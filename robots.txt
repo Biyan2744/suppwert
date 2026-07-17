@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+# Sitemap-URL gilt fuer die geplante Domain suppwert.de — bei abweichender
+# finaler Domain anpassen (siehe ROADMAP Launch-Checkliste).
+Sitemap: https://suppwert.de/sitemap.xml

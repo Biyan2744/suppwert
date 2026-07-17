@@ -22,6 +22,8 @@ Python-Generator für die Verfügbarkeits-Updates.
 | `fonts/` | Inter als lokale woff2 (latin-Subset). |
 | `impressum.html` / `datenschutz.html` | Rechtsseiten (bis zur Veröffentlichung mit markierten Platzhaltern statt echter Personendaten). |
 | `404.html` | Fehlerseite für GitHub Pages (base-Pfad wird zur Laufzeit berechnet). |
+| `og-image.png` | Social-Media-Vorschaubild (og:image, 1200×630, eigenes Branding). |
+| `robots.txt` / `sitemap.xml` | SEO-Grundausstattung (URLs zeigen auf die geplante Domain suppwert.de). |
 | `live.json` | Aktuelle Live-Daten (Verfügbarkeit je Variante, neue Produkte, Datum). |
 | `CLAUDE.md` | Projekt-Brief & Konventionen (für Claude Code / Entwickler:innen). |
 | `ROADMAP.md` | Nächste Ausbaustufen mit Akzeptanzkriterien. |

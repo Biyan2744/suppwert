@@ -9,7 +9,13 @@
 <meta property="og:description" content="Alle MORE-Nutrition-Produkte im Vergleich: Preise, Nährwerte, Scores & Live-Verfügbarkeit je Sorte.">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="de_DE">
-<meta name="twitter:card" content="summary">
+<!-- og:image braucht eine ABSOLUTE URL (Scraper ignorieren relative) — zeigt auf die
+     geplante Domain suppwert.de; falls die finale Domain abweicht: hier anpassen (Launch-Checkliste). -->
+<meta property="og:image" content="https://suppwert.de/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://suppwert.de/og-image.png">
 <meta name="theme-color" content="#fcfcfb">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.json">
@@ -123,13 +129,15 @@ select.sort{border:1px solid var(--line);background:var(--surface-1);color:var(-
 .pc{background:var(--card);border:1px solid var(--ring);border-radius:var(--r);box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden}
 .pc-img{position:relative;height:168px;background:var(--imgbg);display:flex;align-items:center;justify-content:center;padding:12px;border-bottom:1px solid var(--grid)}
 .pc-img img{max-height:100%;max-width:100%;object-fit:contain}
-.pc-img .ph{width:100%;height:100%;border-radius:8px;display:flex;align-items:center;justify-content:center;text-align:center;padding:12px;font-weight:700;font-size:14px;color:#fff;background:linear-gradient(135deg,var(--acc),color-mix(in srgb,var(--acc) 70%,#000))}
+.pc-img .ph{width:100%;height:100%;border-radius:8px;display:flex;flex-direction:column;gap:9px;align-items:center;justify-content:center;text-align:center;padding:12px;font-weight:700;font-size:14px;color:#fff;background:linear-gradient(135deg,var(--acc),color-mix(in srgb,var(--acc) 70%,#000))}
+.pc-img .ph svg{width:40px;height:40px;flex-shrink:0;opacity:.95}
 .pc-img .catbadge{position:absolute;top:9px;left:9px;font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#fff;background:var(--acc);padding:3px 8px;border-radius:999px;box-shadow:0 1px 4px rgba(0,0,0,.2)}
 .pc-img .tp{position:absolute;top:9px;right:9px;background:var(--gold);color:#241c00;font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px;box-shadow:0 1px 4px rgba(0,0,0,.2)}
 .pc-b{padding:12px 14px 0}
 .pc-b .nm{font-size:14.5px;font-weight:650;letter-spacing:-.2px;line-height:1.25}
 .pc-price{display:flex;align-items:center;gap:8px;margin-top:7px}
 .pc-price .pr{font-size:16px;font-weight:750}
+.pc-price .bp{font-size:11px;color:var(--muted);white-space:nowrap}
 .pc-price .avail{margin-left:auto;font-size:11.5px;font-weight:600;display:inline-flex;align-items:center;gap:5px}
 .pc-price .avail .adot{width:8px;height:8px;border-radius:50%}
 .varline{display:flex;align-items:center;gap:8px;padding:7px 14px 0}
@@ -690,6 +698,22 @@ const RETAILERS = [["Offizieller Shop","ja","Komplettes Sortiment"],["Amazon.de"
 
 function imgURL(u){ if(!u)return null; if(!/^https?:/.test(u))return u; return u + (u.indexOf("?")>=0?"&":"?") + "width=640"; }
 function perServing(p){ if(p.perServ!=null) return p.perServ; if(p.price!=null&&p.servings) return p.price/p.servings; return null; }
+/* Grundpreis (PAngV-Logik): €/kg bzw. €/l aus dem kuratierten size-Feld. Stueck-Angaben
+   (Sticks/Kapseln/Gummies/Wraps), Spannen ("110–130 g") und leere Groessen bekommen KEINEN
+   Grundpreis — lieber keine Zahl als eine geratene. "x g / Portion" wird nur mit bekannter
+   Portionszahl hochgerechnet. */
+function baseInfo(p){
+  if(p.price==null||!p.size) return null;
+  const s=p.size.replace(/×/g,"x").replace(",",".");
+  let m=s.match(/^(\d+)\s*x\s*([\d.]+)\s*(g|ml)$/i);
+  let qty=null,unit=null;
+  if(m){ qty=parseInt(m[1],10)*parseFloat(m[2]); unit=m[3].toLowerCase(); }
+  else if((m=s.match(/^([\d.]+)\s*(g|ml)$/i))){ qty=parseFloat(m[1]); unit=m[2].toLowerCase(); }
+  else if((m=s.match(/^([\d.]+)\s*g\s*\/\s*Portion$/i))&&p.servings){ qty=parseFloat(m[1])*p.servings; unit="g"; }
+  if(!qty||!unit) return null;
+  return unit==="g" ? {v:p.price/(qty/1000),u:"kg"} : {v:p.price/(qty/1000),u:"l"};
+}
+function fmtBase(p){ const b=baseInfo(p); return b?`${b.v.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})} €/${b.u}`:null; }
 function euroPerProtein(p){ const ps=perServing(p); if(ps!=null&&p.protein) return ps/p.protein; return null; }
 function proteinDensity(p){ if(p.protein!=null&&p.kcal) return p.protein/p.kcal*100; return null; }
 function normArr(vals){ const v=vals.filter(x=>x!=null); if(!v.length) return null; const mn=Math.min(...v),mx=Math.max(...v); return x=> x==null?null : (mx===mn?0.5:(x-mn)/(mx-mn)); }
@@ -798,7 +822,18 @@ function scorePopHTML(p){
     `<b>Geschmack</b> (35 %): ${p._taste!=null?p._taste:"–"}${p.rating!=null?` · ${p.rating.toLocaleString("de-DE")}★`:""}${p.reviews!=null?` · ${p.reviews.toLocaleString("de-DE")} Bewertungen`:""}<br>`+
     `<span style="color:var(--muted)">Bester Wert der Kategorie = 100. Fehlende Teile fließen nicht ein (Gewichte anteilig neu verteilt) – Details im Info-Tab.</span>`;
 }
-window.imgFail=function(el){ const d=document.createElement("div"); d.className="ph"; d.style.setProperty("--acc",CATS[el.dataset.cat].color); d.textContent=el.dataset.name; el.parentNode.insertBefore(d,el); el.remove(); };
+/* Platzhalter-Illustrationen je Kategorie (Line-Art, weiss auf Kategorie-Farbe) — Launch-Optik
+   ohne Produktfotos (SHOW_PRODUCT_IMGS=false) und Fallback bei Bild-Ladefehlern. */
+const PH_ICONS={
+  proteine:'<svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 26h18l-2.5 23a3 3 0 0 1-3 2.7h-7a3 3 0 0 1-3-2.7Z"/><path d="M25 26v-5h14v5"/><path d="M29 21v-4h6v4"/><path d="M26.5 36h11"/></g></svg>',
+  riegel:'<svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><rect x="12" y="24" width="40" height="16" rx="5"/><path d="M25 24v16M39 24v16"/></g></svg>',
+  snacks:'<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="15" fill="none" stroke="#fff" stroke-width="3.5"/><g fill="#fff"><circle cx="27" cy="27" r="2.4"/><circle cx="37" cy="30" r="2.4"/><circle cx="30" cy="37" r="2.4"/></g></svg>',
+  supplements:'<svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="3.5" transform="rotate(-45 32 32)"><rect x="18" y="25.5" width="28" height="13" rx="6.5"/><path d="M32 25.5v13"/></g></svg>',
+  chunky:'<svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"><ellipse cx="24" cy="39" rx="8.5" ry="6"/><path d="M31.5 34 47 18"/></g><g fill="#fff"><circle cx="21" cy="29" r="1.9"/><circle cx="27.5" cy="26.5" r="1.9"/><circle cx="17" cy="24.5" r="1.9"/></g></svg>',
+  kochen:'<svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"><circle cx="26" cy="36" r="12"/><path d="M37 31 52 23"/></g></svg>'
+};
+function phHTML(cat,name){ return `<div class="ph" style="--acc:${CATS[cat].color}">${PH_ICONS[cat]||""}<span>${name}</span></div>`; }
+window.imgFail=function(el){ const w=document.createElement("div"); w.innerHTML=phHTML(el.dataset.cat,esc(el.dataset.name)); const d=w.firstChild; el.parentNode.insertBefore(d,el); el.remove(); };
 
 function renderKPIs(){
   const prices=PRODUCTS.map(p=>p.price).filter(x=>x!=null);
@@ -958,7 +993,7 @@ function meter(label,val,color){ if(val==null)return `<div class="mrow"><span cl
 function cardHTML(p){
   const c=CATS[p.cat], a=AVAIL[p.avail]||AVAIL["limitiert"], ps=perServing(p), isProt=PROTEIN_CATS.includes(p.cat);
   const vs=VARIANTS[p.id]||[], pv=vs.length?parseVariants(p.id):null;
-  const img = p.img ? `<img src="${imgURL(p.img)}" alt="${esc(p.name)}" data-cat="${p.cat}" data-name="${esc(p.name)}" loading="lazy" onerror="imgFail(this)">` : `<div class="ph" style="--acc:${c.color}">${esc(p.name)}</div>`;
+  const img = p.img ? `<img src="${imgURL(p.img)}" alt="${esc(p.name)}" data-cat="${p.cat}" data-name="${esc(p.name)}" loading="lazy" onerror="imgFail(this)">` : phHTML(p.cat,esc(p.name));
   const cmpchk=`<label class="cmpchk"><input type="checkbox" data-cmp="${p.id}" ${cmp.includes(p.id)?"checked":""} aria-label="${esc(p.name)} vergleichen">Vergleichen</label>`;
   const win = p.pick ? `<span class="tp">★ ${p.pickTxt||"Tipp"}</span>` : (isProt&&p._total!=null&&p._total===catWinner(p.cat)?`<span class="tp">★ Kategorie-Sieger</span>`:"");
   let mid="";
@@ -985,7 +1020,7 @@ function cardHTML(p){
     <div class="pc-img"><span class="catbadge" style="--acc:${c.color}">${c.label}</span>${win}${img}${cmpchk}</div>
     <div class="pc-b">
       <div class="nm">${p.name}</div>
-      <div class="pc-price"><span class="pr tnum">${eur(p.price)}</span><span class="avail"><span class="adot" style="background:${a.c}"></span>${a.t}</span></div>
+      <div class="pc-price"><span class="pr tnum">${eur(p.price)}</span>${fmtBase(p)?`<span class="bp tnum">${fmtBase(p)}</span>`:""}<span class="avail"><span class="adot" style="background:${a.c}"></span>${a.t}</span></div>
       ${pv?`<div class="varline"><span class="vl">Sorten lieferbar</span><span class="vv tnum">${pv.flavors.filter(f=>f.av).length}/${pv.flavors.length}</span>${pv.flavors.length>4?`<button class="vtog" data-vt="${p.id}" data-more="+${pv.flavors.length-4} weitere ▾" aria-expanded="false" aria-controls="vl-${p.id}">+${pv.flavors.length-4} weitere ▾</button>`:""}</div>`:""}
       ${pv?`<div class="vlist" id="vl-${p.id}">${pv.flavors.map((f,i)=>{const best=[...f.sizes].sort((a,b)=>(b.av?1:0)-(a.av?1:0)||b.pr-a.pr)[0];return `<span class="vitem ${f.av?"":"out"}${i>3?" xtra":""}" title="${esc(f.sizes.map(x=>(x.size||"Standard")+(x.av?" – lieferbar":" – ausverkauft")).join(", "))}"><a class="vname" href="${affLink(p.url+"?variant="+best.vid)}" target="_blank" rel="noopener" title="Im MORE-Shop öffnen">${escT(f.flavor)}</a>${f.av?`<button type="button" class="vadd" data-pid="${p.id}" data-vid="${best.vid}" aria-label="${esc(f.flavor)} in den Merkzettel legen" title="In den Merkzettel (${esc(best.size||"Standard")}${best.pr?", "+eur(best.pr):""})">${CARTI}</button>`:""}</span>`;}).join("")}${pv.sizes.length>1?`<span class="vsizes">Größen: ${pv.sizes.map(s=>escT(s.size)+(s.label?` (${s.label})`:"")).join(" · ")}</span>`:""}</div>`:""}
     </div>
@@ -1014,15 +1049,15 @@ function getFiltered(){
   return list.sort(cmp);
 }
 function renderTable(list){
-  const cols=[["name","Produkt",0],["price","Preis",1],["perserv","€/Port.",1],["protein","Protein",1],["sugar","Zucker",1],["kcal","kcal",1],["rating","Bew.",1],["_total","Score",1],["avail","Verfügbar",0]];
+  const cols=[["name","Produkt",0],["price","Preis",1],["base","Grundpreis",1],["perserv","€/Port.",1],["protein","Protein",1],["sugar","Zucker",1],["kcal","kcal",1],["rating","Bew.",1],["_total","Score",1],["avail","Verfügbar",0]];
   let h="<thead><tr>"+cols.map(c=>`<th class="${c[2]?'num':''}" data-k="${c[0]}" aria-sort="${tsort.key===c[0]?(tsort.dir>0?"ascending":"descending"):"none"}">${c[1]}${tsort.key===c[0]?`<span class="sortind">${tsort.dir>0?" ▲":" ▼"}</span>`:""}</th>`).join("")+"</tr></thead>";
   const rows=list.map(p=>{const ps=perServing(p),a=AVAIL[p.avail]||AVAIL["limitiert"];const im=p.img?`<img src="${imgURL(p.img)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:"";
-    return `<tr><td><span class="tprod">${im}${p.name}</span></td><td class="num tnum">${eur(p.price)}</td><td class="num tnum">${ps==null?"–":eur(ps)}</td><td class="num tnum">${p.protein==null?"–":p.protein.toLocaleString("de-DE")+" g"}</td><td class="num tnum">${p.sugar==null?"–":p.sugar.toLocaleString("de-DE")+" g"}</td><td class="num tnum">${p.kcal==null?"–":p.kcal}</td><td class="num tnum">${p.rating==null?"–":p.rating.toLocaleString("de-DE")+"★"}</td><td class="num">${p._total==null?"–":`<span class="scorepill" style="background:${scoreColor(p._total)}">${p._total}</span>`}</td><td><span style="color:${a.c}">●</span> ${a.t}</td></tr>`;}).join("");
+    return `<tr><td><span class="tprod">${im}${p.name}</span></td><td class="num tnum">${eur(p.price)}</td><td class="num tnum">${fmtBase(p)||"–"}</td><td class="num tnum">${ps==null?"–":eur(ps)}</td><td class="num tnum">${p.protein==null?"–":p.protein.toLocaleString("de-DE")+" g"}</td><td class="num tnum">${p.sugar==null?"–":p.sugar.toLocaleString("de-DE")+" g"}</td><td class="num tnum">${p.kcal==null?"–":p.kcal}</td><td class="num tnum">${p.rating==null?"–":p.rating.toLocaleString("de-DE")+"★"}</td><td class="num">${p._total==null?"–":`<span class="scorepill" style="background:${scoreColor(p._total)}">${p._total}</span>`}</td><td><span style="color:${a.c}">●</span> ${a.t}</td></tr>`;}).join("");
   const tbl=document.getElementById("tbl"); tbl.innerHTML=h+"<tbody>"+rows+"</tbody>";
   tbl.querySelectorAll("th").forEach(th=>th.onclick=()=>{const k=th.dataset.k;tsort.dir=tsort.key===k?-tsort.dir:(["name","avail"].includes(k)?1:-1);tsort.key=k;render();});
 }
 const AVAIL_RANK={"auf Lager":0,"limitiert":1,"ausverkauft":2,"coming soon":3};
-function sortForTable(list){const k=tsort.key,d=tsort.dir,val=p=>k==="perserv"?perServing(p):(k==="avail"?AVAIL_RANK[p.avail]:p[k]);return [...list].sort((a,b)=>{let x=val(a),y=val(b);const xn=x==null,yn=y==null;if(xn||yn)return xn&&yn?0:(xn?1:-1);if(typeof x==="string"||typeof y==="string"){return x.toString().localeCompare(y.toString())*d;}return (x-y)*d;});}
+function sortForTable(list){const k=tsort.key,d=tsort.dir,val=p=>k==="perserv"?perServing(p):(k==="base"?(baseInfo(p)?baseInfo(p).v:null):(k==="avail"?AVAIL_RANK[p.avail]:p[k]));return [...list].sort((a,b)=>{let x=val(a),y=val(b);const xn=x==null,yn=y==null;if(xn||yn)return xn&&yn?0:(xn?1:-1);if(typeof x==="string"||typeof y==="string"){return x.toString().localeCompare(y.toString())*d;}return (x-y)*d;});}
 function render(){
   const list=getFiltered(), c=CATS[activeCat];
   document.getElementById("catHead").innerHTML=`<h2><span class="hbar" style="--acc:${c.color}"></span>${c.label}</h2><p>${c.desc}</p>`;

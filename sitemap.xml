@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- URLs gelten fuer die geplante Domain suppwert.de — bei abweichender finaler Domain
+     anpassen (ROADMAP Launch-Checkliste). Impressum/Datenschutz sind noindex und stehen
+     bewusst nicht in der Sitemap. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://suppwert.de/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>

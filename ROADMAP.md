@@ -18,6 +18,12 @@ Priorisierte Ausbaustufen mit Akzeptanzkriterien. Reihenfolge ist ein Vorschlag.
 > Impressum: Biyan will die Privatadresse nicht veröffentlichen und kauft **ganz am Ende**
 > einen Impressum-Service (ladungsfähige Anschrift); bis dahin bleibt Pages aus
 > (Impressumspflicht). Offen: 2 (Restock-Alerts, braucht Backend), 3 (Affiliate).
+> **Vor-Launch-Politur erledigt (17.07.):** Kategorie-Icon-Platzhalter (Launch ohne
+> Produktfotos sieht gewollt aus), og:image + summary_large_image, robots.txt/sitemap.xml
+> (Domain-abhängig, s. o.), Grundpreise €/kg bzw. €/l auf Karten + als sortierbare
+> Tabellenspalte. **Nach-Launch-Ideen:** Verfügbarkeits-Historie aus history.json
+> (wächst wöchentlich), Review-Refresh von den Produktseiten, Search Console,
+> ggf. Produkt-Unterseiten für SEO, Restock-Alerts (Backend).
 
 ## 1. 1-Klick-Warenkorb (vorbefüllter Shopify-Link) — *statisch, kein Backend* ✅
 Kunden stellen auf der Seite einen Warenkorb zusammen und landen per Klick im MORE-Shop mit
