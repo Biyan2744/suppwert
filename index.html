@@ -213,7 +213,7 @@ td .cdot{width:8px;height:8px;border-radius:50%}
 .vtog{border:0;background:transparent;color:var(--m-value);font-size:11px;font-weight:700;cursor:pointer;padding:0;margin-left:8px;white-space:nowrap}
 .vlist{padding:8px 14px 0;display:flex;flex-wrap:wrap;gap:5px}
 .vitem{font-size:10.5px;padding:2px 8px;border-radius:999px;border:1px solid var(--ring);display:inline-flex;align-items:center;gap:5px;color:var(--text-2);text-decoration:none;cursor:pointer}
-a.vitem:hover{border-color:var(--m-value);color:var(--text-1)}
+.vitem:has(.vname:hover){border-color:var(--m-value)}
 .vitem::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ok);flex-shrink:0}
 .vitem.out{color:var(--muted);text-decoration:line-through}
 .vitem.out::before{background:var(--crit)}
@@ -232,13 +232,11 @@ a.vitem:hover{border-color:var(--m-value);color:var(--text-1)}
 
 /* Merkzettel */
 .pcf-r{margin-left:auto;display:inline-flex;gap:8px;align-items:center}
-.mk{border:1px solid var(--line);background:transparent;color:var(--text-2);padding:7px 11px;border-radius:9px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap}
-.mk:hover{border-color:var(--muted);color:var(--text-1)}
-.mk.done{border-color:var(--ok);color:var(--ok)}
-.vpick{padding:8px 14px 0;display:flex;flex-wrap:wrap;gap:5px}
-.vpick .vph{font-size:10.5px;color:var(--muted);align-self:center}
-.vpick button{font-size:10.5px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--text-1);cursor:pointer}
-.vpick button:hover{border-color:var(--m-value);color:var(--m-value)}
+.vname{color:inherit;text-decoration:none}
+.vname:hover{color:var(--m-value)}
+.vitem.out .vname{text-decoration:line-through}
+.vadd{border:0;background:transparent;color:var(--m-value);cursor:pointer;display:inline-flex;align-items:center;padding:1px 1px 1px 6px;margin-left:2px;border-left:1px solid var(--ring);font-size:10px;line-height:1}
+.vadd:hover,.vadd.did{color:var(--ok)}
 .cartbar{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;z-index:80;background:var(--text-1);color:var(--surface-1);border-radius:14px;box-shadow:0 6px 24px rgba(0,0,0,.28);padding:10px 14px;display:flex;gap:10px;align-items:center;font-size:13px;max-width:calc(100vw - 24px);flex-wrap:wrap;justify-content:center}
 .cartbar .go{background:var(--surface-1);color:var(--text-1);border:0;border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:700;cursor:pointer;text-decoration:none;white-space:nowrap}
 .cartbar .go.sec{background:transparent;color:var(--surface-1);border:1px solid var(--ring);opacity:.9}
@@ -258,7 +256,7 @@ a.vitem:hover{border-color:var(--m-value);color:var(--text-1)}
 .cmpchip{position:fixed;left:14px;bottom:14px;z-index:79;background:var(--m-value);color:#fff;border:0;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 6px 24px rgba(0,0,0,.28)}
 body.has-cart .cmpchip{bottom:74px}
 .cmpwrap{position:fixed;inset:0;z-index:90;background:rgba(11,11,11,.45);display:flex;align-items:center;justify-content:center;padding:16px}
-.cmpwrap[hidden],.vlist[hidden],.vpick[hidden],.cartbar[hidden]{display:none}
+.cmpwrap[hidden],.vlist[hidden],.cartbar[hidden]{display:none}
 .cmpbox{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);max-width:860px;width:100%;max-height:86vh;overflow:auto;padding:18px}
 .cmpbox h3{font-size:16px;display:flex;align-items:center}
 .cmpbox .x{margin-left:auto;border:0;background:transparent;color:var(--muted);font-size:17px;cursor:pointer}
@@ -319,11 +317,11 @@ body.has-cart .cmpchip{bottom:74px}
 :focus-visible{outline:2px solid var(--m-value);outline-offset:2px}
 .pc{transition:box-shadow .18s ease,transform .18s ease}
 .pc:hover{transform:translateY(-2px);box-shadow:0 2px 4px rgba(11,11,11,.06),0 12px 28px rgba(11,11,11,.10)}
-.buy,.mk,.jchip,.tbtn,.cartbar .go,.cmpchip,.vpick button{transition:background-color .15s ease,color .15s ease,border-color .15s ease,opacity .15s ease}
+.buy,.vadd,.jchip,.tbtn,.cartbar .go,.cmpchip{transition:background-color .15s ease,color .15s ease,border-color .15s ease,opacity .15s ease}
 ::selection{background:var(--m-value);color:#fff}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
 @media print{
-  header.top,.tabbar,.toolbar,.cartbar,.cartpanel,.cmpchip,.cmpwrap,.skip,.viewtog,.vpick{display:none!important}
+  header.top,.tabbar,.toolbar,.cartbar,.cartpanel,.cmpchip,.cmpwrap,.skip,.viewtog,.vadd{display:none!important}
   .foot{padding-bottom:20px}
   .pc{box-shadow:none;border-color:var(--line)}
   body{background:#fff}
@@ -442,7 +440,7 @@ body.has-cart .cmpchip{bottom:74px}
       <div class="pnl">
         <h3>Spar-Tipps</h3>
         <ul class="tips">
-          <li><b>Proben zuerst:</b> Viele Pulver gibt es als 25-g-Probe für 2,99 € – Sorte testen, bevor die 600-g-Dose kommt (Proben stehen in der Sorten-Auswahl beim Merken).</li>
+          <li><b>Proben zuerst:</b> Viele Pulver gibt es als 25-g-Probe für 2,99 € – Sorte testen, bevor die 600-g-Dose kommt (Sorten-Name anklicken, im Shop die Probengröße wählen).</li>
           <li><b>Gratisversand ab 55 €:</b> Der Merkzettel unten zeigt live, wie viel noch fehlt.</li>
           <li><b>Wechselnde Codes:</b> Aktuell „AKTION" (bis 20 %) – Codes wechseln wöchentlich, kursierende „50 %"-Codes sind meist unbestätigt.</li>
           <li><b>Bundles & Tasterboxen</b> im Shop sind pro Portion oft günstiger als Einzeldosen (z. B. Chunky-Flavour-Bundle 0,22 €/Portion statt 0,32 €).</li>
@@ -705,6 +703,7 @@ function scoreColor(s){ if(s==null)return "var(--muted)"; if(s>=75)return "var(-
 function esc(s){return (s||"").replace(/"/g,"&quot;");}
 function escT(s){return (s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 function varName(t){return t==="Default Title"?"Standardgröße":t;}
+const CARTI=`<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1.6"/><circle cx="19" cy="21" r="1.6"/><path d="M2.5 3h2l2.4 12.5a2 2 0 0 0 2 1.5h9.7a2 2 0 0 0 2-1.6L22 7H6"/></svg>`;
 
 /* Shopify-Varianten sind "Geschmack / Größe" — fuers UI in beide Dimensionen zerlegen:
    Chips zeigen nur den Geschmack (gemeinsamer Produkt-Praefix wie "Milkshake Style" wird
@@ -863,7 +862,7 @@ function meter(label,val,color){ if(val==null)return `<div class="mrow"><span cl
 
 function cardHTML(p){
   const c=CATS[p.cat], a=AVAIL[p.avail]||AVAIL["limitiert"], ps=perServing(p), isProt=PROTEIN_CATS.includes(p.cat);
-  const vs=VARIANTS[p.id]||[], vBuy=vs.filter(v=>v[2]), pv=vs.length?parseVariants(p.id):null;
+  const vs=VARIANTS[p.id]||[], pv=vs.length?parseVariants(p.id):null;
   const img = p.img ? `<img src="${imgURL(p.img)}" alt="${esc(p.name)}" data-cat="${p.cat}" data-name="${esc(p.name)}" loading="lazy" onerror="imgFail(this)">` : `<div class="ph" style="--acc:${c.color}">${esc(p.name)}</div>`;
   const cmpchk=`<label class="cmpchk"><input type="checkbox" data-cmp="${p.id}" ${cmp.includes(p.id)?"checked":""} aria-label="${esc(p.name)} vergleichen">Vergleichen</label>`;
   const win = p.pick ? `<span class="tp">★ ${p.pickTxt||"Tipp"}</span>` : (isProt&&p._total!=null&&p._total===catWinner(p.cat)?`<span class="tp">★ Kategorie-Sieger</span>`:"");
@@ -893,13 +892,12 @@ function cardHTML(p){
       <div class="nm">${p.name}</div>
       <div class="pc-price"><span class="pr tnum">${eur(p.price)}</span><span class="avail"><span class="adot" style="background:${a.c}"></span>${a.t}</span></div>
       ${pv?`<div class="varline"><span class="vl">Sorten lieferbar</span><span class="vv tnum">${pv.flavors.filter(f=>f.av).length}/${pv.flavors.length}</span>${pv.flavors.length>4?`<button class="vtog" data-vt="${p.id}" data-more="+${pv.flavors.length-4} weitere ▾" aria-expanded="false" aria-controls="vl-${p.id}">+${pv.flavors.length-4} weitere ▾</button>`:""}</div>`:""}
-      ${pv?`<div class="vlist" id="vl-${p.id}">${pv.flavors.map((f,i)=>{const best=[...f.sizes].sort((a,b)=>(b.av?1:0)-(a.av?1:0)||b.pr-a.pr)[0];return `<a class="vitem ${f.av?"":"out"}${i>3?" xtra":""}" href="${affLink(p.url+"?variant="+best.vid)}" target="_blank" rel="noopener" title="${esc(f.sizes.map(x=>(x.size||"Standard")+(x.av?" – lieferbar":" – ausverkauft")).join(", "))} – im MORE-Shop öffnen">${escT(f.flavor)}</a>`;}).join("")}${pv.sizes.length>1?`<span class="vsizes">Größen: ${pv.sizes.map(s=>escT(s.size)+(s.label?` (${s.label})`:"")).join(" · ")}</span>`:""}</div>`:""}
+      ${pv?`<div class="vlist" id="vl-${p.id}">${pv.flavors.map((f,i)=>{const best=[...f.sizes].sort((a,b)=>(b.av?1:0)-(a.av?1:0)||b.pr-a.pr)[0];return `<span class="vitem ${f.av?"":"out"}${i>3?" xtra":""}" title="${esc(f.sizes.map(x=>(x.size||"Standard")+(x.av?" – lieferbar":" – ausverkauft")).join(", "))}"><a class="vname" href="${affLink(p.url+"?variant="+best.vid)}" target="_blank" rel="noopener" title="Im MORE-Shop öffnen">${escT(f.flavor)}</a>${f.av?`<button type="button" class="vadd" data-pid="${p.id}" data-vid="${best.vid}" aria-label="${esc(f.flavor)} in den Merkzettel legen" title="In den Merkzettel (${esc(best.size||"Standard")}${best.pr?", "+eur(best.pr):""})">${CARTI}</button>`:""}</span>`;}).join("")}${pv.sizes.length>1?`<span class="vsizes">Größen: ${pv.sizes.map(s=>escT(s.size)+(s.label?` (${s.label})`:"")).join(" · ")}</span>`:""}</div>`:""}
     </div>
     <div class="pc-note">${p.note||""}</div>
     ${badges?`<div class="badges">${badges}</div>`:""}
     ${mid}
-    <div class="vpick" id="vp-${p.id}" hidden></div>
-    <div class="pc-f">${p.rating!=null?`<span class="rate"><span class="st">★</span>${p.rating.toLocaleString("de-DE")}</span>`:""}<span class="pcf-r">${vBuy.length?`<button class="mk" data-mk="${p.id}">+ Merken</button>`:""}<a class="buy" href="${affLink(p.url)}" target="_blank" rel="noopener">Ansehen →</a></span></div>
+    <div class="pc-f">${p.rating!=null?`<span class="rate"><span class="st">★</span>${p.rating.toLocaleString("de-DE")}</span>`:""}<span class="pcf-r"><a class="buy" href="${affLink(p.url)}" target="_blank" rel="noopener">Ansehen →</a></span></div>
   </div>`;
 }
 
@@ -968,10 +966,13 @@ document.getElementById("grid").addEventListener("click",e=>{
   if(vt){const el=document.getElementById("vl-"+vt.dataset.vt);const open=el.classList.toggle("open");vt.setAttribute("aria-expanded",String(open));vt.textContent=open?"weniger ▴":vt.dataset.more;return;}
   const sp=e.target.closest(".spop-btn");
   if(sp){const el=document.getElementById("sp-"+sp.dataset.sp);el.hidden=!el.hidden;sp.setAttribute("aria-expanded",String(!el.hidden));return;}
-  const vb=e.target.closest(".vpick button");
-  if(vb){addToCart(vb.dataset.pid,Number(vb.dataset.vid));const vp=vb.closest(".vpick");vp.hidden=true;flashMk(vp.closest(".pc").querySelector(".mk"));return;}
-  const mk=e.target.closest(".mk");
-  if(mk){merken(mk);return;}
+  const va=e.target.closest(".vadd");
+  if(va){
+    addToCart(va.dataset.pid,Number(va.dataset.vid));
+    const orig=va.innerHTML;va.classList.add("did");va.innerHTML="✓";
+    setTimeout(()=>{if(va.isConnected){va.innerHTML=orig;va.classList.remove("did");}},1200);
+    return;
+  }
 });
 document.getElementById("grid").addEventListener("change",e=>{
   const c=e.target.closest("[data-cmp]");
@@ -984,18 +985,7 @@ document.getElementById("grid").addEventListener("change",e=>{
   renderCmpChip();
 });
 
-/* Merkzettel: Sorte wählen (nur kaufbare Varianten) -> localStorage -> vorbefüllter MORE-Warenkorb-Link */
-function merken(btn){
-  const pid=btn.dataset.mk, vs=(VARIANTS[pid]||[]).filter(v=>v[2]);
-  if(!vs.length)return;
-  if(vs.length===1){addToCart(pid,vs[0][0]);flashMk(btn);return;}
-  const vp=document.getElementById("vp-"+pid);
-  if(!vp.hidden){vp.hidden=true;return;}
-  const P=parseVariants(pid);
-  vp.innerHTML=`<span class="vph">Sorte wählen:</span>`+P.parsed.filter(x=>x.av).map(x=>`<button type="button" data-pid="${pid}" data-vid="${x.vid}">${escT(x.flavor)}${x.size?` · ${escT(x.size)}`:""}${P.multiPrice&&x.pr?` · ${eur(x.pr)}`:""}</button>`).join("");
-  vp.hidden=false;
-}
-function flashMk(btn){if(!btn)return;const t=btn.textContent;btn.textContent="✓ Gemerkt";btn.classList.add("done");setTimeout(()=>{btn.textContent=t;btn.classList.remove("done");},1400);}
+/* Merkzettel: Warenkorb-Symbol an der Sorten-Pill legt die Standardgroesse direkt hinein */
 function addToCart(pid,vid){
   const p=PRODUCTS.find(x=>x.id===pid), v=(VARIANTS[pid]||[]).find(x=>x[0]===vid);
   if(!p||!v)return;
