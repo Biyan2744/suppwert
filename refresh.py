@@ -4,6 +4,13 @@
 # Scores, newProducts) werden NICHT automatisch veraendert — neue Katalog-Produkte werden nur als
 # Vorschlag ausgegeben (Kuration von Hand, weil der Katalog voller Bundles/Buecher/Zubehoer steckt).
 #
+# Schreibt zusaetzlich:
+#   - live.json "variants": je Produkt [[variantId, Sortenname, 1|0 kaufbar, Preis-EUR], ...]
+#     (Basis fuer die Sorten-Anzeige und die 1-Klick-Warenkorb-Permalinks /cart/<id>:<qty>;
+#     der Varianten-Preis ist der ECHTE Preis genau dieser Variante und dient nur der
+#     Merkzettel-Zwischensumme — die kuratierten Karten-Preise bleiben unberuehrt)
+#   - history.json: ein Verfuegbarkeits-Snapshot {datum: {id: [kaufbar, gesamt]}} pro Tag
+#
 # Nutzung: python3 refresh.py [--no-generate]
 import json, re, sys, subprocess, time, urllib.request
 from datetime import date
@@ -13,7 +20,7 @@ ROOT = Path(__file__).parent
 MONATE = ["Januar","Februar","Maerz","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"]
 MONATE[2] = "März"
 # Handles, die im Katalog auftauchen, aber keine kuratierbaren Einzelprodukte sind
-JUNK = re.compile(r"bundle|tasterbox|multipack|starterkit|refill|kochbuch|box|pfand|gutschein|shaker|bottle|muffinform|backform|kosmetiktasche|kuhlpack", re.I)
+JUNK = re.compile(r"bundle|tasterbox|multipack|starterkit|refill|kochbuch|box|pfand|gutschein|shaker|bottle|muffinform|backform|kosmetiktasche|kuhlpack|breakfast-cup", re.I)
 
 def fetch(url, tries=4):
     for attempt in range(tries):
@@ -31,22 +38,33 @@ def main():
     pairs = re.findall(r'\{id:"([a-z0-9]+)",cat:"[a-z]+".*?url:"https://morenutrition\.de/products/([a-z0-9-]+)"', tpl)
     data = json.loads((ROOT / "live.json").read_text(encoding="utf-8"))
 
-    live, fails = {}, []
+    live, variants, fails = {}, {}, []
     for pid, handle in pairs:
         try:
-            variants = fetch(f"https://morenutrition.de/products/{handle}.js").get("variants", [])
-            live[pid] = [sum(1 for v in variants if v.get("available")), len(variants)]
+            vs = fetch(f"https://morenutrition.de/products/{handle}.js").get("variants", [])
+            live[pid] = [sum(1 for v in vs if v.get("available")), len(vs)]
+            variants[pid] = [[v["id"], v.get("title") or "Standard", 1 if v.get("available") else 0, round(v.get("price", 0) / 100, 2)] for v in vs]
         except Exception as e:
             fails.append(f"{pid} ({handle}): {e}")
             if pid in data.get("live", {}):
                 live[pid] = data["live"][pid]  # alter Stand statt Luecke
+                if pid in data.get("variants", {}):
+                    variants[pid] = data["variants"][pid]
         time.sleep(0.4)
 
     heute = date.today()
     data["availDate"] = f"{heute.day}. {MONATE[heute.month - 1]} {heute.year}"
     data["live"] = live
+    data["variants"] = variants
     (ROOT / "live.json").write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
     print(f"live.json: {len(live)} Produkte, Stand {data['availDate']}" + (f", {len(fails)} Fallbacks: {fails}" if fails else ""))
+
+    # Tages-Snapshot fuer Verlaufs-Auswertungen ("seit X ausverkauft", Restock-Muster)
+    hist_path = ROOT / "history.json"
+    hist = json.loads(hist_path.read_text(encoding="utf-8")) if hist_path.exists() else {}
+    hist[heute.isoformat()] = live
+    hist_path.write_text(json.dumps(hist, ensure_ascii=False), encoding="utf-8")
+    print(f"history.json: {len(hist)} Snapshot(s)")
 
     # Neue Katalog-Produkte nur VORSCHLAGEN (newProducts bleibt kuratiert)
     try:

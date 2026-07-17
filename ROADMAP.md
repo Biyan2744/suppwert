@@ -2,7 +2,14 @@
 
 Priorisierte Ausbaustufen mit Akzeptanzkriterien. Reihenfolge ist ein Vorschlag.
 
-## 1. 1-Klick-Warenkorb (vorbefüllter Shopify-Link) — *statisch, kein Backend*
+> **Stand 17.07.2026:** Punkt 1 (Merkzettel + 1-Klick-Warenkorb) ist umgesetzt, ebenso
+> Vergleichsmodus, Deep-Links, Sorten-Anzeige, Score-Popover, PWA/SEO-Grundausstattung,
+> lokale Produktbilder und der CI-Workflow (`.github/workflows/refresh.yml` — aktiv nach
+> GitHub-Push). Punkt 5 ist für 8 Neuprodukte erledigt (Breakfast Cup entpuppte sich als
+> Zubehör-Lunchpot und bleibt draußen). Offen: 2 (Restock-Alerts, braucht Backend),
+> 3 (Affiliate scharf schalten), Hosting-Entscheidung für 4, Impressum/Datenschutz aus 6.
+
+## 1. 1-Klick-Warenkorb (vorbefüllter Shopify-Link) — *statisch, kein Backend* ✅
 Kunden stellen auf der Seite einen Warenkorb zusammen und landen per Klick im MORE-Shop mit
 allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer Kauf).
 - Shopify-Cart-Permalink: `https://morenutrition.de/cart/<variantId>:<qty>,<variantId>:<qty>`

@@ -4,6 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MORE Nutrition – Produktvergleich & Empfehlungen</title>
+<meta name="description" content="Unabhängiger Produktvergleich für MORE Nutrition: alle Kategorien mit Preisen, Nährwerten, Bewertungen, transparentem Score und Live-Verfügbarkeit je Sorte – plus Merkzettel mit 1-Klick-Warenkorb.">
+<meta property="og:title" content="MORE Nutrition – Produktvergleich & Empfehlungen">
+<meta property="og:description" content="Alle MORE-Produkte im Vergleich: Preise, Nährwerte, Scores & Live-Verfügbarkeit je Sorte.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="de_DE">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#fcfcfb">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.json">
 <style>
 :root{
   --surface-1:#fcfcfb; --plane:#f4f4f1; --card:#ffffff; --imgbg:#fbfbfa;
@@ -188,6 +197,65 @@ td .cdot{width:8px;height:8px;border-radius:50%}
 .srcs{font-size:12.5px;color:var(--muted);line-height:1.7;margin-top:16px}
 .srcs a{color:var(--text-2)}
 
+/* Skip-Link */
+.skip{position:absolute;left:-9999px;top:0;z-index:100;background:var(--text-1);color:var(--surface-1);padding:10px 16px;border-radius:0 0 10px 0;font-size:13px;font-weight:600;text-decoration:none}
+.skip:focus{left:0}
+
+/* Sorten-Liste in der Karte */
+.vtog{border:0;background:transparent;color:var(--m-value);font-size:11px;font-weight:700;cursor:pointer;padding:0;margin-left:8px;white-space:nowrap}
+.vlist{padding:8px 14px 0;display:flex;flex-wrap:wrap;gap:5px}
+.vitem{font-size:10.5px;padding:2px 8px;border-radius:999px;border:1px solid var(--ring);display:inline-flex;align-items:center;gap:5px;color:var(--text-2)}
+.vitem::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ok);flex-shrink:0}
+.vitem.out{color:var(--muted);text-decoration:line-through}
+.vitem.out::before{background:var(--crit)}
+
+/* Score-Popover */
+.spop-btn{border:1px solid var(--line);background:transparent;color:var(--muted);width:16px;height:16px;border-radius:50%;font-size:10px;font-weight:700;cursor:pointer;padding:0;line-height:1;margin-left:6px;vertical-align:1px}
+.spop-btn:hover{color:var(--text-1);border-color:var(--muted)}
+.spop{background:var(--plane);border:1px solid var(--ring);border-radius:10px;padding:9px 11px;font-size:11px;color:var(--text-2);line-height:1.6}
+.spop b{color:var(--text-1)}
+
+/* Merkzettel */
+.pcf-r{margin-left:auto;display:inline-flex;gap:8px;align-items:center}
+.mk{border:1px solid var(--line);background:transparent;color:var(--text-2);padding:7px 11px;border-radius:9px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap}
+.mk:hover{border-color:var(--muted);color:var(--text-1)}
+.mk.done{border-color:var(--ok);color:var(--ok)}
+.vpick{padding:8px 14px 0;display:flex;flex-wrap:wrap;gap:5px}
+.vpick .vph{font-size:10.5px;color:var(--muted);align-self:center}
+.vpick button{font-size:10.5px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--text-1);cursor:pointer}
+.vpick button:hover{border-color:var(--m-value);color:var(--m-value)}
+.cartbar{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;z-index:80;background:var(--text-1);color:var(--surface-1);border-radius:14px;box-shadow:0 6px 24px rgba(0,0,0,.28);padding:10px 14px;display:flex;gap:10px;align-items:center;font-size:13px;max-width:calc(100vw - 24px);flex-wrap:wrap;justify-content:center}
+.cartbar .go{background:var(--surface-1);color:var(--text-1);border:0;border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:700;cursor:pointer;text-decoration:none;white-space:nowrap}
+.cartbar .go.sec{background:transparent;color:var(--surface-1);border:1px solid var(--ring);opacity:.9}
+.cartbar .ship{opacity:.75;font-size:12px}
+.cartpanel{position:fixed;left:50%;transform:translateX(-50%);bottom:72px;z-index:80;background:var(--card);color:var(--text-1);border:1px solid var(--ring);border-radius:14px;box-shadow:var(--shadow);padding:12px 14px;width:min(440px,calc(100vw - 24px));max-height:50vh;overflow:auto}
+.citem{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--grid);font-size:12.5px}
+.citem .cn{flex:1;min-width:0}
+.citem .cn small{color:var(--muted);display:block}
+.citem .q{display:inline-flex;align-items:center;gap:6px}
+.citem .q button{width:20px;height:20px;border-radius:6px;border:1px solid var(--line);background:transparent;color:var(--text-1);cursor:pointer;font-size:12px;line-height:1}
+.citem .rm{border:0;background:transparent;color:var(--crit);cursor:pointer;font-size:13px}
+.cartnote{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5}
+
+/* Vergleichsmodus */
+.cmpchk{position:absolute;bottom:9px;left:9px;font-size:10.5px;font-weight:700;background:var(--card);border:1px solid var(--ring);border-radius:999px;padding:3px 9px;display:inline-flex;gap:5px;align-items:center;cursor:pointer;color:var(--text-2);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.cmpchk input{accent-color:var(--m-value);width:12px;height:12px;margin:0}
+.cmpchip{position:fixed;left:14px;bottom:14px;z-index:79;background:var(--m-value);color:#fff;border:0;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 6px 24px rgba(0,0,0,.28)}
+body.has-cart .cmpchip{bottom:74px}
+.cmpwrap{position:fixed;inset:0;z-index:90;background:rgba(11,11,11,.45);display:flex;align-items:center;justify-content:center;padding:16px}
+.cmpwrap[hidden],.vlist[hidden],.vpick[hidden],.cartbar[hidden]{display:none}
+.cmpbox{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);max-width:860px;width:100%;max-height:86vh;overflow:auto;padding:18px}
+.cmpbox h3{font-size:16px;display:flex;align-items:center}
+.cmpbox .x{margin-left:auto;border:0;background:transparent;color:var(--muted);font-size:17px;cursor:pointer}
+.cmptbl{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:10px;min-width:0}
+.cmptbl th,.cmptbl td{white-space:normal;padding:8px 9px;border-bottom:1px solid var(--grid);text-align:left;vertical-align:top}
+.cmptbl thead th{position:static;background:transparent;text-transform:none;font-size:13px;color:var(--text-1);letter-spacing:0;cursor:default}
+.cmptbl td:first-child{color:var(--muted);font-size:11.5px;width:110px}
+.cmptbl img{width:52px;height:52px;object-fit:contain;background:var(--imgbg);border-radius:8px;border:1px solid var(--grid);display:block;margin-bottom:5px}
+.cmpclear{border:1px solid var(--line);background:transparent;color:var(--text-2);border-radius:9px;padding:6px 10px;font-size:12px;cursor:pointer;margin-top:10px}
+
+@media(max-width:520px){ .cartbar .ship{display:none} }
+
 @media(max-width:900px){
   .kpis{grid-template-columns:repeat(2,1fr)}
   .recs{grid-template-columns:1fr}
@@ -198,6 +266,7 @@ td .cdot{width:8px;height:8px;border-radius:50%}
 </style>
 </head>
 <body>
+<a class="skip" href="#main">Zum Inhalt springen</a>
 <header class="top">
   <div class="wrap top-in">
     <div class="brand"><b>MORE Nutrition · Vergleich</b><span>Produkte, Bewertungen & Bezugsquellen</span></div>
@@ -208,7 +277,7 @@ td .cdot{width:8px;height:8px;border-radius:50%}
 <div class="tabbar"><div class="wrap"><div class="tabs" id="tabs" role="tablist" aria-label="Bereiche"></div></div></div>
 <div class="wrap"><div id="affBar" class="affbar" style="display:none"></div></div>
 
-<div class="wrap">
+<div class="wrap" id="main">
   <!-- ÜBERSICHT -->
   <section class="panel" id="panel-uebersicht" role="tabpanel">
     <div class="hero">
@@ -221,7 +290,7 @@ td .cdot{width:8px;height:8px;border-radius:50%}
     <div class="jump" id="jump"></div>
     <div class="sub-h">🏆 Top-Empfehlungen</div>
     <div class="recs" id="recs"></div>
-    <div class="sub-h">🆕 Neu im Shop <span style="font-weight:400;color:var(--muted);font-size:13px">– frisch entdeckt, noch ohne Bewertung</span></div>
+    <div class="sub-h" id="newhead">🆕 Neu im Shop <span style="font-weight:400;color:var(--muted);font-size:13px">– frisch entdeckt, noch ohne Bewertung</span></div>
     <div class="newgrid" id="newprods"></div>
   </section>
 
@@ -300,54 +369,69 @@ td .cdot{width:8px;height:8px;border-radius:50%}
   </section>
 </div>
 
+<!-- Merkzettel-Leiste + Panel (1-Klick-Warenkorb: vorbefüllter MORE-Cart-Link, Checkout macht der Kunde selbst) -->
+<div class="cartbar" id="cartbar" hidden></div>
+<div class="cartpanel" id="cartpanel" hidden></div>
+<!-- Vergleichsmodus -->
+<button class="cmpchip" id="cmpchip" hidden></button>
+<div class="cmpwrap" id="cmpwrap" hidden role="dialog" aria-modal="true" aria-label="Produktvergleich"></div>
+
 <script>
 const IMG = {
-milkshake:"https://morenutrition.de/cdn/shop/files/more_total_protein_600g_strawberry_milkshake-bOWDtqsI_fced57d6-ad51-489b-b4a7-42911a86bc0b.png?v=1759651982",
-clear:"https://morenutrition.de/cdn/shop/files/Clear_Protein_Peach_Iced_Tea_600g_2048x2048-Msl8EjKk_b50dea46-b96e-45e8-97dd-4968d34d692f.png?v=1759651845",
-icedcoffee:"https://cdn.shopify.com/s/files/1/0503/7536/0676/files/Shopbilder_More_PIC_Dark_Cookie_Crumble-fn6wucwy_c0d1de5e-0b3f-4869-a519-35c33a0025cf.png?v=1759652087",
-matcha:"https://morenutrition.de/cdn/shop/files/More_Protein_Iced_Matcha_Latte_Strawberry_Cheesecake_500g_4096x4096-6kOkx_fD_0920366d-b738-4c8f-a732-76e480c853bb.png?v=1766144000",
-chai:"https://morenutrition.de/cdn/shop/files/More_Protein_Iced_Chai_Latte_Cinnamon_Bun_500g_4096x4096-ZAhQkdIZ_9cac2de2-e81d-4940-bd05-1a52bf721b23.png?v=1770389130",
-milkyccino:"https://morenutrition.de/cdn/shop/files/More_Protein_Milkyccino_500g_White_Almond_Coconut_2048x2048-qumUMltX_278bf0f7-169e-4e8b-a3dd-c5669ac006f1.png?v=1761654941",
-vegan:"https://morenutrition.de/cdn/shop/files/more_total_protein_vegan_600g_cinnalicious-TukjHVKV_26d0df62-f68b-495d-ab0a-342573a4056b.png?v=1780653355",
-glow:"https://morenutrition.de/cdn/shop/files/Shopbilder_MCGP_Cherry_White_Tea-ykFXutpZ_c200188f-ce06-492c-aa44-0e6db357bb05.png?v=1754572308",
-satisbites:"https://morenutrition.de/cdn/shop/files/More_Protein_Satisbites_Dark_Cookie_Crumble_Tray_4096x4096-ce6kO8NX_5b36a01c-85fe-4e49-8373-774d1d2efa68.png?v=1772031270",
-proteinbar:"https://cdn.shopify.com/s/files/1/0503/7536/0676/files/more_protein_bar_white_chocolate_peanut_caramel_box-UTezpApq_1de42a3c-7008-41b7-bb9b-2dfa2bfc7868.png?v=1775920127",
-veganbar:"https://morenutrition.de/cdn/shop/files/Protein_Bar_Vegan_Hazelnut_Nougat_Tray_4096x4096-43d6FmC6_c2f50f6c-9b2e-45fd-9a73-d25b5786f6d9.png?v=1762956552",
-waferbar:"https://morenutrition.de/cdn/shop/files/Protein_Wafer_Bar_Milk_Chocolate_Hazelnut_Tray_4096x4096-0biR3Aqk_9d2b825e-ea88-4e73-8acb-ebd0819f36b5.png",
-pudding:"https://morenutrition.de/cdn/shop/files/More_Protein_Pudding_Neutral_600g_2048x2048-f87z0jzM_d9214b8b-fcc2-46d5-b5a2-eefa85c65fff.png?v=1756302304",
-porridge:"https://morenutrition.de/cdn/shop/files/More_Porridge_Original_Taste_62g_4096x4096-KmEbUf5c_89abd40f-5457-4b3e-a3ee-79165855c32a.png?v=1772959826",
-pancake:"https://morenutrition.de/cdn/shop/files/more_total_protein_pancake_mix_neutral-kLg7M809_8c8f3523-a8a4-422c-ac07-fc568f05e78c.png?v=1762943164",
-griess:"https://morenutrition.de/cdn/shop/files/More_Protein_Grie__Pudding_60g_2048x2048-D3SsjLuU_b6b0c283-7879-458d-8aae-6d6cc268268a.png?v=1766132087",
-milchreis:"https://morenutrition.de/cdn/shop/files/More_Milchreis_Original_Taste_65g_4096x4096-dvFbr7GP_cc1eb7e0-e7c6-4a23-9d20-0eeb1777f881.png?v=1773396902",
-dessert:"https://morenutrition.de/cdn/shop/files/More_Protein_Brownie_Bowl_Style_600g_4096x4096_1-46GkGrgJ_08050dcf-defc-4714-a978-ae4739c16e85.png?v=1777991106",
-chunky:"https://morenutrition.de/cdn/shop/files/Chunky_Flavour_Vanilla_Chocolate_Chip_Cookie_150g_2048x2048-siQ1Bn7n_5d9f7816-ddfb-4abd-9bd1-cf9a7e912652.png?v=1780569572",
-stevia:"https://cdn.shopify.com/s/files/1/0503/7536/0676/files/Chunky_Flavour_Stevia_150g_Salted_Caramel_4096x4096-tUY88rTf_99ea9bee-b1a2-40cf-abad-00b3c8549250.png?v=1765649135",
-chunkybundle:"https://morenutrition.de/cdn/shop/files/Chunky_Bundle_1.png?v=1755783835",
-creagum:"https://morenutrition.de/cdn/shop/files/More_Gummies_Creatine_60_D2C_Green_Apple_4096x4096-Cz4qGRvn_131c7a83-d975-4f84-9ff0-41b4554e263a.png?v=1776080350",
-bioticgum:"https://morenutrition.de/cdn/shop/files/More_Gummies__Biotic_40_D2C_Peach_Strawberry_4096x4096-pWGMlxZ0_5df263d4-311e-4319-836e-49d634269ee6.png?v=1776075856",
-sleepgum:"https://morenutrition.de/cdn/shop/files/More_Gummies_Sleep_80_D2C_Waldbeere_4096x4096-2oxmWjXJ_bcea3662-c6b2-4c20-9c9b-34bbf3e2b51f.png?v=1776934441",
-creastick:"https://morenutrition.de/cdn/shop/files/More_Creatin_Carnitin_Sticks_Tray_Raspberry_4096x4096-dBsmKiov_cbfd344f-8d42-47be-9d81-bfa31b927466.png?v=1767714845",
-dailybiotic:"https://cdn.shopify.com/s/files/1/0503/7536/0676/files/More_Daily_Biotic_Box_30x1_5g_Neutral_4096x4096-R3Jkcj-i_3e602f10-1402-4505-bceb-a80c83169a88.png?v=1782482068",
-ashwa:"https://morenutrition.de/cdn/shop/files/More_Ashwagandha_Sticks_Tray_30x_Orange_4096x4096-vfFVkwKv_4c1d8af1-37f5-4fad-83ad-eeb5f5dbe0ff.png?v=1781514575",
-enzyme:"https://morenutrition.de/cdn/shop/files/More_Digestive_Enzymes_Sticks_Tray_30x_Honey_Lemon_4096x4096-EGhJR2Bk_70cef779-7b2a-46aa-a7bf-1ec5c225ddf3.png?v=1781513649",
-melatonin:"https://morenutrition.de/cdn/shop/files/More_Melatonin_Sleep_Sticks_30x_Mint_4096x4096-L5Xbi0hB_a0b4267b-b190-4a93-bb24-132d4e23270f.png?v=1781514577",
-mineral:"https://morenutrition.de/cdn/shop/files/more_mineral_complete_dose-BopccCAT_ce0e7755-e557-436d-9815-ef031b2eae08.png?v=1769687644",
-curcu:"https://morenutrition.de/cdn/shop/files/more_curcumore-YUZHK_la_67b06496-db99-4ee9-a754-fe676353ec7d.png?v=1769685841",
-harmony:"https://morenutrition.de/cdn/shop/files/more_harmony-Aj8lXBnU_8d7298ba-1082-4669-b025-5033ea78ec80.png?v=1769684967",
-cycle:"https://morenutrition.de/cdn/shop/files/More_Cycle_Balance_120_Caps_4096x4096-pu9rO6po_7dcbf971-7b98-4bba-a34e-1339b7a7cddc.png?v=1769684962",
-collagen:"https://morenutrition.de/cdn/shop/files/More_Skin_Glow_Neutral_300g_4096x4096_1-8a0Ijgqq_20270c8f-efb3-430f-bea5-1e265bfd1fd1.png?v=1772960293",
-fiber:"https://morenutrition.de/cdn/shop/files/More_Fiber_Mix_180g_Neutral_Ohne_Flohsamenschalen_4096x4096-qm75T4AW_9dac95f1-8ab8-46bc-a8ac-3bdb792fb99d.png?v=1781525365",
-everyworkout:"https://morenutrition.de/cdn/shop/files/Every_Workout_Sour_Pink_Grapefruit_Caffeine_Free_270g_4096x4096-b5UtWmsz_99196bbd-edff-440e-9a19-a186330e042f.png?v=1776075854",
-saucenback:"https://morenutrition.de/cdn/shop/files/more_total_protein_600g_sahne-7a7_O1if_584de552-b173-47be-a7f7-1a283553932f.png?v=1755541797",
-saucenfix:"https://morenutrition.de/cdn/shop/files/More_Protein_Tomato_Creme_Sauce_40g_Pilzrahmsauce_4096x4096-2rxdT9ae_7a8f7be7-f0fe-4710-a8fc-d418abb84ddb.png?v=1774619811",
-oilspray:"https://morenutrition.de/cdn/shop/files/more_oelspray_standard-Dhwkrg9T_02594f3f-6b5d-44af-9ab8-8f2f58df927f.png?v=1776081479",
-gourmet:"https://morenutrition.de/cdn/shop/files/more_light_gourmet_sauce_teriyaki-BwpKfpl6_056f5ec7-7a13-40a3-9d57-15d230d478ae.png?v=1761561708",
-nomoresugar:"https://morenutrition.de/cdn/shop/files/Shopbilder_More_No_More_Sugar-ApfbT6nE_e992a3b9-c6b7-43f7-b111-ce747aa5d722.png?v=1760966656",
-spices:"https://morenutrition.de/cdn/shop/files/more_Spices_Knobilicious-PXZddrrr_b0675b90-0d7d-4928-b84f-c5a18408f653.png?v=1773749631",
-zerupbarista:"https://morenutrition.de/cdn/shop/files/Zerup_Barista_Vanilla_65ml_2048x2048-kHIqq625_ab323f9f-93e6-4bcc-8873-372d292dd758.png?v=1778678692",
-wrap:"https://morenutrition.de/cdn/shop/files/More_Protein_Wraps_372g_2048x2048_1-43D4m1Sf_34d7c5ae-0c62-48c9-bfca-6a2721c5653b.png?v=1754572968",
-salsa:"https://morenutrition.de/cdn/shop/files/More_Light_Salsa_Dip_Mild_4096x4096-ULqTw_5D_12de934d-3e6f-47b5-9ff3-5cbacc8524e8.png?v=1754572130",
-moremelade:"https://cdn.shopify.com/s/files/1/0503/7536/0676/files/Moremelade_Squeezies_Himbeere_Blaubeere-OnG-ZEkg_93988829-9721-4734-a885-2f6148e6b77f.png?v=1754572115"
+milkshake:"img/milkshake.png",
+clear:"img/clear.png",
+icedcoffee:"img/icedcoffee.png",
+matcha:"img/matcha.png",
+chai:"img/chai.png",
+milkyccino:"img/milkyccino.png",
+vegan:"img/vegan.png",
+glow:"img/glow.png",
+satisbites:"img/satisbites.png",
+proteinbar:"img/proteinbar.png",
+veganbar:"img/veganbar.png",
+waferbar:"img/waferbar.png",
+pudding:"img/pudding.png",
+porridge:"img/porridge.png",
+pancake:"img/pancake.png",
+griess:"img/griess.png",
+milchreis:"img/milchreis.png",
+dessert:"img/dessert.png",
+chunky:"img/chunky.png",
+stevia:"img/stevia.png",
+chunkybundle:"img/chunkybundle.png",
+creagum:"img/creagum.png",
+bioticgum:"img/bioticgum.png",
+sleepgum:"img/sleepgum.png",
+creastick:"img/creastick.png",
+dailybiotic:"img/dailybiotic.png",
+ashwa:"img/ashwa.png",
+enzyme:"img/enzyme.png",
+melatonin:"img/melatonin.png",
+mineral:"img/mineral.png",
+curcu:"img/curcu.png",
+harmony:"img/harmony.png",
+cycle:"img/cycle.png",
+collagen:"img/collagen.png",
+fiber:"img/fiber.png",
+everyworkout:"img/everyworkout.png",
+saucenback:"img/saucenback.png",
+saucenfix:"img/saucenfix.png",
+oilspray:"img/oilspray.png",
+gourmet:"img/gourmet.png",
+nomoresugar:"img/nomoresugar.png",
+spices:"img/spices.png",
+zerupbarista:"img/zerupbarista.png",
+wrap:"img/wrap.png",
+salsa:"img/salsa.png",
+moremelade:"img/moremelade.png",
+tortilla:"img/tortilla.png",
+fizi:"img/fizi.png",
+o3d3k2:"img/o3d3k2.png",
+daily100:"img/daily100.png",
+skinstructure:"img/skinstructure.png",
+magnesium:"img/magnesium.png",
+iron:"img/iron.png",
+nutbutter:"img/nutbutter.png"
 };
 const PRODUCTS = [
 {id:"milkshake",cat:"proteine",name:"More Protein (Milkshake Style)",note:"Cremiger Whey-Casein-Klassiker – die meistverkaufte Basis.",price:35.99,size:"600 g",servings:20,protein:25,sugar:1.4,kcal:177,rating:4.56,reviews:13326,flavors:"~17 Sorten",avail:"limitiert",tags:["Bestseller","cremig"],url:"https://morenutrition.de/products/more-protein-milkshake"},
@@ -370,6 +454,7 @@ const PRODUCTS = [
 {id:"griess",cat:"snacks",name:"More Protein Grießpudding",note:"Protein-Grießpudding zum Anrühren. Nährwerte k.A.",price:2.99,size:"60 g / Portion",servings:1,protein:null,sugar:null,kcal:null,rating:4.41,reviews:3373,flavors:"2 Sorten",avail:"auf Lager",tags:[],url:"https://morenutrition.de/products/more-protein-griesspudding"},
 {id:"milchreis",cat:"snacks",name:"More Protein Milchreis",note:"Protein-Milchreis zum Anrühren. Nährwerte k.A.",price:2.99,size:"65 g / Portion",servings:1,protein:null,sugar:null,kcal:null,rating:4.20,reviews:1419,flavors:"k.A.",avail:"ausverkauft",tags:[],url:"https://morenutrition.de/products/more-protein-milchreis"},
 {id:"dessert",cat:"snacks",name:"More Protein Dessert (Brownie)",note:"Veganer Brownie-Style-Dessertmix, 23 g Protein & 0,5 g Zucker.",price:22.99,size:"600 g",servings:8,protein:23,sugar:0.5,kcal:209,rating:null,reviews:null,flavors:"Brownie",avail:"ausverkauft",tags:["vegan"],url:"https://morenutrition.de/products/more-protein-dessert"},
+{id:"tortilla",cat:"snacks",name:"Protein Tortilla Chips",note:"High-Protein-Chips: 32 g Protein pro 100 g – 6 Tüten à 50 g. Weitere Nährwerte k.A.",price:17.49,size:"6 × 50 g",servings:6,protein:16,sugar:null,kcal:null,rating:null,reviews:null,flavors:"5 Sorten",avail:"limitiert",tags:["Protein"],url:"https://morenutrition.de/products/protein-tortilla-chips"},
 
 {id:"chunky",cat:"chunky",name:"Chunky Flavour (Original)",note:"Geschmackspulver: süßt wie ~50 g Zucker mit nur 6–12 kcal.",price:15.99,size:"150 g",servings:50,rating:null,reviews:null,flavors:"17 Sorten",avail:"limitiert",tags:["Zucker sparen","glutenfrei"],pick:"top",pickTxt:"Vielseitigster Zuckersparer",url:"https://morenutrition.de/products/chunky-flavour"},
 {id:"stevia",cat:"chunky",name:"Stevia Chunky Flavour",note:"Süße auf 100 % Stevia-Basis, nur 0,5 g Zucker pro Portion.",price:11.99,size:"150 g",servings:50,rating:null,reviews:null,flavors:"2 Sorten",avail:"ausverkauft",tags:["Stevia","zuckerfrei"],pick:"value",pickTxt:"Günstigste Einzeldose",url:"https://morenutrition.de/products/stevia-chunky-flavour"},
@@ -390,6 +475,12 @@ const PRODUCTS = [
 {id:"collagen",cat:"supplements",name:"MORE Collagen+",note:"12 g Kollagen + Hyaluron + Vitamin C – Beauty-Drink. Meist verfügbar.",price:29.99,size:"300 g",servings:20,rating:null,reviews:null,avail:"auf Lager",tags:["Beauty","Kollagen"],pick:"popular",pickTxt:"Beauty-Tipp",url:"https://morenutrition.de/products/more-collagen"},
 {id:"fiber",cat:"supplements",name:"Fiber Mix",note:"5 g Ballaststoffe pro Portion + Bakterienkulturen.",price:19.99,size:"180 g",servings:22,rating:null,reviews:null,avail:"ausverkauft",tags:["Ballaststoffe"],url:"https://morenutrition.de/products/fiber-mix"},
 {id:"everyworkout",cat:"supplements",name:"Every Workout (Pre-Workout)",note:"Citrullin + Kreatin + 120 mg Koffein – Energie fürs Training.",price:34.99,size:"270 g",servings:15,rating:null,reviews:null,avail:"ausverkauft",tags:["Pre-Workout","Koffein"],pick:"top",pickTxt:"Pre-Workout-Tipp",url:"https://morenutrition.de/products/every-workout-4-0"},
+{id:"fizi",cat:"supplements",name:"More FIZI",note:"Präbiotische Zero-Limonade in der Dose – als 12er-Tray oder einzeln.",price:22.99,size:"12 × 330 ml",servings:12,rating:null,reviews:null,flavors:"6 Sorten",avail:"limitiert",tags:["Neu"],url:"https://morenutrition.de/products/fizi"},
+{id:"o3d3k2",cat:"supplements",name:"Essentials O3-D3-K2",note:"Omega-3 + Vitamin D3 + K2 kombiniert – auch als vegane Variante. Dosierung s. Shop.",price:22.99,size:"120 Kapseln",servings:null,rating:null,reviews:null,avail:"auf Lager",tags:["Neu"],url:"https://morenutrition.de/products/essentials-o3-d3-k2"},
+{id:"daily100",cat:"supplements",name:"DAILY100",note:"Smoothie-Sticks aus Obst & Gemüse – Starterbox mit 28 Portionen.",price:109.99,size:"28 × 40 g",servings:28,rating:null,reviews:null,flavors:"True Berries",avail:"auf Lager",tags:["Neu"],url:"https://morenutrition.de/products/daily100"},
+{id:"skinstructure",cat:"supplements",name:"Skin Structure Formula",note:"Beauty-Drink mit Kollagen & Hyaluron – 270 g in 9-g-Portionen.",price:64.99,size:"270 g",servings:30,rating:null,reviews:null,flavors:"2 Sorten",avail:"limitiert",tags:["Beauty","Kollagen","Neu"],url:"https://morenutrition.de/products/skin-structure-formula"},
+{id:"magnesium",cat:"supplements",name:"Magnesium Complex Sticks",note:"Magnesium-Komplex als Direkt-Sticks, Lemon Lime.",price:19.99,size:"30 × 3,5 g",servings:30,rating:null,reviews:null,avail:"ausverkauft",tags:["Neu"],url:"https://morenutrition.de/products/magnesium-complex-sticks"},
+{id:"iron",cat:"supplements",name:"Iron+ Sticks",note:"20 mg Eisen pro Stick, Red Berries.",price:19.99,size:"30 × 4 g",servings:30,rating:null,reviews:null,avail:"auf Lager",tags:["Neu"],url:"https://morenutrition.de/products/iron-sticks"},
 
 {id:"saucenback",cat:"kochen",name:"More Saucen & Back Protein",note:"Protein-Alternative zu Sahne/Kokos fürs Kochen – höchste Bewertung.",price:34.99,size:"600 g",servings:12,rating:4.72,reviews:2879,avail:"limitiert",tags:["Protein","Kochen"],pick:"popular",pickTxt:"Beliebtestes Küchenprodukt",url:"https://morenutrition.de/products/more-saucen-back-protein"},
 {id:"saucenfix",cat:"kochen",name:"More Protein Saucen Fix",note:"Protein-Saucenbasis für Pasta, Reis & Aufläufe.",price:2.99,size:"40 g / Portion",servings:1,rating:null,reviews:null,avail:"ausverkauft",tags:["Protein","Kochen"],url:"https://morenutrition.de/products/more-protein-saucen-fix"},
@@ -400,12 +491,14 @@ const PRODUCTS = [
 {id:"zerupbarista",cat:"kochen",name:"Zerup Barista Sirup",note:"Zuckerfreier Sirup für Kaffee/Tee, 0 kcal – 9 Sorten.",price:5.99,size:"65 ml",servings:50,rating:null,reviews:null,flavors:"9 Sorten",avail:"limitiert",tags:["0 kcal","zuckerfrei"],url:"https://morenutrition.de/products/sirup-kaffee-und-tee-getraenke"},
 {id:"wrap",cat:"kochen",name:"More Protein Wrap",note:"Proteinreiche Tortilla-Wraps, 11 g Protein/Wrap.",price:4.99,size:"6 Wraps",servings:6,rating:null,reviews:null,avail:"ausverkauft",tags:["Protein","vegan"],url:"https://morenutrition.de/products/protein-wrap"},
 {id:"salsa",cat:"kochen",name:"Light Salsa Dip",note:"Salsa mit 85 % weniger Zucker, 35 kcal/100 g.",price:6.99,size:"300 g",servings:null,rating:4.40,reviews:400,avail:"limitiert",tags:["Kalorien sparen","vegan"],url:"https://morenutrition.de/products/light-salsa-dip"},
-{id:"moremelade",cat:"kochen",name:"Moremelade",note:"Fruchtaufstrich mit reduziertem Zucker, 3 Sorten.",price:4.99,size:"250 g",servings:null,rating:null,reviews:null,flavors:"3 Sorten",avail:"auf Lager",tags:["Zucker reduziert"],url:"https://morenutrition.de/products/moremelade"}
+{id:"moremelade",cat:"kochen",name:"Moremelade",note:"Fruchtaufstrich mit reduziertem Zucker, 3 Sorten.",price:4.99,size:"250 g",servings:null,rating:null,reviews:null,flavors:"3 Sorten",avail:"auf Lager",tags:["Zucker reduziert"],url:"https://morenutrition.de/products/moremelade"},
+{id:"nutbutter",cat:"kochen",name:"Nut Butter",note:"Proteinreiches Nussmus in drei Sorten – frisch zurück im Shop.",price:11.99,size:"250 g",servings:null,rating:null,reviews:null,flavors:"3 Sorten",avail:"ausverkauft",tags:["Neu"],url:"https://morenutrition.de/products/nut-butter"}
 ];
 PRODUCTS.forEach(p=>{ p.img = IMG[p.id]||null; });
 const AVAIL_DATE = "17. Juli 2026";
-const LIVE = {"milkshake": [7, 17], "clear": [18, 21], "icedcoffee": [13, 21], "matcha": [11, 13], "chai": [1, 3], "milkyccino": [2, 6], "vegan": [3, 9], "glow": [4, 4], "satisbites": [6, 10], "proteinbar": [3, 8], "veganbar": [3, 3], "waferbar": [0, 1], "pudding": [1, 2], "porridge": [1, 1], "pancake": [2, 2], "griess": [1, 1], "milchreis": [1, 1], "dessert": [0, 2], "chunky": [14, 31], "stevia": [4, 4], "chunkybundle": [0, 1], "creagum": [1, 1], "bioticgum": [1, 1], "sleepgum": [1, 1], "creastick": [2, 2], "dailybiotic": [1, 1], "ashwa": [1, 1], "enzyme": [0, 1], "melatonin": [1, 1], "mineral": [1, 1], "curcu": [1, 1], "harmony": [1, 1], "cycle": [1, 1], "collagen": [7, 8], "fiber": [2, 2], "everyworkout": [4, 4], "saucenback": [4, 7], "saucenfix": [3, 3], "oilspray": [3, 3], "gourmet": [4, 9], "nomoresugar": [0, 1], "spices": [1, 2], "zerupbarista": [11, 11], "wrap": [1, 1], "salsa": [0, 1], "moremelade": [2, 3]};
-const NEWPRODUCTS = [{"name": "Protein Tortilla Chips", "type": "Snack", "handle": "protein-tortilla-chips"}, {"name": "More FIZI", "type": "Drink", "handle": "fizi"}, {"name": "Essentials O3-D3-K2", "type": "Supplement", "handle": "essentials-o3-d3-k2"}, {"name": "DAILY100", "type": "Food", "handle": "daily100"}, {"name": "Skin Structure Formula", "type": "Beauty", "handle": "skin-structure-formula"}, {"name": "More Breakfast Cup", "type": "Snack", "handle": "more-breakfast-cup"}, {"name": "Nut Butter", "type": "Food", "handle": "nut-butter"}, {"name": "Magnesium Complex Sticks", "type": "Supplement", "handle": "magnesium-complex-sticks"}, {"name": "Iron+ Sticks", "type": "Supplement", "handle": "iron-sticks"}];
+const LIVE = {"milkshake": [7, 17], "clear": [18, 21], "icedcoffee": [13, 21], "matcha": [11, 13], "chai": [1, 3], "milkyccino": [2, 6], "vegan": [3, 9], "glow": [4, 4], "satisbites": [6, 10], "proteinbar": [3, 8], "veganbar": [3, 3], "waferbar": [0, 1], "pudding": [1, 2], "porridge": [1, 1], "pancake": [2, 2], "griess": [1, 1], "milchreis": [1, 1], "dessert": [0, 2], "tortilla": [2, 5], "chunky": [14, 31], "stevia": [4, 4], "chunkybundle": [0, 1], "creagum": [1, 1], "bioticgum": [1, 1], "sleepgum": [1, 1], "creastick": [2, 2], "dailybiotic": [1, 1], "ashwa": [1, 1], "enzyme": [0, 1], "melatonin": [1, 1], "mineral": [1, 1], "curcu": [1, 1], "harmony": [1, 1], "cycle": [1, 1], "collagen": [7, 8], "fiber": [2, 2], "everyworkout": [4, 4], "fizi": [9, 10], "o3d3k2": [2, 2], "daily100": [1, 1], "skinstructure": [1, 3], "magnesium": [0, 1], "iron": [1, 1], "saucenback": [4, 7], "saucenfix": [3, 3], "oilspray": [3, 3], "gourmet": [4, 9], "nomoresugar": [0, 1], "spices": [1, 2], "zerupbarista": [11, 11], "wrap": [1, 1], "salsa": [0, 1], "moremelade": [2, 3], "nutbutter": [0, 3]};
+const VARIANTS = {"milkshake": [[51094762029220, "Milkshake Style Neutral / 600g", 0, 35.99], [51105811202212, "Milkshake Style Neutral / 25g Probe", 1, 2.99], [51094744170660, "Milkshake Style Chocolate Drink / 600g", 0, 35.99], [51094754787492, "Milkshake Style Chocolate Drink / 25g Probe", 1, 2.99], [51094765011108, "Milkshake Style Vanilla Chocolate Chip Cookie / 600g", 1, 35.99], [51137528135952, "Milkshake Style Vanilla Chocolate Chip Cookie / 25g Probe", 0, 2.99], [51094761046180, "Milkshake Style Cinnalicious V1 / 25g Probe", 1, 2.99], [51094755573924, "Milkshake Style Vanilla Ice Cream / 600g", 1, 35.99], [51094763962532, "Milkshake Style Vanilla Ice Cream / 25g Probe", 1, 2.99], [51094755999908, "Milkshake Style Iced Coffee / 600g", 0, 35.99], [51094747742372, "Milkshake Style Iced Coffee / 25g Probe", 0, 2.99], [51137617592592, "Milkshake Style Cinnalicious / 600g", 0, 35.99], [51094755279012, "Milkshake Style Hazelnut Nougat Praline / 600g", 0, 35.99], [51094758949028, "Milkshake Style Strawberry / 600g", 1, 35.99], [51094754427044, "Milkshake Style Strawberry / 25g Probe", 0, 2.99], [51094757900452, "Milkshake Style Chocolate Brownie / 600g", 0, 35.99], [51094746824868, "Milkshake Style Chocolate Brownie / 25g Probe", 0, 2.99]], "clear": [[51137621426448, "Lemonade Style Bloody Orange / 600g", 1, 39.99], [51137535213840, "Juice Style Orange / 600g", 1, 39.99], [51137616019728, "Lemonade Style Mango Mojito / 600g", 1, 39.99], [51137615954192, "Lemonade Style Raspberry Mojito / 600g", 1, 39.99], [51137616281872, "Lemonade Style Pink Peach Rings / 600g", 1, 39.99], [51098520682660, "Juice Style Pear / 600g", 1, 39.99], [51094758523044, "Juice Style Multifruit / 600g", 1, 39.99], [51094749020324, "Lemonade Style Strawberry Lime / 30g Probe", 1, 3.99], [51094754558116, "Juice Style Pure Apple / 600g", 0, 39.99], [51094760652964, "Lemonade Style Virgin Mojito / 600g", 1, 39.99], [51137528103184, "Lemonade Style Virgin Mojito / 30g Probe", 1, 3.99], [51094750691492, "Iced Tea Style Lemon / 600g", 0, 39.99], [51094765830308, "Iced Tea Style Lemon / 30g Probe", 1, 3.99], [51094746923172, "Iced Tea Style Peach / 600g", 1, 39.99], [51094755508388, "Iced Tea Style Peach / 30g Probe", 1, 3.99], [51094762487972, "Lemonade Style Green Apple / 600g", 1, 39.99], [51094752100516, "Lemonade Style Green Apple / 30g Probe", 1, 3.99], [51094761570468, "Juice Style Mango / 600g", 1, 39.99], [51094754918564, "Juice Style Mango / 30g Probe", 1, 3.99], [51094752657572, "Iced Tea Style Peach Passionfruit / 600g", 0, 39.99], [51094757834916, "Iced Tea Style Peach Passionfruit / 30g Probe", 1, 3.99]], "icedcoffee": [[51135209439396, "Double Chocolate Chip Cookie / 500g", 1, 34.99], [51137621623056, "Coffee Lover / 500g", 1, 34.99], [51137621950736, "Hazelnut Crispy Cream / 500g", 1, 34.99], [51137621033232, "Cafe Frappe Style / 500g", 1, 34.99], [51137621098768, "Dark Chocolate Lover / 500g", 1, 34.99], [51137621066000, "Dark Cookie Crumble / 500g", 1, 34.99], [51135209537700, "Decaff Dark Chocolate Lover / 500g", 1, 34.99], [51135209996452, "Decaff Dark Chocolate Lover / 25g Probe", 0, 2.99], [51094758064292, "Decaff Dark Cookie Crumble / 500g", 1, 34.99], [51094755737764, "Decaff Dark Cookie Crumble / 25g Probe", 1, 2.99], [51094778118308, "Vanilla Chocolate Chip Cookie / 500g", 1, 34.99], [51094764650660, "Vanilla Chocolate Chip Cookie / 25g Probe", 0, 2.99], [51094788178084, "Latte Macchiato / 500g", 1, 34.99], [51094747873444, "Latte Macchiato / 25g Probe", 0, 2.99], [51094775562404, "S'Mores / 500g", 0, 34.99], [51094790668452, "S'Mores / 25g Probe", 0, 2.99], [51094755344548, "Decaff Vanilla Chocolate Chip Cookie / 500g", 0, 34.99], [51094771433636, "Dark Chocolate Cookie Crumble / 500g", 1, 34.99], [51094769074340, "Dark Chocolate Cookie Crumble / 25g Probe", 1, 2.99], [51094774349988, "Decaff Latte Macchiato / 500g", 0, 34.99], [51094754951332, "Decaff Latte Macchiato / 25g Probe", 0, 2.99]], "matcha": [[51137621262608, "Cherry Mochi (Romi x Emma) / 500g", 1, 35.99], [51137621164304, "Strawberry Marshmallow / 500g", 1, 35.99], [51137597767952, "Raspberry Marshmallow (Valentine´s Special) / 500g", 1, 35.99], [51137601831184, "Mango Dream / 500g", 1, 35.99], [51137612841232, "Creamy Banana / 500g", 1, 35.99], [51094744203428, "Strawberry Cheesecake / 500g", 1, 35.99], [51137526890768, "Chai / 500g", 1, 35.99], [51114869227684, "Pistachio White Chocolate / 500g", 1, 35.99], [51137531150608, "Pistachio White Chocolate / 25g Probe", 0, 2.99], [51104394969252, "Vanilla Crumble / 500g", 1, 35.99], [51137528234256, "Vanilla Crumble / 25g Probe", 1, 2.99], [51094742991012, "Original Taste / 500g", 1, 35.99], [51094745809060, "Original Taste / 25g Probe", 0, 2.99]], "chai": [[51137602093328, "Maple Walnut / 500g", 1, 35.99], [51094742401188, "Original Taste / 500g", 0, 35.99], [51094741483684, "Original Taste / 25g Probe", 0, 2.99]], "milkyccino": [[51094741319844, "White Almond Coconut / 500g", 0, 32.99], [51137530822928, "White Almond Coconut / 25g Probe", 1, 2.99], [51104394510500, "Chocolate Crispy Cream / 500g", 1, 32.99], [51137528168720, "Chocolate Crispy Cream / 25g Probe", 0, 2.99], [51114869162148, "Mango Coconut / 500g", 0, 32.99], [51137528070416, "Mango Coconut / 25g Probe", 0, 2.99]], "vegan": [[51137616675088, "Cinnalicious / 600g Dose", 0, 34.99], [51137530560784, "Hazelnut Nougat Praliné / 600g Dose", 0, 34.99], [51137536655632, "Hazelnut Nougat Praliné / 25g Probe", 1, 2.99], [51137531085072, "Cinnalicious V1 / 25g Probe", 0, 2.99], [51094742565028, "Vanilla / 600g Dose", 0, 34.99], [51105811169444, "Vanilla / 25g Probe", 1, 2.99], [51094743875748, "Neutral / 600g Dose", 0, 34.99], [51094743154852, "Neutral / 25g Probe", 1, 2.99], [51094742302884, "Fine Milk Chocolate / 600g Dose", 0, 34.99]], "glow": [[51094752690340, "Green Tea Lime / 600g", 1, 47.99], [51094751314084, "Lemon Iced Tea / 600g", 1, 47.99], [51094746202276, "Cherry White Tea / 600g", 1, 47.99], [51094752297124, "Watermelon / 600g", 1, 47.99]], "satisbites": [[51137616412944, "Pink Raspberry Cheesecake (Pink Design) / 12 x 2x25g", 1, 35.49], [51137598161168, "Milk Chocolate Coconut / 12 x 2x25g", 1, 35.49], [51094629613732, "Milk Chocolate Pistachio / 12 x 2x25g", 0, 35.49], [51137529643280, "Milk Chocolate Pistachio / 2 x 25g", 1, 2.99], [51094629646500, "White Chocolate Strawberry Cream / 12 x 2x25g", 1, 35.49], [51137529676048, "White Chocolate Strawberry Cream / 2 x 25g", 1, 2.99], [51094629679268, "White Hazelnut Nougat / 12 x 2x25g", 0, 35.49], [51137529512208, "White Hazelnut Nougat / 2 x 25g", 0, 2.99], [51094629515428, "Dark Cookie Crumble / 12 x 2x25g", 1, 35.49], [51094629449892, "Dark Cookie Crumble / 2 x 25g", 0, 2.99]], "proteinbar": [[51137527447824, "White Chocolate Caramel Crunch / 10 x 50g", 0, 29.89], [51137530724624, "Caramel Morezipan / 10 x 50g", 0, 29.89], [51094742106276, "Peanut Caramel / 10 x 50g", 1, 29.89], [51104395198628, "Peanut Caramel / 50g", 0, 2.99], [51094754394276, "White Chocolate Peanut Caramel / 10 x 50g", 1, 29.89], [51104394444964, "White Chocolate Peanut Caramel / 50g", 0, 2.99], [51094752592036, "Caramel Crunch / 10 x 50g", 1, 29.89], [51104394739876, "Caramel Crunch / 50g", 0, 2.99]], "veganbar": [[51137531019536, "Hazelnut Nougat / 10 x 55g", 1, 29.89], [51137528299792, "Peanut Butter / 10 x 55g", 1, 29.89], [51137604059408, "Peanut Butter / 55g", 1, 2.99]], "waferbar": [[51137537212688, "Milk Chocolate Hazelnut / 6 x 30g", 0, 17.89]], "pudding": [[51094752329892, "Neutral / 600g", 0, 27.99], [51094749348004, "Neutral / 30g Probe", 1, 2.99]], "porridge": [[51137544356112, "Original Taste / 62g", 1, 2.99]], "pancake": [[51094755147940, "Neutral / 450g", 1, 22.99], [51094746562724, "Neutral / 45g Probe", 1, 2.99]], "griess": [[51137544323344, "Original Taste / 60g", 1, 2.99]], "milchreis": [[51137544388880, "Original Taste / 65g", 1, 2.99]], "dessert": [[51137613168912, "Brownie Style / 600g", 0, 22.99], [51137613201680, "Brownie Style / 75g Probe", 0, 3.49]], "tortilla": [[51137620443408, "Ketchup / 300g (6 x 50g)", 0, 17.49], [51137620640016, "Bruschetta Rosemary / 300g (6 x 50g)", 0, 17.49], [51094755246244, "Sour Cream & Onion / 300g (6 x 50g)", 1, 17.49], [51137616544016, "Western Style / 300g (6 x 50g)", 1, 17.49], [51094754754724, "Paprika Ungarisch / 300g (6 x 50g)", 0, 17.49]], "chunky": [[51137611727120, "Blueberry Lavender / 150g", 0, 15.99], [51094754459812, "Pistachio White Chocolate / 150g", 1, 13.99], [51094783590564, "Pistachio White Chocolate / 30g Probe", 1, 4.49], [51094787326116, "Strawberry Perfection / 150g", 0, 13.99], [51094769402020, "Strawberry Perfection / 30g Probe", 1, 4.49], [51137614446864, "Pure Honey / 150g", 0, 13.99], [51137604747536, "Pure Honey / 30g Probe", 1, 4.49], [51094774874276, "Neutral / 150g", 1, 13.99], [51105811234980, "Neutral / 30g Probe", 1, 4.49], [51094755803300, "White Almond Coconut / 150g", 0, 13.99], [51094779527332, "White Almond Coconut / 30g Probe", 1, 4.49], [51137528037648, "Dark Cookie Crumble / 30g Probe", 1, 4.49], [51094748070052, "Dark Cookie Crumble / 170g", 0, 13.99], [51137604780304, "Hazelnut & Milky Cream / 30g Probe", 0, 4.49], [51094746005668, "Fudge Brownie / 150g", 1, 13.99], [51094754853028, "Fudge Brownie / 30g Probe", 1, 4.49], [51094761996452, "Vanilla Perfection / 150g", 1, 13.99], [51094748856484, "Vanilla Perfection / 30g Probe", 0, 4.49], [51094755410084, "Lemon Ice Cream Cake / 150g", 0, 13.99], [51137604813072, "Lemon Ice Cream Cake / 30g Probe", 1, 4.49], [51094752854180, "Milchreis-Zimt / 150g", 1, 13.99], [51094771171492, "Milchreis-Zimt / 30g Probe", 0, 4.49], [51094766616740, "Blueberry Cheesecake / 150g", 0, 13.99], [51094756294820, "Blueberry Cheesecake / 30g Probe", 0, 4.49], [51094747578532, "Vanilla Chocolate Chip Cookie / 150g", 0, 13.99], [51094746857636, "Vanilla Chocolate Chip Cookie / 30g Probe", 0, 4.49], [51094765076644, "Salted Caramel / 150g", 0, 13.99], [51094752264356, "Salted Caramel / 30g Probe", 0, 4.49], [51137528201488, "Raspberry Panna Cotta / 30g Probe", 1, 4.49], [51094764060836, "Stracciatella / 150g", 0, 13.99], [51094777757860, "Stracciatella / 30g Probe", 0, 4.49]], "stevia": [[51094762127524, "Strawberry Perfection / 150g", 1, 11.99], [51137535312144, "Strawberry Perfection / 30g Probe", 1, 4.49], [51094762356900, "Pure Vanilla / 150g", 1, 11.99], [51137535148304, "Pure Vanilla / 30g Probe", 1, 4.49]], "chunkybundle": [[51105799471268, "Default Title", 0, 32.99]], "creagum": [[51137612710160, "Green Apple / 60 Gummies", 1, 29.99]], "bioticgum": [[51137612546320, "Peach Strawberry / 40 Gummies", 1, 29.99]], "sleepgum": [[51137612611856, "Forest Berries / 80 Gummies", 1, 29.99]], "creastick": [[51137537409296, "Raspberry / 30 x 5g", 1, 19.99], [51137536721168, "Lemon / 30 x 5g", 1, 19.99]], "dailybiotic": [[51137614971152, "Neutral / 30 x 1,5g", 1, 29.99]], "ashwa": [[51137619460368, "Orange / 30 x 5g", 1, 19.99]], "enzyme": [[51137619296528, "Honey Lemon / 30 x 5g", 0, 24.99]], "melatonin": [[51137619525904, "Mint / 30 x 5g", 1, 19.99]], "mineral": [[51137616314640, "90 Kapseln", 1, 29.99]], "curcu": [[51094759112868, "210 Kapseln", 1, 29.99]], "harmony": [[51094761898148, "90 Kapseln", 1, 29.99]], "cycle": [[51094743384228, "120 Kapseln", 1, 24.99]], "collagen": [[51137537376528, "Neutral / 300g", 1, 29.99], [51137601863952, "Neutral / 15g Probe", 1, 2.99], [51137601929488, "Neutral / 7 x 15g", 1, 15.99], [51137537442064, "Watermelon-Mint / 300g", 1, 29.99], [51137601962256, "Watermelon-Mint / 15g Probe", 1, 2.99], [51137601765648, "Watermelon-Mint / 7 x 15g", 1, 15.99], [51137601896720, "Cherry White Tea / 300g", 0, 29.99], [51137612513552, "Cherry White Tea / 15g Probe", 1, 2.99]], "fiber": [[51137619820816, "Neutral (ohne Flohsamenschalen) / 180g", 1, 19.99], [51137620214032, "Neutral (mit Flohsamenschalen) / 180g", 1, 19.99]], "everyworkout": [[51137612480784, "Sour Pink Grapefruit (without Caffeine) / 270g", 1, 34.99], [51137615233296, "Sour Pink Grapefruit (without Caffeine) / 18g Probe", 1, 2.99], [51137612644624, "Sour Pink Grapefruit (with Caffeine) / 270g", 1, 34.99], [51137615331600, "Sour Pink Grapefruit (with Caffeine) / 18g Probe", 1, 2.99]], "fizi": [[51137614283024, "Mango / 12 x 330ml", 1, 22.99], [51137614479632, "Candy Cola / 12 x 330ml", 1, 22.99], [51137614315792, "Mojito / 12 x 330ml", 0, 22.99], [51137616380176, "Apple Cranberry / 12 x 330ml", 1, 22.99], [51137620934928, "Lemon Lime / 12 x 330ml", 1, 22.99], [51137527677200, "Lemon Lime / 330ml", 1, 1.99], [51137616576784, "White Peach / 12 x 330ml", 1, 22.99], [51137527644432, "White Peach / 330ml", 1, 1.99], [51137527709968, "Orange / 330ml", 1, 1.99], [51135284412580, "Orange / 6 x 330ml", 1, 11.49]], "o3d3k2": [[51137537245456, "Standard / 120 Kapseln", 1, 22.99], [51094754984100, "Vegan / 80 Kapseln", 1, 39.99]], "daily100": [[51137527054608, "True Berries / 28 x 40g Starterbox", 1, 109.99]], "skinstructure": [[51094757736612, "Peach Iced Tea / 270g", 0, 64.99], [51094758097060, "Peach Iced Tea / 9g Probe", 1, 2.99], [51094742368420, "Pink Grapefruit / 270g", 0, 64.99]], "magnesium": [[51137606385936, "Lemon Lime / 30 x 3,5g", 0, 19.99]], "iron": [[51137606418704, "Red Berries / 30 x 4g", 1, 19.99]], "saucenback": [[51137611628816, "Schlagcreme / 600g", 1, 35.99], [51137611333904, "Schlagcreme / 50g Probe", 0, 3.99], [51094757802148, "Sahne / 600g", 0, 35.99], [51094758228132, "Sahne / 50g Probe", 1, 3.99], [51094740041892, "Coconut Milk / 600g", 0, 35.99], [51114869194916, "Coconut Milk / 50g Probe", 1, 3.99], [51137534984464, "Sahne (NY Edition) / 2000g", 1, 114.99]], "saucenfix": [[51094755049636, "Tomatencremesauce / 40g", 1, 2.99], [51094744400036, "Helle Sauce / 40g", 1, 2.99], [51094755311780, "Pilzrahm / 40g", 1, 2.99]], "oilspray": [[51094742794404, "Butter / 200ml", 1, 5.99], [51137614905616, "Lemon / 200ml", 1, 5.99], [51094743842980, "Standard / 200ml", 1, 5.99]], "gourmet": [[51094630760612, "Teriyaki / 285ml", 1, 6.99], [51094630564004, "True Curry Ketchup / 285ml", 1, 6.99], [51094751281316, "Burger / 285ml", 1, 6.99], [51094748692644, "Caesar Cheese / 285ml", 1, 6.99], [51094630629540, "Honey Mustard / 285ml", 0, 6.99], [51094630236324, "Balsamico Garlic / 285ml", 0, 6.99], [51094630957220, "BBQ / 285ml", 0, 6.99], [51094762520740, "Creamy Honey Mustard / 285ml", 0, 6.99], [51094750658724, "Creamy Mushroom-Style / 285ml", 0, 6.99]], "nomoresugar": [[51094740598948, "Neutral / 1000g", 0, 14.99]], "spices": [[51094749118628, "Italian Allrounder / 110g", 1, 6.99], [51094751183012, "Knobi-Licious / 130g", 0, 6.99]], "zerupbarista": [[51094756229284, "Hazelnut / 65ml", 1, 6.99], [51137534361872, "Cinnamon / 65ml", 1, 6.99], [51094743056548, "Chocolate / 65ml", 1, 6.99], [51114869293220, "Chai / 65ml", 1, 6.99], [51137533378832, "Amaretto / 65ml", 1, 6.99], [51137603961104, "Sweet Honey / 65ml", 1, 6.99], [51137599635728, "Brown Sugar / 65ml", 1, 6.99], [51094755868836, "Vanilla / 65ml", 1, 5.99], [51094745645220, "Salted Caramel / 65ml", 1, 5.99], [51114869129380, "Maple Walnut / 65ml", 1, 5.99], [51094755639460, "White Sugar / 65ml", 1, 5.99]], "wrap": [[51094764814500, "372g (6 x 62g)", 1, 4.99]], "salsa": [[51094741581988, "Mild / 300g", 0, 6.99]], "moremelade": [[51094741254308, "Raspberry-Blueberry, Squeezie / 250g", 1, 4.99], [51094755213476, "Strawberry, Squeezie / 250g", 1, 4.99], [51094754721956, "Strawberry, Glas / 240g", 0, 4.99]], "nutbutter": [[51094749413540, "White Almond Coconut / 250g", 0, 11.99], [51094751019172, "Hazelnut Vanilla / 250g", 0, 11.99], [51094746595492, "Sweet & Salty Cashew / 250g", 0, 11.99]]}; /* je Produkt: [[variantId, Sortenname, 1|0 kaufbar], ...] */
+const NEWPRODUCTS = [];
 PRODUCTS.forEach(p=>{ const l=LIVE[p.id]; if(l){ p.varAvail=l[0]; p.varTotal=l[1]; p.avail = l[0]===0?"ausverkauft":(l[0]>=l[1]?"auf Lager":"limitiert"); } });
 
 /* Affiliate-Konfiguration – auf enabled:true schalten, sobald Codes/Links vorliegen.
@@ -431,7 +524,7 @@ const CATORDER=["proteine","riegel","snacks","supplements","chunky","kochen"];
 const PROTEIN_CATS = ["proteine","riegel","snacks"];
 const RETAILERS = [["Offizieller Shop","ja","Komplettes Sortiment"],["Amazon.de","ja","Breit inkl. Chunky, Proteine, Riegel"],["dm","ja","Proteine, Drinks, Chunky, Riegel"],["Rossmann","ja","Proteine, Chunky, Riegel"],["Müller","ja","Breites Sortiment"],["Edeka / Rewe","teils","Ausgewählte Filialen"],["Fitmart & Fitness-Shops","ja","Breit inkl. Gummies"],["Kaufland","teils","Nur Online-Marktplatz"]];
 
-function imgURL(u){ if(!u)return null; return u + (u.indexOf("?")>=0?"&":"?") + "width=640"; }
+function imgURL(u){ if(!u)return null; if(!/^https?:/.test(u))return u; return u + (u.indexOf("?")>=0?"&":"?") + "width=640"; }
 function perServing(p){ if(p.perServ!=null) return p.perServ; if(p.price!=null&&p.servings) return p.price/p.servings; return null; }
 function euroPerProtein(p){ const ps=perServing(p); if(ps!=null&&p.protein) return ps/p.protein; return null; }
 function proteinDensity(p){ if(p.protein!=null&&p.kcal) return p.protein/p.kcal*100; return null; }
@@ -475,6 +568,23 @@ const eur=x=> x==null?"k.A.":x.toLocaleString("de-DE",{minimumFractionDigits:2,m
 const AVAIL={"auf Lager":{c:"var(--ok)",t:"auf Lager"},"limitiert":{c:"var(--warn)",t:"limitiert"},"ausverkauft":{c:"var(--crit)",t:"ausverkauft"},"coming soon":{c:"var(--coming)",t:"coming soon"}};
 function scoreColor(s){ if(s==null)return "var(--muted)"; if(s>=75)return "var(--ok)"; if(s>=55)return "#2a78d6"; if(s>=40)return "var(--warn)"; return "var(--crit)"; }
 function esc(s){return (s||"").replace(/"/g,"&quot;");}
+function escT(s){return (s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function varName(t){return t==="Default Title"?"Standardgröße":t;}
+
+/* Vergleichs-Auswahl (Session) + Merkzettel (localStorage; als echte App ok, vgl. ROADMAP) */
+let cmp=[];
+let cart=[];
+try{cart=JSON.parse(localStorage.getItem("mn-cart")||"[]")||[];}catch(e){cart=[];}
+function saveCart(){try{localStorage.setItem("mn-cart",JSON.stringify(cart));}catch(e){}}
+
+function scorePopHTML(p){
+  if(!PROTEIN_CATS.includes(p.cat))return "";
+  const pd=proteinDensity(p),ep=euroPerProtein(p),f=x=>x==null?null:x.toLocaleString("de-DE",{maximumFractionDigits:2});
+  return `<b>Nährwerte</b> (35 %): ${p._nutri!=null?p._nutri:"–"}${pd!=null?` · ${f(pd)} g Protein/100 kcal`:""}${p.sugar!=null?` · ${p.sugar.toLocaleString("de-DE")} g Zucker`:""}<br>`+
+    `<b>Preis-Leistung</b> (30 %): ${p._value!=null?p._value:"–"}${ep!=null?` · ${f(ep)} €/g Protein`:""}<br>`+
+    `<b>Geschmack</b> (35 %): ${p._taste!=null?p._taste:"–"}${p.rating!=null?` · ${p.rating.toLocaleString("de-DE")}★`:""}${p.reviews!=null?` · ${p.reviews.toLocaleString("de-DE")} Bewertungen`:""}<br>`+
+    `<span style="color:var(--muted)">Bester Wert der Kategorie = 100. Fehlende Teile fließen nicht ein (Gewichte anteilig neu verteilt) – Details im Info-Tab.</span>`;
+}
 window.imgFail=function(el){ const d=document.createElement("div"); d.className="ph"; d.style.setProperty("--acc",CATS[el.dataset.cat].color); d.textContent=el.dataset.name; el.parentNode.insertBefore(d,el); el.remove(); };
 
 function renderKPIs(){
@@ -496,7 +606,9 @@ function renderRecs(){
   document.getElementById("recs").innerHTML=RECS.map(r=>`<div class="rec" style="--acc:${CATS[r.cat].color}"><div class="tag">${r.tag}</div><div class="nm">${r.name}</div><div class="why">${r.why}</div><div class="mt"><span>${CATS[r.cat].label}</span>${r.score!=null?`<span class="sc">Score ${r.score}</span>`:""}<span style="margin-left:auto">${r.extra}</span></div></div>`).join("");
 }
 function renderNew(){
-  document.getElementById("newprods").innerHTML=NEWPRODUCTS.map(n=>`<div class="newc"><div class="nn">${n.name}</div><div class="nt">${n.type}</div><a href="${affLink('https://morenutrition.de/products/'+n.handle)}" target="_blank" rel="noopener">Ansehen →</a></div>`).join("");
+  const grid=document.getElementById("newprods"), head=document.getElementById("newhead");
+  if(!NEWPRODUCTS.length){grid.style.display="none";head.style.display="none";return;}
+  grid.innerHTML=NEWPRODUCTS.map(n=>`<div class="newc"><div class="nn">${n.name}</div><div class="nt">${n.type}</div><a href="${affLink('https://morenutrition.de/products/'+n.handle)}" target="_blank" rel="noopener">Ansehen →</a></div>`).join("");
 }
 function renderAff(){
   if(AFF.enabled&&AFF.disclosure){var el=document.getElementById("affBar");el.style.display="";el.innerHTML="<b>Anzeige</b> · Diese Seite enthält Affiliate-/Werbelinks. Kaufst du darüber, erhalten wir ggf. eine Provision – für dich ohne Mehrkosten.";}
@@ -510,7 +622,9 @@ function meter(label,val,color){ if(val==null)return `<div class="mrow"><span cl
 
 function cardHTML(p){
   const c=CATS[p.cat], a=AVAIL[p.avail]||AVAIL["limitiert"], ps=perServing(p), isProt=PROTEIN_CATS.includes(p.cat);
+  const vs=VARIANTS[p.id]||[], vBuy=vs.filter(v=>v[2]);
   const img = p.img ? `<img src="${imgURL(p.img)}" alt="${esc(p.name)}" data-cat="${p.cat}" data-name="${esc(p.name)}" loading="lazy" onerror="imgFail(this)">` : `<div class="ph" style="--acc:${c.color}">${esc(p.name)}</div>`;
+  const cmpchk=`<label class="cmpchk"><input type="checkbox" data-cmp="${p.id}" ${cmp.includes(p.id)?"checked":""} aria-label="${esc(p.name)} vergleichen">Vergleichen</label>`;
   const win = p.pick ? `<span class="tp">★ ${p.pickTxt||"Tipp"}</span>` : (isProt&&p._total!=null&&p._total===catWinner(p.cat)?`<span class="tp">★ Kategorie-Sieger</span>`:"");
   let mid="";
   if(isProt){
@@ -520,7 +634,8 @@ function cardHTML(p){
       <div class="ms"><div class="mv tnum">${p.kcal==null?"–":p.kcal}</div><div class="ml">kcal</div></div>
     </div>
     <div class="scores">
-      <div class="score-top"><span class="gl">Gesamtscore</span><span class="gv tnum" style="color:${scoreColor(p._total)}">${p._total==null?"–":p._total}</span></div>
+      <div class="score-top"><span class="gl">Gesamtscore<button class="spop-btn" data-sp="${p.id}" aria-expanded="false" aria-label="Wie setzt sich der Score zusammen?">?</button></span><span class="gv tnum" style="color:${scoreColor(p._total)}">${p._total==null?"–":p._total}</span></div>
+      <div class="spop" id="sp-${p.id}" hidden>${scorePopHTML(p)}</div>
       ${meter("Nährwerte",p._nutri,"var(--m-nutri)")}${meter("Preis-Leistung",p._value,"var(--m-value)")}${meter("Geschmack",p._taste,"var(--m-taste)")}
     </div>`;
   }else{
@@ -532,16 +647,18 @@ function cardHTML(p){
   }
   const badges=(p.tags||[]).slice(0,4).map(t=>`<span class="b">${t}</span>`).join("");
   return `<div class="pc">
-    <div class="pc-img"><span class="catbadge" style="--acc:${c.color}">${c.label}</span>${win}${img}</div>
+    <div class="pc-img"><span class="catbadge" style="--acc:${c.color}">${c.label}</span>${win}${img}${cmpchk}</div>
     <div class="pc-b">
       <div class="nm">${p.name}</div>
       <div class="pc-price"><span class="pr tnum">${eur(p.price)}</span><span class="avail"><span class="adot" style="background:${a.c}"></span>${a.t}</span></div>
-      ${p.varTotal?`<div class="varline"><span class="vl">Varianten (Sorten/Größen) lieferbar</span><span class="vv tnum">${p.varAvail}/${p.varTotal}</span></div>`:""}
+      ${p.varTotal?`<div class="varline"><span class="vl">Varianten (Sorten/Größen) lieferbar</span><span class="vv tnum">${p.varAvail}/${p.varTotal}</span>${vs.length?`<button class="vtog" data-vt="${p.id}" aria-expanded="false" aria-controls="vl-${p.id}">Sorten ▾</button>`:""}</div>`:""}
+      ${vs.length?`<div class="vlist" id="vl-${p.id}" hidden>${vs.map(v=>`<span class="vitem ${v[2]?"":"out"}">${escT(varName(v[1]))}</span>`).join("")}</div>`:""}
     </div>
     <div class="pc-note">${p.note||""}</div>
     ${badges?`<div class="badges">${badges}</div>`:""}
     ${mid}
-    <div class="pc-f">${p.rating!=null?`<span class="rate"><span class="st">★</span>${p.rating.toLocaleString("de-DE")}</span>`:""}<a class="buy" href="${affLink(p.url)}" target="_blank" rel="noopener">Ansehen →</a></div>
+    <div class="vpick" id="vp-${p.id}" hidden></div>
+    <div class="pc-f">${p.rating!=null?`<span class="rate"><span class="st">★</span>${p.rating.toLocaleString("de-DE")}</span>`:""}<span class="pcf-r">${vBuy.length?`<button class="mk" data-mk="${p.id}">+ Merken</button>`:""}<a class="buy" href="${affLink(p.url)}" target="_blank" rel="noopener">Ansehen →</a></span></div>
   </div>`;
 }
 
@@ -577,6 +694,7 @@ function render(){
   document.getElementById("count").textContent=`${list.length} Produkt${list.length!==1?"e":""} in „${c.label}"`;
   if(view==="cards"){document.getElementById("grid").style.display="";document.getElementById("tableView").style.display="none";document.getElementById("grid").innerHTML=list.map(cardHTML).join("")||`<div style="color:var(--muted);padding:26px">Keine Produkte für diese Filter.</div>`;}
   else{document.getElementById("grid").style.display="none";document.getElementById("tableView").style.display="";renderTable(sortForTable(list));}
+  updateHash();
 }
 
 const TABS=[["uebersicht","Übersicht",null],...CATORDER.map(c=>[c,CATS[c].label,CATS[c].hex]),["buy","Wo kaufen",null],["info","Info",null]];
@@ -585,7 +703,7 @@ function renderTabs(){
   document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 }
 function showTab(tab){
-  document.querySelectorAll(".tab").forEach(b=>{const on=b.dataset.tab===tab;b.classList.toggle("on",on);b.setAttribute("aria-selected",on?"true":"false");});
+  document.querySelectorAll(".tab").forEach(b=>{const on=b.dataset.tab===tab;b.classList.toggle("on",on);b.setAttribute("aria-selected",on?"true":"false");b.tabIndex=on?0:-1;});
   const isCat=!!CATS[tab];
   document.getElementById("panel-uebersicht").classList.toggle("on",tab==="uebersicht");
   document.getElementById("panel-products").classList.toggle("on",isCat);
@@ -593,6 +711,7 @@ function showTab(tab){
   document.getElementById("panel-info").classList.toggle("on",tab==="info");
   if(isCat){activeCat=tab;document.getElementById("search").value="";render();}
   window.scrollTo(0,0);
+  updateHash();
 }
 
 // Dropdown-Sortierung auf die Tabellen-Sortierung spiegeln (sonst wirkt das Dropdown in der Tabellen-Ansicht nicht)
@@ -601,6 +720,155 @@ document.getElementById("sort").addEventListener("change",()=>{const m=SORT2TSOR
 ["search","sort","fAvail","fVegan","fSugar"].forEach(id=>{const el=document.getElementById(id);el.addEventListener(el.tagName==="INPUT"&&el.type!=="checkbox"?"input":"change",render);});
 document.getElementById("vCards").onclick=()=>{view="cards";document.getElementById("vCards").classList.add("on");document.getElementById("vTable").classList.remove("on");render();};
 document.getElementById("vTable").onclick=()=>{view="table";document.getElementById("vTable").classList.add("on");document.getElementById("vCards").classList.remove("on");render();};
+/* ---------- Karten-Interaktionen (Delegation, weil das Grid bei jedem render() neu entsteht) ---------- */
+document.getElementById("grid").addEventListener("click",e=>{
+  const vt=e.target.closest(".vtog");
+  if(vt){const el=document.getElementById("vl-"+vt.dataset.vt);el.hidden=!el.hidden;vt.setAttribute("aria-expanded",String(!el.hidden));vt.textContent=el.hidden?"Sorten ▾":"Sorten ▴";return;}
+  const sp=e.target.closest(".spop-btn");
+  if(sp){const el=document.getElementById("sp-"+sp.dataset.sp);el.hidden=!el.hidden;sp.setAttribute("aria-expanded",String(!el.hidden));return;}
+  const vb=e.target.closest(".vpick button");
+  if(vb){addToCart(vb.dataset.pid,Number(vb.dataset.vid));const vp=vb.closest(".vpick");vp.hidden=true;flashMk(vp.closest(".pc").querySelector(".mk"));return;}
+  const mk=e.target.closest(".mk");
+  if(mk){merken(mk);return;}
+});
+document.getElementById("grid").addEventListener("change",e=>{
+  const c=e.target.closest("[data-cmp]");
+  if(!c)return;
+  const pid=c.dataset.cmp;
+  if(c.checked){
+    if(cmp.length>=3){c.checked=false;flashChip("max. 3 Produkte");return;}
+    if(!cmp.includes(pid))cmp.push(pid);
+  }else cmp=cmp.filter(x=>x!==pid);
+  renderCmpChip();
+});
+
+/* Merkzettel: Sorte wählen (nur kaufbare Varianten) -> localStorage -> vorbefüllter MORE-Warenkorb-Link */
+function merken(btn){
+  const pid=btn.dataset.mk, vs=(VARIANTS[pid]||[]).filter(v=>v[2]);
+  if(!vs.length)return;
+  if(vs.length===1){addToCart(pid,vs[0][0]);flashMk(btn);return;}
+  const vp=document.getElementById("vp-"+pid);
+  if(!vp.hidden){vp.hidden=true;return;}
+  vp.innerHTML=`<span class="vph">Sorte wählen:</span>`+vs.map(v=>`<button type="button" data-pid="${pid}" data-vid="${v[0]}">${escT(varName(v[1]))}</button>`).join("");
+  vp.hidden=false;
+}
+function flashMk(btn){if(!btn)return;const t=btn.textContent;btn.textContent="✓ Gemerkt";btn.classList.add("done");setTimeout(()=>{btn.textContent=t;btn.classList.remove("done");},1400);}
+function addToCart(pid,vid){
+  const p=PRODUCTS.find(x=>x.id===pid), v=(VARIANTS[pid]||[]).find(x=>x[0]===vid);
+  if(!p||!v)return;
+  const hit=cart.find(i=>i.vid===vid);
+  if(hit)hit.q++;else cart.push({vid:vid,pid:pid,name:p.name,vt:varName(v[1]),pr:v[3]||0,q:1});
+  saveCart();renderCart();
+}
+function cartURL(){return affLink("https://morenutrition.de/cart/"+cart.map(i=>i.vid+":"+i.q).join(","));}
+function renderCart(){
+  const bar=document.getElementById("cartbar"),panel=document.getElementById("cartpanel");
+  document.body.classList.toggle("has-cart",cart.length>0);
+  if(!cart.length){bar.hidden=true;panel.hidden=true;return;}
+  const n=cart.reduce((a,i)=>a+i.q,0), sum=cart.reduce((a,i)=>a+i.pr*i.q,0);
+  const ship=sum>=55?"Gratisversand ✓":"noch "+eur(55-sum)+" bis Gratisversand (DE)";
+  bar.innerHTML=`<span>🛒 <b class="tnum">${n}</b> Artikel · <b class="tnum">${eur(sum)}</b><span class="ship"> · ${ship}</span></span>`+
+    `<button class="go sec" id="cartToggle" aria-expanded="${String(!panel.hidden)}">Merkzettel</button>`+
+    `<a class="go" href="${cartURL()}" target="_blank" rel="noopener">Zum MORE-Warenkorb →</a>`;
+  bar.hidden=false;
+  document.getElementById("cartToggle").onclick=()=>{panel.hidden=!panel.hidden;renderCart();};
+  if(!panel.hidden){
+    panel.innerHTML=cart.map((i,ix)=>`<div class="citem"><span class="cn">${escT(i.name)}<small>${escT(i.vt)}${i.pr?" · "+eur(i.pr):""}</small></span><span class="q"><button type="button" data-cq="${ix}" data-d="-1" aria-label="Menge verringern">−</button><span class="tnum">${i.q}</span><button type="button" data-cq="${ix}" data-d="1" aria-label="Menge erhöhen">+</button></span><button type="button" class="rm" data-crm="${ix}" aria-label="${escT(i.name)} entfernen">✕</button></div>`).join("")+
+      `<div class="cartnote">Der Link öffnet den MORE-Shop mit diesen Positionen vorbefüllt – bestellt wird dort, nicht hier. Preise laut Shop-Varianten, ohne Gewähr.</div>`+
+      `<button class="cmpclear" id="cartClear">Merkzettel leeren</button>`;
+    document.getElementById("cartClear").onclick=()=>{cart=[];saveCart();renderCart();};
+    panel.querySelectorAll("[data-cq]").forEach(b=>b.onclick=()=>{const ix=Number(b.dataset.cq);cart[ix].q+=Number(b.dataset.d);if(cart[ix].q<1)cart.splice(ix,1);saveCart();renderCart();});
+    panel.querySelectorAll("[data-crm]").forEach(b=>b.onclick=()=>{cart.splice(Number(b.dataset.crm),1);saveCart();renderCart();});
+  }
+}
+
+/* Vergleichsmodus */
+function renderCmpChip(){
+  const ch=document.getElementById("cmpchip");
+  if(!cmp.length){ch.hidden=true;return;}
+  ch.hidden=false;ch.textContent=`⚖ Vergleichen (${cmp.length})`;
+  ch.title=cmp.length<2?"Mindestens 2 Produkte anhaken":"";
+}
+function flashChip(msg){const ch=document.getElementById("cmpchip");ch.hidden=false;ch.textContent=msg;setTimeout(renderCmpChip,1200);}
+document.getElementById("cmpchip").onclick=()=>{if(cmp.length>=2)openCmp();else flashChip("mind. 2 anhaken");};
+function cmpRow(label,fn){return `<tr><td>${label}</td>${cmp.map(id=>{const v=fn(PRODUCTS.find(x=>x.id===id));return `<td>${v==null||v===""?"–":v}</td>`;}).join("")}</tr>`;}
+function openCmp(){
+  const w=document.getElementById("cmpwrap"), de=x=>x==null?null:x.toLocaleString("de-DE");
+  const heads=cmp.map(id=>{const p=PRODUCTS.find(x=>x.id===id);return `<th>${p.img?`<img src="${imgURL(p.img)}" alt="" onerror="this.remove()">`:""}${escT(p.name)}</th>`;}).join("");
+  w.innerHTML=`<div class="cmpbox"><h3>⚖ Produktvergleich <button type="button" class="x" aria-label="Vergleich schließen">✕</button></h3><div style="overflow-x:auto"><table class="cmptbl"><thead><tr><td></td>${heads}</tr></thead><tbody>`+
+    cmpRow("Kategorie",p=>CATS[p.cat].label)+
+    cmpRow("Preis",p=>eur(p.price))+
+    cmpRow("€ / Portion",p=>perServing(p)==null?null:eur(perServing(p)))+
+    cmpRow("Protein / Portion",p=>p.protein==null?null:de(p.protein)+" g")+
+    cmpRow("Zucker / Portion",p=>p.sugar==null?null:de(p.sugar)+" g")+
+    cmpRow("kcal / Portion",p=>p.kcal)+
+    cmpRow("Gesamtscore",p=>p._total!=null?`<b>${p._total}</b>`:null)+
+    cmpRow("Nährwerte-Score",p=>p._nutri)+
+    cmpRow("Preis-Leistung",p=>p._value)+
+    cmpRow("Geschmack",p=>p._taste)+
+    cmpRow("Bewertung",p=>p.rating==null?null:de(p.rating)+"★"+(p.reviews?` (${de(p.reviews)})`:""))+
+    cmpRow("Verfügbarkeit",p=>{const a=AVAIL[p.avail]||AVAIL["limitiert"];return `<span style="color:${a.c}">●</span> ${a.t}`;})+
+    cmpRow("Sorten lieferbar",p=>p.varTotal?`${p.varAvail}/${p.varTotal}`:null)+
+    cmpRow("",p=>`<a class="buy" href="${affLink(p.url)}" target="_blank" rel="noopener">Ansehen →</a>`)+
+    `</tbody></table></div><button type="button" class="cmpclear" id="cmpClear">Auswahl leeren</button></div>`;
+  w.hidden=false;
+  w.querySelector(".x").onclick=closeCmp;
+  document.getElementById("cmpClear").onclick=()=>{cmp=[];renderCmpChip();closeCmp();render();};
+  w.onclick=e=>{if(e.target===w)closeCmp();};
+  w.querySelector(".x").focus();
+}
+function closeCmp(){document.getElementById("cmpwrap").hidden=true;}
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeCmp();});
+
+/* Deep-Links: #tab?q=&f=avs&sort=&view=table — teilbare Zustände, replaceState (kein History-Spam) */
+let hashReady=false;
+function currentTab(){const b=document.querySelector(".tab.on");return b?b.dataset.tab:"uebersicht";}
+function updateHash(){
+  if(!hashReady)return;
+  const tab=currentTab();let h="#"+tab;
+  if(CATS[tab]){
+    const ps=new URLSearchParams();
+    const q=document.getElementById("search").value.trim();if(q)ps.set("q",q);
+    const f=[["fAvail","a"],["fVegan","v"],["fSugar","s"]].filter(x=>document.getElementById(x[0]).checked).map(x=>x[1]).join("");if(f)ps.set("f",f);
+    const s=document.getElementById("sort").value;if(s!=="score")ps.set("sort",s);
+    if(view==="table")ps.set("view","table");
+    const str=ps.toString();if(str)h+="?"+str;
+  }
+  if(location.hash!==h)history.replaceState(null,"",h);
+}
+function applyHash(){
+  const m=location.hash.slice(1);if(!m)return false;
+  const qi=m.indexOf("?"),tab=qi<0?m:m.slice(0,qi),qs=qi<0?"":m.slice(qi+1);
+  if(!(CATS[tab]||["uebersicht","buy","info"].includes(tab)))return false;
+  showTab(tab);
+  if(CATS[tab]){ /* Parameter anwenden — leeres qs setzt bewusst auf Defaults zurück (der Hash ist die Wahrheit) */
+    const ps=new URLSearchParams(qs);
+    document.getElementById("search").value=ps.get("q")||"";
+    const f=ps.get("f")||"";
+    document.getElementById("fAvail").checked=f.indexOf("a")>=0;
+    document.getElementById("fVegan").checked=f.indexOf("v")>=0;
+    document.getElementById("fSugar").checked=f.indexOf("s")>=0;
+    const so=ps.get("sort");
+    if(so&&SORT2TSORT[so]){document.getElementById("sort").value=so;tsort.key=SORT2TSORT[so][0];tsort.dir=SORT2TSORT[so][1];}
+    const tb=ps.get("view")==="table";
+    view=tb?"table":"cards";
+    document.getElementById("vTable").classList.toggle("on",tb);
+    document.getElementById("vCards").classList.toggle("on",!tb);
+    render();
+  }
+  return true;
+}
+window.addEventListener("hashchange",applyHash);
+
+/* Tastatur-Navigation im Tablist (Pfeile, Pos1/Ende) */
+document.getElementById("tabs").addEventListener("keydown",e=>{
+  if(["ArrowRight","ArrowLeft","Home","End"].indexOf(e.key)<0)return;
+  const btns=Array.from(document.querySelectorAll(".tab"));let i=btns.indexOf(document.activeElement);if(i<0)return;
+  e.preventDefault();
+  if(e.key==="ArrowRight")i=(i+1)%btns.length;else if(e.key==="ArrowLeft")i=(i-1+btns.length)%btns.length;else if(e.key==="Home")i=0;else i=btns.length-1;
+  btns[i].focus();showTab(btns[i].dataset.tab);
+});
+
 // Tabbar-Sticky-Offset = echte Header-Höhe (fester 55px-Wert lag unter der realen Höhe → Überlappung)
 const _hdr=document.querySelector("header.top");
 function setHeadH(){document.documentElement.style.setProperty("--headh",_hdr.offsetHeight+"px");}
@@ -612,7 +880,20 @@ let theme=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").m
 themeBtn.onclick=()=>{theme=theme==="dark"?"light":"dark";setTheme(theme);};
 
 var _ad=document.getElementById("availDate"); if(_ad)_ad.textContent=AVAIL_DATE;
-renderTabs();renderKPIs();renderJump();renderRecs();renderNew();renderRetailers();renderAff();render();showTab("uebersicht");
+renderTabs();renderKPIs();renderJump();renderRecs();renderNew();renderRetailers();renderAff();render();
+if(!applyHash())showTab("uebersicht");
+hashReady=true;updateHash();
+renderCart();renderCmpChip();
+
+/* SEO: strukturierte Daten direkt aus dem Produktbestand */
+(function(){
+  const ld={"@context":"https://schema.org","@type":"ItemList","name":"MORE Nutrition Produktvergleich","numberOfItems":PRODUCTS.length,
+    "itemListElement":PRODUCTS.map((p,i)=>({"@type":"ListItem","position":i+1,"item":Object.assign({"@type":"Product","name":p.name,"url":p.url},
+      p.rating!=null&&p.reviews?{"aggregateRating":{"@type":"AggregateRating","ratingValue":p.rating,"reviewCount":p.reviews}}:{})}))};
+  const s=document.createElement("script");s.type="application/ld+json";s.textContent=JSON.stringify(ld);document.head.appendChild(s);
+})();
+/* PWA: Service Worker nur über http(s) (nicht file://) */
+if("serviceWorker"in navigator&&location.protocol.indexOf("http")===0){navigator.serviceWorker.register("sw.js").catch(()=>{});}
 </script>
 </body>
 </html>

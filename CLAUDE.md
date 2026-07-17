@@ -24,8 +24,17 @@ python3 refresh.py                                        # Live-Verfügbarkeit 
 python3 generate.py template.html live.json index.html    # nur Seite neu erzeugen (ohne Netz)
 # oder Datei einfach direkt im Browser öffnen
 ```
-`refresh.py` aktualisiert NUR `availDate` + `live` (mit Retry/Backoff gegen Shopify-503) und
-schlägt neue Katalog-Produkte lediglich als Kandidaten vor — `newProducts` bleibt kuratiert.
+`refresh.py` aktualisiert NUR `availDate` + `live` + `variants` (mit Retry/Backoff gegen
+Shopify-503), hängt einen Tages-Snapshot an `history.json` an und schlägt neue Katalog-Produkte
+lediglich als Kandidaten vor — `newProducts` bleibt kuratiert.
+
+Seit dem Feature-Paket vom 17.07.2026 außerdem: `variants` in `live.json` ([variantId, Sorte,
+kaufbar, Preis]) speist die **Sorten-Anzeige** und den **Merkzettel mit 1-Klick-Warenkorb**
+(`/cart/<variantId>:<qty>`-Permalink, localStorage-State, KEIN Checkout-Bot); Vergleichsmodus
+(max. 3), Deep-Links im Hash (`#riegel?q=&f=avs&sort=&view=table`), Score-Popover, Tablist mit
+Pfeiltasten, PWA (manifest.json/sw.js/favicon.svg, SW nur über http), JSON-LD zur Laufzeit,
+Produktbilder lokal unter `img/` (IMG-Map zeigt auf lokale Pfade, `imgURL()` hängt nur an
+http-URLs einen width-Parameter an). Wöchentlicher CI-Refresh: `.github/workflows/refresh.yml`.
 Kein Test-Framework vorhanden. **Verifikation via Headless-Browser** (empfohlen):
 Playwright/Chromium laden `index.html`, auf `pageerror`/console-errors prüfen und Screenshots
 machen. `net::ERR_...`/„Failed to load resource" von Bild-URLs sind KEINE JS-Fehler (externe CDN).

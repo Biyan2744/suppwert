@@ -1,0 +1,13 @@
+{
+  "name": "MORE Nutrition Produktvergleich",
+  "short_name": "MORE Vergleich",
+  "description": "Unabhängiger Produktvergleich für MORE Nutrition mit Live-Verfügbarkeit",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f4f4f1",
+  "theme_color": "#fcfcfb",
+  "lang": "de",
+  "icons": [
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
