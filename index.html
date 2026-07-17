@@ -90,6 +90,7 @@ header.top{background:var(--surface-1);border-bottom:1px solid var(--grid);posit
 .srcsw{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;flex-shrink:0;margin-top:4px}
 .srcsw button{border:0;background:transparent;color:var(--text-2);padding:9px 13px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
 .srcsw button.on{background:var(--text-1);color:var(--surface-1)}
+#srcAlt.on{background:var(--m-value);color:#fff}
 .phead h2{font-size:22px;letter-spacing:-.3px;display:flex;align-items:center;gap:10px}
 .phead h2 .hbar{width:5px;height:22px;border-radius:3px;background:var(--acc)}
 .phead p{margin:7px 0 0;color:var(--text-2);font-size:14px}
@@ -251,6 +252,7 @@ body.show-alt .alt-row{display:flex}
 .alt-row .al{font-weight:600}
 .alt-row a{color:var(--text-2);text-decoration:none;font-weight:600}
 .alt-row a:hover{color:var(--m-value);text-decoration:underline}
+.alt-row a.adirect{color:var(--m-value)}
 .alt-row .asep{color:var(--line)}
 .vname{color:inherit;text-decoration:none}
 .vname:hover{color:var(--m-value)}
@@ -770,9 +772,41 @@ function escT(s){return (s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</
 function varName(t){return t==="Default Title"?"Standardgröße":t;}
 const CARTI=`<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1.6"/><circle cx="19" cy="21" r="1.6"/><path d="M2.5 3h2l2.4 12.5a2 2 0 0 0 2 1.5h9.7a2 2 0 0 0 2-1.6L22 7H6"/></svg>`;
 
-/* Andere Anbieter: ehrliche SUCH-Links (keine Live-Preise — die gibt es nur vom MORE-Shop).
-   Kategorie-Zuordnung aus der kuratierten Haendler-Tabelle; Amazon laeuft durch affLink()
-   und bekommt spaeter automatisch den PartnerNet-Tag. */
+/* Andere Anbieter: Amazon bekommt KURATIERTE Direkt-Links (AMZ-Map unten, je Produkt
+   verifiziert; fehlt ein Eintrag, gab es kein sauberes Amazon-Listing -> Such-Link-Fallback).
+   Drogerien bleiben bewusst SUCH-Links: deren Sortiment rotiert, kuratierte Direktlinks
+   waeren nach Wochen tot. Keine Live-Preise — die gibt es nur vom MORE-Shop. Amazon laeuft
+   durch affLink() und bekommt spaeter automatisch den PartnerNet-Tag. */
+/* Kuratierte Amazon-Direktlinks (Recherche 17.07.2026, je Produkt gegen den Listing-Titel
+   verifiziert; ASINs stammen aus echten amazon.de-Treffern, keiner geraten). FEHLENDE ids
+   haben bewusst KEINEN Eintrag: veganbar/waferbar/melatonin/iron/saucenfix/wrap/salsa/
+   nutbutter sind auf amazon.de nicht (sauber) gelistet; saucenback/dessert/fiber wurden
+   AUSSORTIERT, weil der beste Treffer plausibel ein anderes Produkt ist (Sahne-750g-Protein,
+   Brownie-BACKMISCHUNG, Flohsamen-VARIANTE) — die behalten den ehrlichen Such-Link. */
+const AMZ={
+  milkshake:"https://www.amazon.de/dp/B0GMJWXRSN",clear:"https://www.amazon.de/dp/B0D424HTJS",
+  icedcoffee:"https://www.amazon.de/dp/B0GMJXG573",matcha:"https://www.amazon.de/dp/B0DVYZZ8VD",
+  chai:"https://www.amazon.de/dp/B0GMJXMDZR",milkyccino:"https://www.amazon.de/dp/B0FKNFQWJY",
+  vegan:"https://www.amazon.de/dp/B0CP81FVBC",glow:"https://www.amazon.de/dp/B0CJCGS88X",
+  satisbites:"https://www.amazon.de/dp/B0G4DMP28R",proteinbar:"https://www.amazon.de/dp/B0CJFTKWZ9",
+  pudding:"https://www.amazon.de/dp/B0CP3Q66LW",porridge:"https://www.amazon.de/dp/B0DC6M3TQD",
+  pancake:"https://www.amazon.de/dp/B0CFVTGXZJ",griess:"https://www.amazon.de/dp/B0DXL4F51Q",
+  milchreis:"https://www.amazon.de/dp/B0DWXTFJ5T",tortilla:"https://www.amazon.de/dp/B0CFFDNT31",
+  chunky:"https://www.amazon.de/dp/B08NGK5SXQ",stevia:"https://www.amazon.de/dp/B0F6D7HJZ5",
+  chunkybundle:"https://www.amazon.de/dp/B0D3HVS8HB",creagum:"https://www.amazon.de/dp/B0GSZ6RS2R",
+  bioticgum:"https://www.amazon.de/dp/B0GSZ5DVG9",sleepgum:"https://www.amazon.de/dp/B0GT1LR3TR",
+  creastick:"https://www.amazon.de/dp/B0GBX4CBCD",dailybiotic:"https://www.amazon.de/dp/B0H1H552VZ",
+  ashwa:"https://www.amazon.de/dp/B0H51BWFTF",enzyme:"https://www.amazon.de/dp/B0H51TZXCV",
+  mineral:"https://www.amazon.de/dp/B0CJFHP8CJ",curcu:"https://www.amazon.de/dp/B0BQ3TT4CB",
+  harmony:"https://www.amazon.de/dp/B0CD2M6TDJ",cycle:"https://www.amazon.de/dp/B0CCWBM791",
+  collagen:"https://www.amazon.de/dp/B0GBX281B8",everyworkout:"https://www.amazon.de/dp/B07F14KYS4",
+  fizi:"https://www.amazon.de/dp/B0G8J5KBDH",o3d3k2:"https://www.amazon.de/dp/B07G4TL3QP",
+  daily100:"https://www.amazon.de/dp/B0G64KPF39",skinstructure:"https://www.amazon.de/dp/B0CVBFT8ZP",
+  magnesium:"https://www.amazon.de/dp/B0GRBX4G3G",oilspray:"https://www.amazon.de/dp/B0CCJR76MY",
+  gourmet:"https://www.amazon.de/dp/B0CCJLJN9H",nomoresugar:"https://www.amazon.de/dp/B0CVBKT3V3",
+  spices:"https://www.amazon.de/dp/B0C3DFXB14",zerupbarista:"https://www.amazon.de/dp/B0DWY7PXKL",
+  moremelade:"https://www.amazon.de/dp/B0CF1ZBB8J"
+};
 const RETAIL_LINKS=[
   {label:"Amazon",cats:null,url:q=>affLink("https://www.amazon.de/s?k="+q)},
   {label:"dm",cats:["proteine","riegel","chunky"],url:q=>"https://www.dm.de/search?query="+q},
@@ -782,9 +816,12 @@ const RETAIL_LINKS=[
 ];
 function altLinksHTML(p){
   const q=encodeURIComponent(("MORE Nutrition "+p.name.replace(/MORE |More /g,"").replace(/[()®]/g," ")).replace(/\s+/g," ").trim());
-  const links=RETAIL_LINKS.filter(r=>!r.cats||r.cats.includes(p.cat));
+  const links=RETAIL_LINKS.filter(r=>!r.cats||r.cats.includes(p.cat)).map(r=>{
+    if(r.label==="Amazon"&&AMZ[p.id]) return {label:"Amazon",href:affLink(AMZ[p.id]),title:"Dieses Produkt direkt bei Amazon ansehen – Preis/Verfügbarkeit dort können abweichen",direct:true};
+    return {label:r.label,href:r.url(q),title:r.label+"-Suche öffnen – Preis/Verfügbarkeit dort können abweichen",direct:false};
+  });
   if(!links.length)return "";
-  return `<div class="alt-row"><span class="al">Auch suchen bei:</span>${links.map(r=>`<a href="${r.url(q)}" target="_blank" rel="noopener" title="${r.label}-Suche öffnen – Preis/Verfügbarkeit dort können abweichen">${r.label}</a>`).join('<span class="asep">·</span>')}</div>`;
+  return `<div class="alt-row"><span class="al">Auch bei:</span>${links.map(r=>`<a href="${r.href}" target="_blank" rel="noopener" class="${r.direct?"adirect":""}" title="${r.title}">${r.label}${r.direct?" ↗":""}</a>`).join('<span class="asep">·</span>')}</div>`;
 }
 
 /* Shopify-Varianten sind "Geschmack / Größe" — fuers UI in beide Dimensionen zerlegen:
