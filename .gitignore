@@ -2,6 +2,9 @@
 __pycache__/
 *.pyc
 
+# Lokale Notizen (Bewerbungsentwuerfe etc.) — bleiben aus dem oeffentlichen Repo draussen
+BEWERBUNG-NOTIZEN.md
+
 # OS-Muell
 .DS_Store
 Thumbs.db
