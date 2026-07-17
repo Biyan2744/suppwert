@@ -18,6 +18,9 @@ Priorisierte Ausbaustufen mit Akzeptanzkriterien. Reihenfolge ist ein Vorschlag.
 > Impressum: Biyan will die Privatadresse nicht veröffentlichen und kauft **ganz am Ende**
 > einen Impressum-Service (ladungsfähige Anschrift); bis dahin bleibt Pages aus
 > (Impressumspflicht). Offen: 2 (Restock-Alerts, braucht Backend), 3 (Affiliate).
+> **Bestenlisten (17.07.):** Übersichtsseite bekommt 4 Rekord-Kacheln, live aus den
+> Produktdaten berechnet: Meiste Protein fürs Geld (g Eiweiß/€), Meiste Protein/Portion,
+> Höchste Proteindichte (g/100 kcal), Meistbewertet – je Kachel der Rekordhalter + Deep-Link.
 > **Sets-Reiter (17.07.):** neuer Tab „Sets" mit 7 redaktionell kuratierten Bundles
 > (Protein-Fasten / Muskelaufbau / Bestseller-Mix / Beauty / Frühstück & Snacks / Schlank
 > kochen / Gute Nacht). Das Protein-Fasten-Set verweist BESCHREIBEND auf die WPF-Methode von

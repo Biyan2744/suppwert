@@ -116,6 +116,12 @@ header.top{background:var(--surface-1);border-bottom:1px solid var(--grid);posit
 .rec .nm{font-size:15px;font-weight:650}
 .rec .why{font-size:12.5px;color:var(--text-2)}
 .rec .mt{margin-top:auto;display:flex;gap:8px;align-items:center;font-size:12px;color:var(--muted);padding-top:8px}
+.bestgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.besttile{background:var(--card);border:1px solid var(--ring);border-top:3px solid var(--acc);border-radius:var(--r);padding:13px 14px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:3px}
+.besttile .bl{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--acc)}
+.besttile .bv{font-size:18px;font-weight:750;letter-spacing:-.3px}
+.besttile a.bn{font-size:12.5px;color:var(--text-2);text-decoration:none;font-weight:600;margin-top:1px}
+.besttile a.bn:hover{color:var(--m-value);text-decoration:underline}
 .rec .sc{font-weight:700;color:var(--text-1)}
 
 /* Toolbar */
@@ -379,8 +385,9 @@ body.has-cart .cmpchip{bottom:74px}
   .kpis{grid-template-columns:repeat(2,1fr)}
   .recs{grid-template-columns:1fr}
   .buy-grid{grid-template-columns:1fr}
+  .bestgrid{grid-template-columns:repeat(2,1fr)}
 }
-@media(max-width:520px){ .kpis{grid-template-columns:1fr} .grid{grid-template-columns:1fr 1fr;gap:10px} }
+@media(max-width:520px){ .kpis{grid-template-columns:1fr} .bestgrid{grid-template-columns:1fr} .grid{grid-template-columns:1fr 1fr;gap:10px} }
 @media(max-width:380px){ .grid{grid-template-columns:1fr} }
 </style>
 </head>
@@ -413,6 +420,8 @@ body.has-cart .cmpchip{bottom:74px}
     <div class="radar" id="radar" hidden></div>
     <div class="sub-h">Schnell zu einer Kategorie</div>
     <div class="jump" id="jump"></div>
+    <div class="sub-h">Bestenlisten <span style="font-weight:400;color:var(--muted);font-size:13px">– Rekordhalter aus den Produktdaten berechnet</span></div>
+    <div class="bestgrid" id="best"></div>
     <div class="sub-h">Top-Empfehlungen</div>
     <div class="recs" id="recs"></div>
     <div class="sub-h" id="newhead">Neu im Shop <span style="font-weight:400;color:var(--muted);font-size:13px">– frisch entdeckt, noch ohne Bewertung</span></div>
@@ -923,6 +932,22 @@ function renderJump(){
 function renderRecs(){
   document.getElementById("recs").innerHTML=RECS.map(r=>`<div class="rec" style="--acc:${CATS[r.cat].color}"><div class="tag">${r.tag}</div><div class="nm">${r.name}</div><div class="why">${r.why}</div><div class="mt"><span>${CATS[r.cat].label}</span>${r.score!=null?`<span class="sc">Score ${r.score}</span>`:""}<span style="margin-left:auto">${r.extra}</span></div></div>`).join("");
 }
+/* Bestenlisten: ehrliche Superlative LIVE aus den Produktdaten. Jede Kachel zeigt den
+   Rekordhalter + den echten Messwert und verlinkt per Deep-Link zum Produkt. */
+function bestBy(cands,metric,dir){ let best=null,bv=null; cands.forEach(p=>{const v=metric(p); if(v==null)return; if(bv==null||v*dir>bv*dir){bv=v;best=p;}}); return best?{p:best,v:bv}:null; }
+function renderBest(){
+  const prot=PRODUCTS.filter(p=>p.protein!=null&&p.protein>0);
+  const t=[];
+  const val=bestBy(prot.filter(p=>euroPerProtein(p)!=null),euroPerProtein,-1);
+  if(val)t.push({acc:"--m-value",label:"Meiste Protein fürs Geld",value:(val.p.protein/perServing(val.p)).toLocaleString("de-DE",{maximumFractionDigits:1})+" g Eiweiß / €",p:val.p});
+  const pp=bestBy(prot,p=>p.protein,1);
+  if(pp)t.push({acc:"--m-nutri",label:"Meiste Protein / Portion",value:pp.p.protein.toLocaleString("de-DE")+" g pro Portion",p:pp.p});
+  const pd=bestBy(prot,proteinDensity,1);
+  if(pd)t.push({acc:"--acc-riegel",label:"Höchste Proteindichte",value:proteinDensity(pd.p).toLocaleString("de-DE",{maximumFractionDigits:1})+" g / 100 kcal",p:pd.p});
+  const rv=bestBy(PRODUCTS.filter(p=>p.reviews!=null),p=>p.reviews,1);
+  if(rv)t.push({acc:"--m-taste",label:"Meistbewertet",value:rv.p.reviews.toLocaleString("de-DE")+" Bewertungen",p:rv.p});
+  document.getElementById("best").innerHTML=t.map(x=>`<div class="besttile" style="--acc:var(${x.acc})"><span class="bl">${x.label}</span><span class="bv tnum">${x.value}</span><a class="bn" href="#${x.p.cat}?q=${encodeURIComponent(x.p.name)}">${escT(x.p.name)} →</a></div>`).join("");
+}
 /* Ratgeber: Ziel-Kaufberatung (deterministische Regeln auf dem echten Datenbestand) + FAQ */
 const GOALS=[
   {key:"abnehmen",label:"Abnehmen & Kalorien sparen",ids:["chunky","clear","oilspray","gourmet","zerupbarista","nomoresugar"],note:"Zucker und Kalorien im Alltag ersetzen statt verzichten – plus das kalorienärmste Protein."},
@@ -1375,7 +1400,7 @@ themeBtn.onclick=()=>{theme=theme==="dark"?"light":"dark";setTheme(theme);};
 
 var _ad=document.getElementById("availDate"); if(_ad)_ad.textContent=AVAIL_DATE;
 var _fd=document.getElementById("footDate"); if(_fd)_fd.textContent=AVAIL_DATE;
-renderTabs();renderKPIs();renderJump();renderRecs();renderNew();renderRetailers();renderAff();renderRadar();renderGuide();renderSets();renderFaqs();render();
+renderTabs();renderKPIs();renderJump();renderRecs();renderBest();renderNew();renderRetailers();renderAff();renderRadar();renderGuide();renderSets();renderFaqs();render();
 if(!applyHash())showTab("uebersicht");
 hashReady=true;updateHash();
 renderCart();renderCmpChip();
