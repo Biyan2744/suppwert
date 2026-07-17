@@ -216,6 +216,8 @@ td .cdot{width:8px;height:8px;border-radius:50%}
 .vitem::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ok);flex-shrink:0}
 .vitem.out{color:var(--muted);text-decoration:line-through}
 .vitem.out::before{background:var(--crit)}
+.vitem .vpr{color:var(--text-1);font-weight:700;margin-left:2px}
+.vitem.out .vpr{color:var(--muted)}
 
 /* Score-Popover */
 .spop-btn{border:1px solid var(--line);background:transparent;color:var(--muted);width:16px;height:16px;border-radius:50%;font-size:10px;font-weight:700;cursor:pointer;padding:0;line-height:1;margin-left:6px;vertical-align:1px}
@@ -688,6 +690,8 @@ function meter(label,val,color){ if(val==null)return `<div class="mrow"><span cl
 function cardHTML(p){
   const c=CATS[p.cat], a=AVAIL[p.avail]||AVAIL["limitiert"], ps=perServing(p), isProt=PROTEIN_CATS.includes(p.cat);
   const vs=VARIANTS[p.id]||[], vBuy=vs.filter(v=>v[2]);
+  /* Preis nur zeigen, wenn die Varianten unterschiedlich kosten (Groessen-Varianten wie FIZI 1er/6er/12er) */
+  const vMulti=new Set(vs.map(v=>v[3])).size>1;
   const img = p.img ? `<img src="${imgURL(p.img)}" alt="${esc(p.name)}" data-cat="${p.cat}" data-name="${esc(p.name)}" loading="lazy" onerror="imgFail(this)">` : `<div class="ph" style="--acc:${c.color}">${esc(p.name)}</div>`;
   const cmpchk=`<label class="cmpchk"><input type="checkbox" data-cmp="${p.id}" ${cmp.includes(p.id)?"checked":""} aria-label="${esc(p.name)} vergleichen">Vergleichen</label>`;
   const win = p.pick ? `<span class="tp">★ ${p.pickTxt||"Tipp"}</span>` : (isProt&&p._total!=null&&p._total===catWinner(p.cat)?`<span class="tp">★ Kategorie-Sieger</span>`:"");
@@ -717,7 +721,7 @@ function cardHTML(p){
       <div class="nm">${p.name}</div>
       <div class="pc-price"><span class="pr tnum">${eur(p.price)}</span><span class="avail"><span class="adot" style="background:${a.c}"></span>${a.t}</span></div>
       ${p.varTotal?`<div class="varline"><span class="vl">Varianten (Sorten/Größen) lieferbar</span><span class="vv tnum">${p.varAvail}/${p.varTotal}</span>${vs.length?`<button class="vtog" data-vt="${p.id}" aria-expanded="false" aria-controls="vl-${p.id}">Sorten ▾</button>`:""}</div>`:""}
-      ${vs.length?`<div class="vlist" id="vl-${p.id}" hidden>${vs.map(v=>`<span class="vitem ${v[2]?"":"out"}">${escT(varName(v[1]))}</span>`).join("")}</div>`:""}
+      ${vs.length?`<div class="vlist" id="vl-${p.id}" hidden>${vs.map(v=>`<span class="vitem ${v[2]?"":"out"}">${escT(varName(v[1]))}${vMulti&&v[3]?`<b class="vpr tnum">${eur(v[3])}</b>`:""}</span>`).join("")}</div>`:""}
     </div>
     <div class="pc-note">${p.note||""}</div>
     ${badges?`<div class="badges">${badges}</div>`:""}
@@ -814,7 +818,8 @@ function merken(btn){
   if(vs.length===1){addToCart(pid,vs[0][0]);flashMk(btn);return;}
   const vp=document.getElementById("vp-"+pid);
   if(!vp.hidden){vp.hidden=true;return;}
-  vp.innerHTML=`<span class="vph">Sorte wählen:</span>`+vs.map(v=>`<button type="button" data-pid="${pid}" data-vid="${v[0]}">${escT(varName(v[1]))}</button>`).join("");
+  const mp=new Set((VARIANTS[pid]||[]).map(v=>v[3])).size>1;
+  vp.innerHTML=`<span class="vph">Sorte wählen:</span>`+vs.map(v=>`<button type="button" data-pid="${pid}" data-vid="${v[0]}">${escT(varName(v[1]))}${mp&&v[3]?` · ${eur(v[3])}`:""}</button>`).join("");
   vp.hidden=false;
 }
 function flashMk(btn){if(!btn)return;const t=btn.textContent;btn.textContent="✓ Gemerkt";btn.classList.add("done");setTimeout(()=>{btn.textContent=t;btn.classList.remove("done");},1400);}
