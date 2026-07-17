@@ -14,6 +14,10 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.json">
 <style>
+@font-face{font-family:"Inter";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/inter-400.woff2) format("woff2")}
+@font-face{font-family:"Inter";font-style:normal;font-weight:600;font-display:swap;src:url(fonts/inter-600.woff2) format("woff2")}
+@font-face{font-family:"Inter";font-style:normal;font-weight:700;font-display:swap;src:url(fonts/inter-700.woff2) format("woff2")}
+@font-face{font-family:"Inter";font-style:normal;font-weight:800;font-display:swap;src:url(fonts/inter-800.woff2) format("woff2")}
 :root{
   --surface-1:#fcfcfb; --plane:#f4f4f1; --card:#ffffff; --imgbg:#fbfbfa;
   --text-1:#0b0b0b; --text-2:#52514e; --muted:#898781;
@@ -39,7 +43,8 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
-body{background:var(--plane);color:var(--text-1);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
+body{background:var(--plane);color:var(--text-1);font-family:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select{font-family:inherit}
 .wrap{max-width:1180px;margin:0 auto;padding:0 18px}
 a{color:inherit}
 h1,h2,h3{line-height:1.2;margin:0}
@@ -48,9 +53,12 @@ h1,h2,h3{line-height:1.2;margin:0}
 /* Header */
 header.top{background:var(--surface-1);border-bottom:1px solid var(--grid);position:sticky;top:0;z-index:50}
 .top-in{display:flex;align-items:center;gap:14px;padding:11px 0}
-.brand{display:flex;flex-direction:column}
-.brand b{font-size:16px;letter-spacing:-.2px}
-.brand span{font-size:11.5px;color:var(--muted)}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}
+.brand .logo{width:30px;height:30px;border-radius:8px;flex-shrink:0}
+.brand .bt{display:flex;flex-direction:column}
+.brand b{font-size:16px;letter-spacing:-.2px;font-weight:800}
+.brand .bt span{font-size:11.5px;color:var(--muted)}
+.indep{font-size:11px;font-weight:600;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 10px;white-space:nowrap}
 .top-sp{flex:1}
 .tbtn{border:1px solid var(--line);background:transparent;color:var(--text-2);border-radius:10px;padding:7px 11px;font-size:13px;cursor:pointer;display:inline-flex;gap:6px;align-items:center;white-space:nowrap}
 .tbtn:hover{border-color:var(--muted);color:var(--text-1)}
@@ -254,6 +262,35 @@ body.has-cart .cmpchip{bottom:74px}
 .cmptbl img{width:52px;height:52px;object-fit:contain;background:var(--imgbg);border-radius:8px;border:1px solid var(--grid);display:block;margin-bottom:5px}
 .cmpclear{border:1px solid var(--line);background:transparent;color:var(--text-2);border-radius:9px;padding:6px 10px;font-size:12px;cursor:pointer;margin-top:10px}
 
+/* Trust-Zeile im Hero */
+.trust{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.trust span{font-size:11.5px;font-weight:600;color:var(--text-2);border:1px solid var(--line);border-radius:999px;padding:4px 11px;display:inline-flex;align-items:center;gap:6px}
+.trust span::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--m-nutri)}
+
+/* Footer */
+.foot{background:var(--surface-1);border-top:1px solid var(--grid);margin-top:34px;padding:28px 0 96px}
+.foot-in{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:26px}
+.fcol{display:flex;flex-direction:column;gap:7px;font-size:12.5px;color:var(--muted);line-height:1.55}
+.fcol p{margin:0}
+.fbrand{font-weight:800;font-size:14px;color:var(--text-1);letter-spacing:-.2px}
+.fh{font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-2)}
+.fcol a{color:var(--text-2);text-decoration:none;width:fit-content}
+.fcol a:hover{color:var(--text-1);text-decoration:underline}
+
+/* Feinschliff: Fokus, Bewegung, Auswahl, Druck */
+:focus-visible{outline:2px solid var(--m-value);outline-offset:2px}
+.pc{transition:box-shadow .18s ease,transform .18s ease}
+.pc:hover{transform:translateY(-2px);box-shadow:0 2px 4px rgba(11,11,11,.06),0 12px 28px rgba(11,11,11,.10)}
+.buy,.mk,.jchip,.tbtn,.cartbar .go,.cmpchip,.vpick button{transition:background-color .15s ease,color .15s ease,border-color .15s ease,opacity .15s ease}
+::selection{background:var(--m-value);color:#fff}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+@media print{
+  header.top,.tabbar,.toolbar,.cartbar,.cartpanel,.cmpchip,.cmpwrap,.skip,.viewtog,.vpick{display:none!important}
+  .foot{padding-bottom:20px}
+  .pc{box-shadow:none;border-color:var(--line)}
+  body{background:#fff}
+}
+@media(max-width:700px){.foot-in{grid-template-columns:1fr}.indep{display:none}}
 @media(max-width:520px){ .cartbar .ship{display:none} }
 
 @media(max-width:900px){
@@ -269,8 +306,12 @@ body.has-cart .cmpchip{bottom:74px}
 <a class="skip" href="#main">Zum Inhalt springen</a>
 <header class="top">
   <div class="wrap top-in">
-    <div class="brand"><b>MORE Nutrition · Vergleich</b><span>Produkte, Bewertungen & Bezugsquellen</span></div>
+    <a class="brand" href="#uebersicht" aria-label="Zur Übersicht">
+      <svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#1baf7a"/><path d="M14 46V20h7l7.5 12.5L36 20h7v26h-6.5V31.5L29.5 43h-2L20.5 31.5V46z" fill="#fff"/><circle cx="49" cy="17" r="6" fill="#eda100"/></svg>
+      <span class="bt"><b>MORE Vergleich</b><span>Unabhängiger Produktvergleich</span></span>
+    </a>
     <div class="top-sp"></div>
+    <span class="indep">Unabhängig · kein offizieller Shop</span>
     <button class="tbtn" id="themeBtn">🌙 <span id="themeLbl">Dunkel</span></button>
   </div>
 </header>
@@ -286,11 +327,12 @@ body.has-cart .cmpchip{bottom:74px}
       <div class="updated">Datenstand <b>12. Juli 2026</b> · Verfügbarkeit live abgeglichen: <b id="availDate">12. Juli 2026</b> · Quelle: morenutrition.de (Shopify). Preise = kuratierte Standardgrößen; Verfügbarkeit je Variante (Sorten/Größen) live.</div>
     </div>
     <div class="kpis" id="kpis"></div>
-    <div class="sub-h">🧭 Schnell zu einer Kategorie</div>
+    <div class="trust"><span>Unabhängig & redaktionell</span><span>Transparente Score-Methodik</span><span>Live-Verfügbarkeit je Sorte</span></div>
+    <div class="sub-h">Schnell zu einer Kategorie</div>
     <div class="jump" id="jump"></div>
-    <div class="sub-h">🏆 Top-Empfehlungen</div>
+    <div class="sub-h">Top-Empfehlungen</div>
     <div class="recs" id="recs"></div>
-    <div class="sub-h" id="newhead">🆕 Neu im Shop <span style="font-weight:400;color:var(--muted);font-size:13px">– frisch entdeckt, noch ohne Bewertung</span></div>
+    <div class="sub-h" id="newhead">Neu im Shop <span style="font-weight:400;color:var(--muted);font-size:13px">– frisch entdeckt, noch ohne Bewertung</span></div>
     <div class="newgrid" id="newprods"></div>
   </section>
 
@@ -322,7 +364,7 @@ body.has-cart .cmpchip{bottom:74px}
 
   <!-- WO KAUFEN -->
   <section class="panel" id="panel-buy" role="tabpanel">
-    <div class="phead"><h2><span class="hbar" style="--acc:var(--acc-kochen)"></span>🛒 Wo bekommt man MORE Nutrition?</h2><p>Offizieller Shop + große Händler · Stand Juli 2026</p></div>
+    <div class="phead"><h2><span class="hbar" style="--acc:var(--acc-kochen)"></span>Wo bekommt man MORE Nutrition?</h2><p>Offizieller Shop + große Händler · Stand Juli 2026</p></div>
     <div class="buy-grid">
       <div class="pnl">
         <h3>Händler & Sortiment</h3>
@@ -336,16 +378,16 @@ body.has-cart .cmpchip{bottom:74px}
         <div class="shiprow"><span>Schweiz</span><b>9,90 € · gratis ab 150 CHF</b></div>
         <div class="shiprow"><span>Lieferzeit</span><b>ca. 4–6 Tage</b></div>
         <div class="shiprow"><span>Sommer-Kühlversand</span><b>ggf. + 3,99 €</b></div>
-        <div class="codebox">💡 Aktueller Code <b>„AKTION"</b>: bis 20 % auf alles / 10 % auf Proteine, plus Staffelrabatt. <b>Codes wechseln wöchentlich</b> – kursierende „bis 50 %"-Codes sind unbestätigt.</div>
+        <div class="codebox">Aktueller Code <b>„AKTION"</b>: bis 20 % auf alles / 10 % auf Proteine, plus Staffelrabatt. <b>Codes wechseln wöchentlich</b> – kursierende „bis 50 %"-Codes sind unbestätigt.</div>
         <div id="persoCode" class="codebox" style="display:none;border-style:solid;border-color:var(--acc-riegel)"></div>
-        <p class="note">⚠️ Beliebte Artikel sind <b>oft schnell ausverkauft</b>. 2025/26 sorgte eine weltweite Whey-Knappheit für Engpässe (auch bei dm & Müller bestätigt). Feste Restock-Termine nennt MORE bewusst nicht. CH: morenutrition.ch · AT: zusätzlich dm.at, BIPA, Shop-Apotheke.at.</p>
+        <p class="note">Beliebte Artikel sind <b>oft schnell ausverkauft</b>. 2025/26 sorgte eine weltweite Whey-Knappheit für Engpässe (auch bei dm & Müller bestätigt). Feste Restock-Termine nennt MORE bewusst nicht. CH: morenutrition.ch · AT: zusätzlich dm.at, BIPA, Shop-Apotheke.at.</p>
       </div>
     </div>
   </section>
 
   <!-- INFO -->
   <section class="panel" id="panel-info" role="tabpanel">
-    <div class="phead"><h2><span class="hbar" style="--acc:var(--muted)"></span>ℹ️ Methodik & Hinweise</h2></div>
+    <div class="phead"><h2><span class="hbar" style="--acc:var(--muted)"></span>Methodik & Hinweise</h2></div>
     <div class="method">
       <p>Für die vergleichbaren Kategorien <b>Proteinpulver, Riegel und Snacks</b> berechnet die Seite je Produkt drei Teil-Scores und daraus einen Gesamtscore (0–100). Normalisiert wird jeweils <b>innerhalb der Kategorie</b> (bester Wert = 100). Fehlt ein Wert, fließt er nicht ein und die Gewichte werden anteilig neu verteilt.</p>
       <div class="wgt">
@@ -363,11 +405,34 @@ body.has-cart .cmpchip{bottom:74px}
         <span><i style="background:var(--crit)"></i>ausverkauft</span>
       </div>
       <p class="note">„€/Portion" ist – außer bei ausgewiesenen Grundpreisen – aus Preis ÷ Portionen berechnet. Nährwerte je Portion; Pudding/Porridge/Pancakes zubereitet (höherer Zucker beim Pudding stammt v. a. aus der Milch). „k.A." = nicht ausgewiesen. Produktbilder & Daten von morenutrition.de; ausgelistete Artikel (z. B. Choco-Toppings) sind nicht enthalten. Werte sind eine Momentaufnahme.</p>
+      <div class="disc"><b>Über diese Seite:</b> Dieses Projekt vergleicht das MORE-Nutrition-Sortiment unabhängig und redaktionell – mit kuratierten Preisen und Nährwerten, einer offengelegten Score-Berechnung (siehe oben) und Live-Verfügbarkeit direkt aus dem Shop, die wöchentlich automatisch abgeglichen wird.</div>
       <div class="disc"><b>Hinweis:</b> Unabhängiger, informativer Vergleich ohne Verbindung zu MORE Nutrition. Keine Kauf-, Ernährungs- oder Gesundheitsberatung. Preise, Nährwerte, Sorten und Verfügbarkeit ändern sich laufend – verbindlich ist ausschließlich der jeweilige Shop. Angaben ohne Gewähr. Marken-/Produktnamen gehören ihren Eigentümern.</div>
       <div class="srcs"><b>Quellen:</b> morenutrition.de (Produkt- & Kollektionsseiten, Helpcenter) · kaufda.de · supermarktcheck.de · dm.de · rossmann.de · mueller.de · amazon.de · fitmart.de · t-online.de (Whey-Engpass) · morenutrition.ch</div>
     </div>
   </section>
 </div>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <div class="fcol">
+      <div class="fbrand">MORE Vergleich</div>
+      <p>Unabhängiger, redaktioneller Produktvergleich für das Sortiment von MORE Nutrition – ohne Verbindung zu MORE Nutrition. Keine Kauf-, Ernährungs- oder Gesundheitsberatung.</p>
+    </div>
+    <div class="fcol">
+      <div class="fh">Transparenz</div>
+      <a href="#info">Methodik & Score-Berechnung</a>
+      <a href="#buy">Bezugsquellen & Versand</a>
+      <span>Verfügbarkeit live abgeglichen: <b id="footDate"></b></span>
+      <span>Quelle: morenutrition.de (Shopify)</span>
+    </div>
+    <div class="fcol">
+      <div class="fh">Rechtliches</div>
+      <span>Alle Angaben ohne Gewähr – verbindlich ist ausschließlich der jeweilige Shop.</span>
+      <span>Marken- und Produktnamen gehören ihren jeweiligen Eigentümern.</span>
+      <span>Impressum & Datenschutzerklärung folgen vor Veröffentlichung.</span>
+    </div>
+  </div>
+</footer>
 
 <!-- Merkzettel-Leiste + Panel (1-Klick-Warenkorb: vorbefüllter MORE-Cart-Link, Checkout macht der Kunde selbst) -->
 <div class="cartbar" id="cartbar" hidden></div>
@@ -612,7 +677,7 @@ function renderNew(){
 }
 function renderAff(){
   if(AFF.enabled&&AFF.disclosure){var el=document.getElementById("affBar");el.style.display="";el.innerHTML="<b>Anzeige</b> · Diese Seite enthält Affiliate-/Werbelinks. Kaufst du darüber, erhalten wir ggf. eine Provision – für dich ohne Mehrkosten.";}
-  if(AFF.enabled&&AFF.moreCode){var c=document.getElementById("persoCode");if(c){c.style.display="";c.innerHTML="🎁 Dein Vorteilscode: <b>"+AFF.moreCode+"</b> – beim Checkout im MORE-Shop eingeben.";}}
+  if(AFF.enabled&&AFF.moreCode){var c=document.getElementById("persoCode");if(c){c.style.display="";c.innerHTML="Dein Vorteilscode: <b>"+AFF.moreCode+"</b> – beim Checkout im MORE-Shop eingeben.";}}
 }
 function renderRetailers(){
   document.getElementById("retailers").innerHTML=RETAILERS.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]==="ja"?'<span class="pillY">● ja</span>':'<span class="pillM">◐ teils</span>'}</td><td class="r">${r[2]}</td></tr>`).join("");
@@ -767,7 +832,7 @@ function renderCart(){
   if(!cart.length){bar.hidden=true;panel.hidden=true;return;}
   const n=cart.reduce((a,i)=>a+i.q,0), sum=cart.reduce((a,i)=>a+i.pr*i.q,0);
   const ship=sum>=55?"Gratisversand ✓":"noch "+eur(55-sum)+" bis Gratisversand (DE)";
-  bar.innerHTML=`<span>🛒 <b class="tnum">${n}</b> Artikel · <b class="tnum">${eur(sum)}</b><span class="ship"> · ${ship}</span></span>`+
+  bar.innerHTML=`<span><b class="tnum">${n}</b> Artikel · <b class="tnum">${eur(sum)}</b><span class="ship"> · ${ship}</span></span>`+
     `<button class="go sec" id="cartToggle" aria-expanded="${String(!panel.hidden)}">Merkzettel</button>`+
     `<a class="go" href="${cartURL()}" target="_blank" rel="noopener">Zum MORE-Warenkorb →</a>`;
   bar.hidden=false;
@@ -786,7 +851,7 @@ function renderCart(){
 function renderCmpChip(){
   const ch=document.getElementById("cmpchip");
   if(!cmp.length){ch.hidden=true;return;}
-  ch.hidden=false;ch.textContent=`⚖ Vergleichen (${cmp.length})`;
+  ch.hidden=false;ch.textContent=`Vergleichen (${cmp.length})`;
   ch.title=cmp.length<2?"Mindestens 2 Produkte anhaken":"";
 }
 function flashChip(msg){const ch=document.getElementById("cmpchip");ch.hidden=false;ch.textContent=msg;setTimeout(renderCmpChip,1200);}
@@ -795,7 +860,7 @@ function cmpRow(label,fn){return `<tr><td>${label}</td>${cmp.map(id=>{const v=fn
 function openCmp(){
   const w=document.getElementById("cmpwrap"), de=x=>x==null?null:x.toLocaleString("de-DE");
   const heads=cmp.map(id=>{const p=PRODUCTS.find(x=>x.id===id);return `<th>${p.img?`<img src="${imgURL(p.img)}" alt="" onerror="this.remove()">`:""}${escT(p.name)}</th>`;}).join("");
-  w.innerHTML=`<div class="cmpbox"><h3>⚖ Produktvergleich <button type="button" class="x" aria-label="Vergleich schließen">✕</button></h3><div style="overflow-x:auto"><table class="cmptbl"><thead><tr><td></td>${heads}</tr></thead><tbody>`+
+  w.innerHTML=`<div class="cmpbox"><h3>Produktvergleich <button type="button" class="x" aria-label="Vergleich schließen">✕</button></h3><div style="overflow-x:auto"><table class="cmptbl"><thead><tr><td></td>${heads}</tr></thead><tbody>`+
     cmpRow("Kategorie",p=>CATS[p.cat].label)+
     cmpRow("Preis",p=>eur(p.price))+
     cmpRow("€ / Portion",p=>perServing(p)==null?null:eur(perServing(p)))+
@@ -880,6 +945,7 @@ let theme=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").m
 themeBtn.onclick=()=>{theme=theme==="dark"?"light":"dark";setTheme(theme);};
 
 var _ad=document.getElementById("availDate"); if(_ad)_ad.textContent=AVAIL_DATE;
+var _fd=document.getElementById("footDate"); if(_fd)_fd.textContent=AVAIL_DATE;
 renderTabs();renderKPIs();renderJump();renderRecs();renderNew();renderRetailers();renderAff();render();
 if(!applyHash())showTab("uebersicht");
 hashReady=true;updateHash();
