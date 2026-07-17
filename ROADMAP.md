@@ -98,6 +98,12 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Produkte-Reiter statt 6 Kategorie-Reitern (17.07.):** Die Tab-Leiste schrumpft von 13 auf
+> 8 Reiter. Ein Reiter „Produkte" bündelt alles: Kategorie-Chips („Alle" + 6 Kategorien mit
+> Zählern) als Filter, Standard „Alle" zeigt alle 56 gruppiert in Kategorie-Sektionen mit
+> farbigen Überschriften; Suche/Filter/Sortierung wirken über alle Kategorien; Tabellen-Ansicht
+> bekommt im Alle-Modus eine sortierbare Kategorie-Spalte. Alte Deep-Links (#proteine?q=…)
+> bleiben die Wahrheit und routen auf den Produkte-Reiter mit gesetztem Chip.
 > **Katalog-Vollständigkeit (17.07.):** kompletten Live-Katalog (104 Einträge) gegen unsere
 > Produkte abgeglichen. Ergebnis: nur 2 echte Einzelprodukte fehlten → hinzugefügt
 > (**Zerup Zero Sirup** 65 ml/48 Sorten; **Every Workout 3.0**, die günstigere Altversion,

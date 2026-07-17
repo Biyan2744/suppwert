@@ -93,6 +93,20 @@ header.top{background:var(--surface-1);border-bottom:1px solid var(--grid);posit
 .srcsw button{border:0;background:transparent;color:var(--text-2);padding:9px 13px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
 .srcsw button.on{background:var(--text-1);color:var(--surface-1)}
 #srcAlt.on{background:var(--m-value);color:#fff}
+/* Kategorie-Chips im Produkte-Reiter */
+.catchips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.catchip{border:1px solid var(--line);background:var(--card);color:var(--text-2);border-radius:999px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;gap:7px;align-items:center;transition:border-color .15s ease,background-color .15s ease,color .15s ease}
+.catchip .dot{width:8px;height:8px;border-radius:50%;background:var(--c)}
+.catchip .cn{color:var(--muted);font-weight:700;font-size:11.5px}
+.catchip:hover{border-color:var(--c,var(--muted));color:var(--text-1)}
+.catchip.on{background:var(--text-1);color:var(--surface-1);border-color:var(--text-1)}
+.catchip.on .cn{color:inherit;opacity:.65}
+/* "Alle"-Modus: Karten in Kategorie-Sektionen */
+.grid.groups{display:block}
+.catsec{margin-bottom:28px}
+.csh{font-size:16px;font-weight:800;letter-spacing:-.2px;display:flex;align-items:center;gap:9px;margin:0 0 12px}
+.csh .hbar{width:4px;height:16px;border-radius:2px;background:var(--acc);flex-shrink:0}
+.csh .csn{color:var(--muted);font-weight:700;font-size:12.5px}
 .phead h2{font-size:22px;letter-spacing:-.3px;display:flex;align-items:center;gap:10px}
 .phead h2 .hbar{width:5px;height:22px;border-radius:3px;background:var(--acc)}
 .phead p{margin:7px 0 0;color:var(--text-2);font-size:14px}
@@ -484,8 +498,9 @@ body.has-cart .cmpchip{bottom:74px}
         <button id="srcAlt" type="button" aria-pressed="false" title="Such-Links zu Amazon, dm, Rossmann, Müller & Fitmart auf den Karten einblenden – Preise/Verfügbarkeit dort können abweichen">+ andere Anbieter</button>
       </div>
     </div>
+    <div class="catchips" id="catchips" role="group" aria-label="Kategorie wählen"></div>
     <div class="toolbar">
-      <input class="search" id="search" placeholder="In dieser Kategorie suchen…" aria-label="In dieser Kategorie suchen">
+      <input class="search" id="search" placeholder="In allen Produkten suchen…" aria-label="Produkte durchsuchen">
       <select class="sort" id="sort" aria-label="Sortieren">
         <option value="score">Sortieren: Bestbewertet</option>
         <option value="price">Preis (aufsteigend)</option>
@@ -1228,12 +1243,12 @@ function cardHTML(p){
   </div>`;
 }
 
-let activeCat="proteine", view="cards", tsort={key:"_total",dir:-1};
+let activeCat="alle", view="cards", tsort={key:"_total",dir:-1};
 function getFiltered(){
   const q=document.getElementById("search").value.toLowerCase().trim();
   const fA=document.getElementById("fAvail").checked, fV=document.getElementById("fVegan").checked, fS=document.getElementById("fSugar").checked;
   let list=PRODUCTS.filter(p=>{
-    if(p.cat!==activeCat)return false;
+    if(activeCat!=="alle"&&p.cat!==activeCat)return false;
     if(fA&&p.avail!=="auf Lager")return false;
     if(fV&&!(p.tags||[]).includes("vegan"))return false;
     if(fS&&!((p.sugar!=null&&p.sugar<=2)||(p.tags||[]).some(t=>/zuckerfrei|zuckerarm|Zucker|Stevia/.test(t))))return false;
@@ -1244,35 +1259,59 @@ function getFiltered(){
   const cmp={score:(a,b)=>num(b._total)-num(a._total)||num(b.rating)-num(a.rating),price:(a,b)=>(a.price==null?Infinity:a.price)-(b.price==null?Infinity:b.price),perserv:(a,b)=>(perServing(a)==null?Infinity:perServing(a))-(perServing(b)==null?Infinity:perServing(b)),protein:(a,b)=>num(b.protein)-num(a.protein),sugar:(a,b)=>(a.sugar==null?Infinity:a.sugar)-(b.sugar==null?Infinity:b.sugar),rating:(a,b)=>num(b.rating)-num(a.rating),reviews:(a,b)=>num(b.reviews)-num(a.reviews)}[s];
   return list.sort(cmp);
 }
+/* Kategorie-Chips im Produkte-Reiter ("Alle" + 6 Kategorien, mit Zaehlern). Chip-Wechsel
+   behaelt Suche/Filter bei (Verfeinerung statt Reset — Reset macht der Tab-Klick). */
+function renderCatChips(){
+  const box=document.getElementById("catchips"); if(!box)return;
+  const mk=(key,label,hex,n)=>`<button type="button" class="catchip${activeCat===key?" on":""}" data-cat="${key}" ${hex?`style="--c:${hex}"`:""} aria-pressed="${activeCat===key}">${hex?'<span class="dot"></span>':""}${label} <span class="cn tnum">${n}</span></button>`;
+  box.innerHTML=mk("alle","Alle",null,PRODUCTS.length)+CATORDER.map(c=>mk(c,CATS[c].label,CATS[c].hex,PRODUCTS.filter(p=>p.cat===c).length)).join("");
+  box.querySelectorAll(".catchip").forEach(b=>b.onclick=()=>{activeCat=b.dataset.cat;render();});
+}
 function renderTable(list){
-  const cols=[["name","Produkt",0],["price","Preis",1],["base","Grundpreis",1],["perserv","€/Port.",1],["protein","Protein",1],["sugar","Zucker",1],["kcal","kcal",1],["rating","Bew.",1],["_total","Score",1],["avail","Verfügbar",0]];
+  const alle=activeCat==="alle";
+  const cols=[...(alle?[["cat","Kategorie",0]]:[]),["name","Produkt",0],["price","Preis",1],["base","Grundpreis",1],["perserv","€/Port.",1],["protein","Protein",1],["sugar","Zucker",1],["kcal","kcal",1],["rating","Bew.",1],["_total","Score",1],["avail","Verfügbar",0]];
   let h="<thead><tr>"+cols.map(c=>`<th class="${c[2]?'num':''}" data-k="${c[0]}" aria-sort="${tsort.key===c[0]?(tsort.dir>0?"ascending":"descending"):"none"}">${c[1]}${tsort.key===c[0]?`<span class="sortind">${tsort.dir>0?" ▲":" ▼"}</span>`:""}</th>`).join("")+"</tr></thead>";
   const rows=list.map(p=>{const ps=perServing(p),a=AVAIL[p.avail]||AVAIL["limitiert"];const im=p.img?`<img src="${imgURL(p.img)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:"";
-    return `<tr><td><span class="tprod">${im}${p.name}</span></td><td class="num tnum">${eur(p.price)}</td><td class="num tnum">${fmtBase(p)||"–"}</td><td class="num tnum">${ps==null?"–":eur(ps)}</td><td class="num tnum">${p.protein==null?"–":p.protein.toLocaleString("de-DE")+" g"}</td><td class="num tnum">${p.sugar==null?"–":p.sugar.toLocaleString("de-DE")+" g"}</td><td class="num tnum">${p.kcal==null?"–":p.kcal}</td><td class="num tnum">${p.rating==null?"–":p.rating.toLocaleString("de-DE")+"★"}</td><td class="num">${p._total==null?"–":`<span class="scorepill" style="background:${scoreColor(p._total)}">${p._total}</span>`}</td><td><span style="color:${a.c}">●</span> ${a.t}</td></tr>`;}).join("");
+    return `<tr>${alle?`<td>${CATS[p.cat].label}</td>`:""}<td><span class="tprod">${im}${p.name}</span></td><td class="num tnum">${eur(p.price)}</td><td class="num tnum">${fmtBase(p)||"–"}</td><td class="num tnum">${ps==null?"–":eur(ps)}</td><td class="num tnum">${p.protein==null?"–":p.protein.toLocaleString("de-DE")+" g"}</td><td class="num tnum">${p.sugar==null?"–":p.sugar.toLocaleString("de-DE")+" g"}</td><td class="num tnum">${p.kcal==null?"–":p.kcal}</td><td class="num tnum">${p.rating==null?"–":p.rating.toLocaleString("de-DE")+"★"}</td><td class="num">${p._total==null?"–":`<span class="scorepill" style="background:${scoreColor(p._total)}">${p._total}</span>`}</td><td><span style="color:${a.c}">●</span> ${a.t}</td></tr>`;}).join("");
   const tbl=document.getElementById("tbl"); tbl.innerHTML=h+"<tbody>"+rows+"</tbody>";
-  tbl.querySelectorAll("th").forEach(th=>th.onclick=()=>{const k=th.dataset.k;tsort.dir=tsort.key===k?-tsort.dir:(["name","avail"].includes(k)?1:-1);tsort.key=k;render();});
+  tbl.querySelectorAll("th").forEach(th=>th.onclick=()=>{const k=th.dataset.k;tsort.dir=tsort.key===k?-tsort.dir:(["name","avail","cat"].includes(k)?1:-1);tsort.key=k;render();});
 }
 const AVAIL_RANK={"auf Lager":0,"limitiert":1,"ausverkauft":2,"coming soon":3};
-function sortForTable(list){const k=tsort.key,d=tsort.dir,val=p=>k==="perserv"?perServing(p):(k==="base"?(baseInfo(p)?baseInfo(p).v:null):(k==="avail"?AVAIL_RANK[p.avail]:p[k]));return [...list].sort((a,b)=>{let x=val(a),y=val(b);const xn=x==null,yn=y==null;if(xn||yn)return xn&&yn?0:(xn?1:-1);if(typeof x==="string"||typeof y==="string"){return x.toString().localeCompare(y.toString())*d;}return (x-y)*d;});}
+function sortForTable(list){const k=tsort.key,d=tsort.dir,val=p=>k==="perserv"?perServing(p):(k==="base"?(baseInfo(p)?baseInfo(p).v:null):(k==="avail"?AVAIL_RANK[p.avail]:(k==="cat"?CATORDER.indexOf(p.cat):p[k])));return [...list].sort((a,b)=>{let x=val(a),y=val(b);const xn=x==null,yn=y==null;if(xn||yn)return xn&&yn?0:(xn?1:-1);if(typeof x==="string"||typeof y==="string"){return x.toString().localeCompare(y.toString())*d;}return (x-y)*d;});}
 function render(){
-  const list=getFiltered(), c=CATS[activeCat];
-  document.getElementById("catHead").innerHTML=`<h2><span class="hbar" style="--acc:${c.color}"></span>${c.label}</h2><p>${c.desc}</p>`;
-  document.getElementById("count").textContent=`${list.length} Produkt${list.length!==1?"e":""} in „${c.label}"`;
-  if(view==="cards"){document.getElementById("grid").style.display="";document.getElementById("tableView").style.display="none";document.getElementById("grid").innerHTML=list.map(cardHTML).join("")||`<div style="color:var(--muted);padding:26px">Keine Produkte für diese Filter.</div>`;}
+  const list=getFiltered(), alle=activeCat==="alle", c=alle?null:CATS[activeCat];
+  document.getElementById("catHead").innerHTML=alle
+    ?`<h2><span class="hbar" style="--acc:var(--m-nutri)"></span>Alle Produkte</h2><p>Das komplette Sortiment im Überblick – Suche, Filter und Sortierung wirken über alle Kategorien.</p>`
+    :`<h2><span class="hbar" style="--acc:${c.color}"></span>${c.label}</h2><p>${c.desc}</p>`;
+  renderCatChips();
+  document.getElementById("search").placeholder=alle?"In allen Produkten suchen…":"In dieser Kategorie suchen…";
+  document.getElementById("count").textContent=`${list.length} Produkt${list.length!==1?"e":""}${alle?"":` in „${c.label}"`}`;
+  if(view==="cards"){
+    const g=document.getElementById("grid");
+    g.style.display="";document.getElementById("tableView").style.display="none";
+    g.classList.toggle("groups",alle);
+    g.innerHTML=(alle
+      ?CATORDER.map(cat=>{const items=list.filter(p=>p.cat===cat);if(!items.length)return "";return `<div class="catsec"><h3 class="csh"><span class="hbar" style="--acc:${CATS[cat].color}"></span>${CATS[cat].label}<span class="csn tnum">${items.length}</span></h3><div class="grid">${items.map(cardHTML).join("")}</div></div>`;}).join("")
+      :list.map(cardHTML).join(""))||`<div style="color:var(--muted);padding:26px">Keine Produkte für diese Filter.</div>`;
+  }
   else{document.getElementById("grid").style.display="none";document.getElementById("tableView").style.display="";renderTable(sortForTable(list));}
   updateHash();
 }
 
-const TABS=[["uebersicht","Übersicht",null],...CATORDER.map(c=>[c,CATS[c].label,CATS[c].hex]),["vergleich","Vergleich",null],["empfehlungen","Empfehlungen",null],["sets","Sets",null],["ratgeber","Ratgeber",null],["buy","Wo kaufen",null],["info","Info",null]];
+/* Ein einziger "Produkte"-Reiter statt 6 Kategorie-Reitern (Biyan: alle Produkte gut im
+   Ueberblick, nicht aneinandergereiht): darin Kategorie-Chips als Filter, Standard "Alle"
+   zeigt das komplette Sortiment in Kategorie-SEKTIONEN. Alte Deep-Links #proteine etc.
+   funktionieren weiter (applyHash/showTab routen sie auf den Produkte-Reiter + Filter). */
+const TABS=[["uebersicht","Übersicht",null],["produkte","Produkte",null],["vergleich","Vergleich",null],["empfehlungen","Empfehlungen",null],["sets","Sets",null],["ratgeber","Ratgeber",null],["buy","Wo kaufen",null],["info","Info",null]];
 function renderTabs(){
-  document.getElementById("tabs").innerHTML=TABS.map(t=>`<button class="tab" data-tab="${t[0]}" role="tab" aria-selected="false" aria-controls="${CATS[t[0]]?"panel-products":"panel-"+t[0]}" ${t[2]?`style="--tabc:${t[2]}"`:""}>${t[2]?'<span class="tdot"></span>':''}${t[1]}${CATS[t[0]]?`<span class="tcount">${PRODUCTS.filter(p=>p.cat===t[0]).length}</span>`:""}</button>`).join("");
+  document.getElementById("tabs").innerHTML=TABS.map(t=>`<button class="tab" data-tab="${t[0]}" role="tab" aria-selected="false" aria-controls="${t[0]==="produkte"?"panel-products":"panel-"+t[0]}">${t[1]}${t[0]==="produkte"?`<span class="tcount">${PRODUCTS.length}</span>`:""}</button>`).join("");
   document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 }
 function showTab(tab){
-  document.querySelectorAll(".tab").forEach(b=>{const on=b.dataset.tab===tab;b.classList.toggle("on",on);b.setAttribute("aria-selected",on?"true":"false");b.tabIndex=on?0:-1;});
-  const isCat=!!CATS[tab];
+  const isCat=!!CATS[tab], btnTab=isCat?"produkte":tab;
+  document.querySelectorAll(".tab").forEach(b=>{const on=b.dataset.tab===btnTab;b.classList.toggle("on",on);b.setAttribute("aria-selected",on?"true":"false");b.tabIndex=on?0:-1;});
   document.getElementById("panel-uebersicht").classList.toggle("on",tab==="uebersicht");
-  document.getElementById("panel-products").classList.toggle("on",isCat);
+  document.getElementById("panel-products").classList.toggle("on",isCat||tab==="produkte");
   document.getElementById("panel-vergleich").classList.toggle("on",tab==="vergleich");
   document.getElementById("panel-empfehlungen").classList.toggle("on",tab==="empfehlungen");
   document.getElementById("panel-sets").classList.toggle("on",tab==="sets");
@@ -1281,6 +1320,7 @@ function showTab(tab){
   document.getElementById("panel-buy").classList.toggle("on",tab==="buy");
   document.getElementById("panel-info").classList.toggle("on",tab==="info");
   if(isCat){activeCat=tab;document.getElementById("search").value="";render();}
+  else if(tab==="produkte"){activeCat="alle";document.getElementById("search").value="";render();}
   window.scrollTo(0,0);
   updateHash();
 }
@@ -1466,8 +1506,10 @@ let hashReady=false;
 function currentTab(){const b=document.querySelector(".tab.on");return b?b.dataset.tab:"uebersicht";}
 function updateHash(){
   if(!hashReady)return;
-  const tab=currentTab();let h="#"+tab;
-  if(CATS[tab]){
+  let tab=currentTab();
+  if(tab==="produkte"&&activeCat!=="alle")tab=activeCat; /* alte #proteine-Links bleiben die Wahrheit */
+  let h="#"+tab;
+  if(CATS[tab]||tab==="produkte"){
     const ps=new URLSearchParams();
     const q=document.getElementById("search").value.trim();if(q)ps.set("q",q);
     const f=[["fAvail","a"],["fVegan","v"],["fSugar","s"]].filter(x=>document.getElementById(x[0]).checked).map(x=>x[1]).join("");if(f)ps.set("f",f);
@@ -1480,9 +1522,9 @@ function updateHash(){
 function applyHash(){
   const m=location.hash.slice(1);if(!m)return false;
   const qi=m.indexOf("?"),tab=qi<0?m:m.slice(0,qi),qs=qi<0?"":m.slice(qi+1);
-  if(!(CATS[tab]||["uebersicht","vergleich","empfehlungen","sets","ratgeber","buy","info"].includes(tab)))return false;
+  if(!(CATS[tab]||["uebersicht","produkte","vergleich","empfehlungen","sets","ratgeber","buy","info"].includes(tab)))return false;
   showTab(tab);
-  if(CATS[tab]){ /* Parameter anwenden — leeres qs setzt bewusst auf Defaults zurück (der Hash ist die Wahrheit) */
+  if(CATS[tab]||tab==="produkte"){ /* Parameter anwenden — leeres qs setzt bewusst auf Defaults zurück (der Hash ist die Wahrheit) */
     const ps=new URLSearchParams(qs);
     document.getElementById("search").value=ps.get("q")||"";
     const f=ps.get("f")||"";
