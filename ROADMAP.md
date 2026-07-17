@@ -98,6 +98,20 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Sets-Ausbau: Verfügbarkeits-Filter + Creator-/Community-Sets (18.07.):** (a) Anklick-Option
+> „Nur komplett lieferbare Sets" über dem Set-Grid – blendet Sets aus, in denen gerade mindestens
+> ein Artikel ausverkauft ist, und nennt die Zahl ehrlich. (b) Neue Sektion „Creator- &
+> Community-Sets" OHNE Backend (gleiches Prinzip wie das Merkzettel-Teilen): „Eigenes Set
+> erstellen & teilen" macht aus dem aktuellen Merkzettel (dort wählt man die Sorten) ein
+> benanntes Set (+ optionaler Creator-Name) und erzeugt einen `#set=vid:qty,…~Name~Creator`-Link
+> (navigator.share/Clipboard); das eigene Set landet zusätzlich lokal in der Sektion. Wer den
+> Link öffnet, bekommt einen Bestätigungs-Dialog (Posten, Live-Preise, Verfügbarkeit, Summe) und
+> kann speichern (localStorage `mn-comsets`, max. 20, Dedupe) oder lieferbare Posten direkt in
+> den Merkzettel legen – NIE stille Übernahme, unbekannte Varianten-IDs werden übersprungen.
+> WICHTIG (Ehrlichkeit): keine erfundenen Creator/Sets – die Sektion startet leer und erklärt,
+> wie sie sich per Link füllt; gespeichert wird nur im Browser, wir sehen die Sets nicht.
+> Verifikations-Ritual ergänzt: `node --check` aufs extrahierte Inline-Script (fing einen
+> String-Breaker durch ein ASCII- statt deutsches Anführungszeichen).
 > **Kategorie-Kombis + Plus erschafft Slots (18.07.):** (a) Die Kategorie-Chips im
 > Produkte-Reiter sind jetzt **Mehrfachauswahl**: Antippen kombiniert (z. B. Proteinpulver +
 > Snacks nebeneinander als Sektionen), nochmal antippen wählt ab, „Alle" leert; alle 6 an

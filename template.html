@@ -426,6 +426,13 @@ body.has-cart .cmpchip{bottom:74px}
 .goalbtn{border:1px solid var(--line);background:var(--surface-1);color:var(--text-2);border-radius:999px;padding:7px 13px;font-size:12.5px;font-weight:600;cursor:pointer}
 .goalbtn:hover{border-color:var(--muted);color:var(--text-1)}
 .goalbtn.on{background:var(--text-1);color:var(--surface-1);border-color:var(--text-1)}
+/* Sets: Anklick-Optionen oben, Creator-Zeile + Aktions-Buttons auf Community-Karten, Builder-Formular */
+.setctl{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px}
+.setby{font-size:11.5px;color:var(--muted);font-weight:600;margin:-3px 0 6px}
+.setacts{display:flex;gap:8px;margin-top:9px}
+.setform{display:flex;flex-direction:column;gap:8px;margin:12px 0 4px}
+.setform input{border:1px solid var(--line);background:var(--surface-1);color:var(--text-1);border-radius:10px;padding:9px 12px;font-size:13.5px}
+.setform input::placeholder{color:var(--muted)}
 .rchip .gsc{font-weight:800;color:var(--m-value);margin-left:2px}
 .tips{margin:0;padding-left:18px;font-size:12.5px;color:var(--text-2);line-height:1.6;display:flex;flex-direction:column;gap:7px}
 .tips b{color:var(--text-1)}
@@ -633,7 +640,14 @@ body.has-cart .cmpchip{bottom:74px}
   <!-- SETS -->
   <section class="panel" id="panel-sets" role="tabpanel">
     <div class="phead"><h2><span class="hbar" style="--acc:var(--acc-supplements)"></span>Fertige Sets</h2><p>Von uns redaktionell zusammengestellte Produkt-Kombis – ein Klick legt alle lieferbaren Artikel in den Merkzettel. Das sind unsere Empfehlungen aus dem Sortiment, keine Kaufdaten.</p></div>
+    <div class="setctl">
+      <button type="button" class="catchip" id="setAvail" aria-pressed="false">Nur komplett lieferbare Sets</button>
+      <button type="button" class="catchip" id="setNew">＋ Eigenes Set erstellen &amp; teilen</button>
+    </div>
     <div class="setgrid" id="setgrid"></div>
+    <div class="sub-h">Creator- &amp; Community-Sets</div>
+    <p class="note" id="comnote"></p>
+    <div class="setgrid" id="comgrid"></div>
   </section>
 
   <!-- RATGEBER -->
@@ -735,6 +749,7 @@ body.has-cart .cmpchip{bottom:74px}
 <div class="cmpwrap" id="shopov" hidden role="dialog" aria-modal="true" aria-label="Andere Shops"></div>
 <div class="cmpwrap" id="pickov" hidden role="dialog" aria-modal="true" aria-label="Produkt wählen"></div>
 <div class="cmpwrap" id="shareov" hidden role="dialog" aria-modal="true" aria-label="Geteilter Merkzettel"></div>
+<div class="cmpwrap" id="setov" hidden role="dialog" aria-modal="true" aria-label="Set erstellen oder übernehmen"></div>
 
 <script>
 const IMG = {
@@ -1194,10 +1209,15 @@ const SETS=[
   {key:"kochen",acc:"--acc-kochen",title:"Schlank kochen",why:"Öl-Spray statt Öl, kalorienarme Sauce, Zero-Sirup und Gewürze – Kalorien sparen ohne Verzicht.",ids:["oilspray","gourmet","zerupbarista","spices"]},
   {key:"schlaf",acc:"--acc-supplements",title:"Gute Nacht & Stress",why:"Melatonin-Gummies zum Einschlafen und Adaptogene wie Ashwagandha für stressige Phasen. Kein Ersatz für ärztlichen Rat.",ids:["sleepgum","harmony","ashwa"]}
 ];
+/* Anklick-Option "Nur komplett lieferbare Sets" (Biyan) — filtert Sets, in denen gerade
+   mindestens ein Artikel ausverkauft ist; die Zahl der ausgeblendeten wird ehrlich genannt. */
+let setsOnlyAvail=false;
 function renderSets(){
+  let hidden=0;
   document.getElementById("setgrid").innerHTML=SETS.map(s=>{
     const rows=s.ids.map(id=>{const p=PRODUCTS.find(x=>x.id===id);return p?{p:p,v:bestBuyable(id)}:null;}).filter(Boolean);
     const buyable=rows.filter(r=>r.v&&r.v.pr);
+    if(setsOnlyAvail&&buyable.length<rows.length){hidden++;return "";}
     const sum=buyable.reduce((a,r)=>a+r.v.pr,0);
     const items=rows.map(r=>r.v&&r.v.pr
       ? `<div class="setit"><span class="sn"><b>${escT(r.p.name)}</b><small>${escT(r.v.flavor)}${r.v.size?" · "+escT(r.v.size):""}${r.p._total!=null?" · Score "+r.p._total:""}</small></span><span class="sp tnum">${eur(r.v.pr)}</span></div>`
@@ -1214,7 +1234,8 @@ function renderSets(){
       <div class="setfoot">${foot}</div>
       <button type="button" class="setadd" data-set="${s.key}"${buyable.length?"":" disabled"}>${buyable.length?`Lieferbare in den Merkzettel (${buyable.length})`:"Gerade nicht lieferbar"}</button>
     </div>`;
-  }).join("");
+  }).join("")+(hidden?`<div class="note">${hidden} Set${hidden!==1?"s":""} ausgeblendet – dort ist gerade mindestens ein Artikel ausverkauft.</div>`:"");
+  renderComSets();
 }
 document.getElementById("setgrid").addEventListener("click",e=>{
   const b=e.target.closest(".setadd"); if(!b||b.disabled)return;
@@ -1222,6 +1243,163 @@ document.getElementById("setgrid").addEventListener("click",e=>{
   let n=0; s.ids.forEach(id=>{const v=bestBuyable(id);if(v&&v.pr){addToCart(id,v.vid);n++;}});
   b.textContent=`✓ ${n} im Merkzettel – unten weiter zum Warenkorb`; b.disabled=true;
 });
+document.getElementById("setAvail").onclick=()=>{
+  setsOnlyAvail=!setsOnlyAvail;
+  const b=document.getElementById("setAvail");
+  b.classList.toggle("on",setsOnlyAvail);b.setAttribute("aria-pressed",String(setsOnlyAvail));
+  renderSets();
+};
+document.getElementById("setNew").onclick=()=>openSetBuilder();
+
+/* Creator- & Community-Sets OHNE Backend (gleiche Linie wie das Merkzettel-Teilen b972acf):
+   ein Set = Name (+ optionaler Creator-Name) + Varianten-Posten, kodiert als
+   #set=vid:qty,...~<Name>~<Creator>. Wer den Link oeffnet, sieht einen Dialog mit Posten,
+   Live-Preisen und Verfuegbarkeit und kann das Set lokal speichern (localStorage mn-comsets,
+   max. 20) oder direkt in den Merkzettel legen. KEINE erfundenen Creator/Sets — die Sektion
+   startet leer und erklaert ehrlich, wie sie sich fuellt; gespeichert wird nur im Browser. */
+let comSets=[]; try{comSets=JSON.parse(localStorage.getItem("mn-comsets")||"[]")||[];}catch(e){comSets=[];}
+function saveComSets(){try{localStorage.setItem("mn-comsets",JSON.stringify(comSets));}catch(e){}}
+function comSetRow(vid,q){
+  for(const pid in VARIANTS){
+    if((VARIANTS[pid]||[]).some(v=>v[0]===vid)){
+      const p=PRODUCTS.find(x=>x.id===pid); if(!p)return null;
+      const px=parseVariants(pid).parsed.find(x=>x.vid===vid);
+      return px?{p:p,px:px,q:q,vid:vid}:null;
+    }
+  }
+  return null;
+}
+function setShareURL(cs){
+  return location.href.split("#")[0]+"#set="+cs.i.map(it=>it[0]+":"+it[1]).join(",")+"~"+encodeURIComponent(cs.n)+(cs.c?"~"+encodeURIComponent(cs.c):"");
+}
+async function shareSetLink(cs,btn,idle){
+  const url=setShareURL(cs);
+  if(navigator.share){
+    try{await navigator.share({title:`Suppwert-Set: ${cs.n}`,text:`Set „${cs.n}"${cs.c?` von ${cs.c}`:""} auf Suppwert – Link öffnen, speichern oder direkt in den Merkzettel legen:`,url:url});return;}
+    catch(e){if(e&&e.name==="AbortError")return;}
+  }
+  try{await navigator.clipboard.writeText(url);btn.textContent="✓ Link kopiert!";}
+  catch(e){window.prompt("Link zum Teilen kopieren:",url);}
+  setTimeout(()=>{if(btn.isConnected)btn.textContent=idle;},1600);
+}
+function renderComSets(){
+  const grid=document.getElementById("comgrid"),note=document.getElementById("comnote");
+  if(!grid)return;
+  if(!comSets.length){
+    grid.innerHTML="";
+    note.textContent="Noch keine Sets gespeichert. Creator- und Community-Sets funktionieren per Link: Jemand stellt aus seinem Merkzettel ein Set zusammen („Eigenes Set erstellen & teilen“) und verschickt den Link – wer ihn öffnet, kann das Set hier speichern und mit einem Klick in den Merkzettel legen. Gespeichert wird nur in deinem Browser; wir betreiben keinen Server und sehen die Sets nicht.";
+    return;
+  }
+  note.textContent="Per Link geteilte Sets, die du gespeichert hast – sie liegen nur in deinem Browser. Preise und Verfügbarkeit kommen live vom Shop-Abgleich.";
+  let hidden=0;
+  grid.innerHTML=comSets.map((cs,ix)=>{
+    const rows=cs.i.map(it=>comSetRow(it[0],it[1])).filter(Boolean);
+    const buyable=rows.filter(r=>r.px.av&&r.px.pr);
+    if(setsOnlyAvail&&(!rows.length||buyable.length<rows.length)){hidden++;return "";}
+    const sum=buyable.reduce((a,r)=>a+r.px.pr*r.q,0);
+    const items=rows.map(r=>r.px.av&&r.px.pr
+      ? `<div class="setit"><span class="sn"><b>${r.q>1?`${r.q}× `:""}${escT(r.p.name)}</b><small>${escT(r.px.flavor)}${r.px.size?" · "+escT(r.px.size):""}</small></span><span class="sp tnum">${eur(r.px.pr*r.q)}</span></div>`
+      : `<div class="setit gone"><span class="sn"><b>${r.q>1?`${r.q}× `:""}${escT(r.p.name)}</b><small>zzt. ausverkauft</small></span><span class="sp">–</span></div>`
+    ).join("")||`<div class="setit gone"><span class="sn"><b>Kein Posten mehr im Sortiment</b></span><span class="sp">–</span></div>`;
+    const when=cs.ts?new Date(cs.ts).toLocaleDateString("de-DE"):"";
+    return `<div class="setcard" style="--acc:var(--m-value)">
+      <div class="sethead"><h3>${escT(cs.n)}</h3>${buyable.length?`<span class="setsum tnum">${eur(sum)}</span>`:""}</div>
+      <div class="setby">${cs.c?`von ${escT(cs.c)} · `:""}per Link gespeichert${when?` am ${when}`:""}</div>
+      <div class="setitems">${items}</div>
+      <div class="setfoot">${rows.length?`${buyable.length} von ${rows.length} lieferbar · Sorten wie geteilt.`:"Die Posten dieses Sets sind nicht mehr im Sortiment."}</div>
+      <button type="button" class="setadd" data-comadd="${ix}"${buyable.length?"":" disabled"}>${buyable.length?`Lieferbare in den Merkzettel (${buyable.length})`:"Gerade nicht lieferbar"}</button>
+      <div class="setacts"><button type="button" class="goalbtn" data-comshare="${ix}">Link teilen</button><button type="button" class="goalbtn" data-comrm="${ix}">✕ Entfernen</button></div>
+    </div>`;
+  }).join("")+(hidden?`<div class="note">${hidden} gespeichertes Set${hidden!==1?"s":""} ausgeblendet – nicht komplett lieferbar.</div>`:"");
+  grid.querySelectorAll("[data-comadd]").forEach(b=>b.onclick=()=>{
+    const cs=comSets[Number(b.dataset.comadd)]; if(!cs)return;
+    let n=0;
+    cs.i.forEach(it=>{const r=comSetRow(it[0],it[1]);if(r&&r.px.av&&r.px.pr){for(let k=0;k<r.q;k++)addToCart(r.p.id,r.vid);n+=r.q;}});
+    b.textContent=`✓ ${n} im Merkzettel – unten weiter zum Warenkorb`;b.disabled=true;
+  });
+  grid.querySelectorAll("[data-comshare]").forEach(b=>b.onclick=()=>{const cs=comSets[Number(b.dataset.comshare)];if(cs)shareSetLink(cs,b,"Link teilen");});
+  grid.querySelectorAll("[data-comrm]").forEach(b=>b.onclick=()=>{comSets.splice(Number(b.dataset.comrm),1);saveComSets();renderComSets();});
+}
+function closeSetOv(){const w=document.getElementById("setov");if(w)w.hidden=true;}
+function setOvShow(html){
+  const w=document.getElementById("setov");
+  w.innerHTML=html;w.hidden=false;
+  w.querySelector(".x").onclick=closeSetOv;
+  w.onclick=e=>{if(e.target===w)closeSetOv();};
+  return w;
+}
+/* Builder: Grundlage ist der aktuelle Merkzettel (dort werden Sorten/Groessen gewaehlt) —
+   Name rein, optional Creator-Name, fertig ist der Teilen-Link. Eigenes Set wird zusaetzlich
+   lokal gespeichert, damit es unter Creator- & Community-Sets auftaucht. */
+function openSetBuilder(){
+  if(!cart.length){
+    setOvShow(`<div class="cmpbox shopbox"><h3>Eigenes Set erstellen <button type="button" class="x" aria-label="Schließen">✕</button></h3>
+      <div class="shopnote">Dein Merkzettel ist noch leer. Leg zuerst Produkte mit deiner Wunsch-Sorte in den Merkzettel (Warenkorb-Symbol an den Sorten-Pills) – daraus wird dann dein Set mit Name und Teilen-Link.</div></div>`);
+    return;
+  }
+  const w=setOvShow(`<div class="cmpbox shopbox"><h3>Eigenes Set erstellen <button type="button" class="x" aria-label="Schließen">✕</button></h3>
+    <div class="setitems">${cart.map(i=>`<div class="setit"><span class="sn"><b>${i.q>1?`${i.q}× `:""}${escT(i.name)}</b><small>${escT(i.vt)}</small></span><span class="sp tnum">${eur(i.pr*i.q)}</span></div>`).join("")}</div>
+    <div class="setform">
+      <input id="setBn" maxlength="40" placeholder="Set-Name, z. B. „Meine Frühstücks-Basics“" aria-label="Set-Name">
+      <input id="setBc" maxlength="30" placeholder="Dein Name / Creator-Name (optional)" aria-label="Creator-Name (optional)">
+    </div>
+    <div class="shopnote">Grundlage ist dein aktueller Merkzettel (${cart.length} Position${cart.length!==1?"en":""}). Das Set wird als Link geteilt – es liegt auf keinem Server. Wer den Link öffnet, sieht die Posten mit Live-Preisen und kann das Set speichern oder in den Merkzettel legen.</div>
+    <button type="button" class="setadd" id="setBgo">Teilen-Link erstellen</button></div>`);
+  document.getElementById("setBgo").onclick=()=>{
+    const nEl=document.getElementById("setBn");
+    const n=nEl.value.replace(/[<>]/g,"").trim().slice(0,40);
+    if(!n){nEl.style.borderColor="var(--crit)";nEl.focus();return;}
+    const c=document.getElementById("setBc").value.replace(/[<>]/g,"").trim().slice(0,30);
+    const cs={n:n,c:c,i:cart.map(i=>[i.vid,i.q]),ts:Date.now()};
+    const key=JSON.stringify([cs.n,cs.i]);
+    if(!comSets.some(x=>JSON.stringify([x.n,x.i])===key)){comSets.unshift(cs);comSets=comSets.slice(0,20);saveComSets();renderComSets();}
+    const b=document.getElementById("setBgo");
+    shareSetLink(cs,b,"Teilen-Link erstellen");
+    b.insertAdjacentHTML("afterend",`<div class="shopnote">Dein Set ist zusätzlich unter „Creator- &amp; Community-Sets" gespeichert (nur in diesem Browser).</div>`);
+  };
+  document.getElementById("setBn").focus();
+}
+/* Empfaenger-Seite eines #set=-Links: validieren (bekannte Varianten-IDs, Menge 1-99, max. 40
+   Posten), Hash sofort bereinigen, Dialog mit Posten + Live-Preisen — NIE stilles Speichern. */
+function openSetImport(str){
+  const parts=String(str).split("~");
+  const dec=s=>{try{return decodeURIComponent(s||"");}catch(e){return "";}};
+  const clean=(s,len)=>dec(s).replace(/[<>\x00-\x1f]/g,"").trim().slice(0,len);
+  const n=clean(parts[1],40)||"Geteiltes Set", c=clean(parts[2],30);
+  const items=[];
+  String(parts[0]||"").split(",").slice(0,40).forEach(pair=>{
+    const kv=pair.split(":"), vid=Number(kv[0]);
+    let q=Math.floor(Number(kv[1]||1));
+    if(!vid||!isFinite(q))return;
+    q=Math.min(Math.max(q,1),99);
+    if(comSetRow(vid,q))items.push([vid,q]);
+  });
+  history.replaceState(null,"","#sets");
+  showTab("sets");
+  if(!items.length)return;
+  const rows=items.map(it=>comSetRow(it[0],it[1])).filter(Boolean);
+  const buyable=rows.filter(r=>r.px.av&&r.px.pr);
+  const sum=buyable.reduce((a,r)=>a+r.px.pr*r.q,0);
+  const w=setOvShow(`<div class="cmpbox shopbox"><h3>Geteiltes Set <button type="button" class="x" aria-label="Schließen">✕</button></h3>
+    <div class="shopprod">${escT(n)}${c?` <small style="color:var(--muted);font-weight:600">von ${escT(c)}</small>`:""}</div>
+    <div class="setitems">${rows.map(r=>r.px.av&&r.px.pr
+      ?`<div class="setit"><span class="sn"><b>${r.q>1?`${r.q}× `:""}${escT(r.p.name)}</b><small>${escT(r.px.flavor)}${r.px.size?" · "+escT(r.px.size):""}</small></span><span class="sp tnum">${eur(r.px.pr*r.q)}</span></div>`
+      :`<div class="setit gone"><span class="sn"><b>${r.q>1?`${r.q}× `:""}${escT(r.p.name)}</b><small>zzt. ausverkauft</small></span><span class="sp">–</span></div>`).join("")}</div>
+    <div class="shopnote">${buyable.length} von ${rows.length} Posten lieferbar${buyable.length?` · zusammen ${eur(sum)}`:""}. Jemand hat dir dieses Set geteilt. „Speichern" legt es unter Creator- &amp; Community-Sets ab (nur in deinem Browser) – bestellt wird wie immer erst im MORE-Shop, nicht hier.</div>
+    <button type="button" class="setadd" id="impSetSave">Im Sets-Tab speichern</button>
+    <div class="setacts"><button type="button" class="goalbtn" id="impSetCart"${buyable.length?"":" disabled"}>${buyable.length?`Lieferbare in den Merkzettel (${buyable.reduce((a,r)=>a+r.q,0)})`:"Gerade nicht lieferbar"}</button></div></div>`);
+  document.getElementById("impSetSave").onclick=()=>{
+    const cs={n:n,c:c,i:items,ts:Date.now()};
+    const key=JSON.stringify([cs.n,cs.i]);
+    if(!comSets.some(x=>JSON.stringify([x.n,x.i])===key)){comSets.unshift(cs);comSets=comSets.slice(0,20);saveComSets();}
+    renderComSets();closeSetOv();
+  };
+  document.getElementById("impSetCart").onclick=()=>{
+    let k=0;buyable.forEach(r=>{for(let j=0;j<r.q;j++)addToCart(r.p.id,r.vid);k+=r.q;});
+    const b=document.getElementById("impSetCart");b.textContent=`✓ ${k} im Merkzettel`;b.disabled=true;
+  };
+  w.querySelector(".x").focus();
+}
 
 const FAQS=[
   ["Ist das hier der offizielle MORE-Nutrition-Shop?","Nein. Diese Seite ist ein unabhängiger, redaktioneller Vergleich ohne Verbindung zu MORE Nutrition. Gekauft wird immer im offiziellen Shop oder bei Händlern – der Merkzettel füllt lediglich den MORE-Warenkorb vor."],
@@ -1781,7 +1959,7 @@ function openShops(pid){
   w.querySelector(".x").focus();
 }
 function closeShops(){document.getElementById("shopov").hidden=true;}
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeCmp();closeShops();closePicker();closeShare();}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeCmp();closeShops();closePicker();closeShare();closeSetOv();}});
 
 /* Deep-Links: #tab?q=&f=avs&sort=&view=table — teilbare Zustände, replaceState (kein History-Spam) */
 let hashReady=false;
@@ -1846,6 +2024,7 @@ function closeShare(){document.getElementById("shareov").hidden=true;}
 function applyHash(){
   const m=location.hash.slice(1);if(!m)return false;
   if(m.startsWith("warenkorb=")){openCartImport(m.slice(10));return true;}
+  if(m.startsWith("set=")){openSetImport(m.slice(4));return true;}
   const qi=m.indexOf("?"),tab=qi<0?m:m.slice(0,qi),qs=qi<0?"":m.slice(qi+1);
   if(!(CATS[tab]||["uebersicht","produkte","vergleich","empfehlungen","sets","ratgeber","buy","info"].includes(tab)))return false;
   showTab(tab);
