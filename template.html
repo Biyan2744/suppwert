@@ -85,6 +85,11 @@ header.top{background:var(--surface-1);border-bottom:1px solid var(--grid);posit
 .panel{display:none;padding:24px 0 40px}
 .panel.on{display:block}
 .phead{margin-bottom:16px}
+.phead-row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+.phead-row .phead{margin-bottom:0}
+.srcsw{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;flex-shrink:0;margin-top:4px}
+.srcsw button{border:0;background:transparent;color:var(--text-2);padding:9px 13px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
+.srcsw button.on{background:var(--text-1);color:var(--surface-1)}
 .phead h2{font-size:22px;letter-spacing:-.3px;display:flex;align-items:center;gap:10px}
 .phead h2 .hbar{width:5px;height:22px;border-radius:3px;background:var(--acc)}
 .phead p{margin:7px 0 0;color:var(--text-2);font-size:14px}
@@ -343,7 +348,7 @@ body.has-cart .cmpchip{bottom:74px}
 ::selection{background:var(--m-value);color:#fff}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
 @media print{
-  header.top,.tabbar,.toolbar,.cartbar,.cartpanel,.cmpchip,.cmpwrap,.skip,.viewtog,.vadd{display:none!important}
+  header.top,.tabbar,.toolbar,.cartbar,.cartpanel,.cmpchip,.cmpwrap,.skip,.viewtog,.vadd,.srcsw{display:none!important}
   .foot{padding-bottom:20px}
   .pc{box-shadow:none;border-color:var(--line)}
   body{background:#fff}
@@ -397,7 +402,13 @@ body.has-cart .cmpchip{bottom:74px}
 
   <!-- PRODUKTE (shared for 6 category tabs) -->
   <section class="panel" id="panel-products" role="tabpanel">
-    <div class="phead" id="catHead"></div>
+    <div class="phead-row">
+      <div class="phead" id="catHead"></div>
+      <div class="srcsw" role="group" aria-label="Angezeigte Anbieter">
+        <button id="srcMore" type="button" aria-pressed="true">Nur MORE-Shop</button>
+        <button id="srcAlt" type="button" aria-pressed="false" title="Such-Links zu Amazon, dm, Rossmann, Müller & Fitmart auf den Karten einblenden – Preise/Verfügbarkeit dort können abweichen">+ andere Anbieter</button>
+      </div>
+    </div>
     <div class="toolbar">
       <input class="search" id="search" placeholder="In dieser Kategorie suchen…" aria-label="In dieser Kategorie suchen">
       <select class="sort" id="sort" aria-label="Sortieren">
@@ -413,7 +424,6 @@ body.has-cart .cmpchip{bottom:74px}
         <label class="tg"><input type="checkbox" id="fAvail">nur verfügbar</label>
         <label class="tg"><input type="checkbox" id="fVegan">vegan</label>
         <label class="tg"><input type="checkbox" id="fSugar">zuckerarm</label>
-        <label class="tg" title="Such-Links zu Amazon, dm & Co. auf den Karten einblenden – Preise/Verfügbarkeit dort können abweichen"><input type="checkbox" id="fAlt">andere Anbieter</label>
       </div>
       <div class="viewtog"><button id="vCards" class="on">▦ Karten</button><button id="vTable">≡ Tabelle</button></div>
     </div>
@@ -1085,14 +1095,21 @@ function showTab(tab){
   updateHash();
 }
 
-/* "andere Anbieter": Praeferenz (localStorage), kein Filter — blendet nur die Such-Link-Zeile ein/aus */
-const fAltEl=document.getElementById("fAlt");
-try{fAltEl.checked=localStorage.getItem("mn-alt")==="1";}catch(e){}
-document.body.classList.toggle("show-alt",fAltEl.checked);
-fAltEl.addEventListener("change",()=>{
-  document.body.classList.toggle("show-alt",fAltEl.checked);
-  try{localStorage.setItem("mn-alt",fAltEl.checked?"1":"0");}catch(e){}
-});
+/* Anbieter-Umschalter "Nur MORE-Shop / + andere Anbieter" neben der Kategorie-Ueberschrift
+   (Biyan-Feedback: das alte Toolbar-Haekchen war zu unauffaellig). Praeferenz in localStorage
+   (mn-alt, kompatibel zum alten Haekchen), KEIN Filter — blendet nur die Such-Link-Zeile
+   auf den Karten ein/aus. */
+const srcMoreBtn=document.getElementById("srcMore"), srcAltBtn=document.getElementById("srcAlt");
+function setAltSrc(on,save){
+  document.body.classList.toggle("show-alt",on);
+  srcMoreBtn.classList.toggle("on",!on); srcAltBtn.classList.toggle("on",on);
+  srcMoreBtn.setAttribute("aria-pressed",String(!on)); srcAltBtn.setAttribute("aria-pressed",String(on));
+  if(save){ try{localStorage.setItem("mn-alt",on?"1":"0");}catch(e){} }
+}
+let altInit=false; try{altInit=localStorage.getItem("mn-alt")==="1";}catch(e){}
+setAltSrc(altInit,false);
+srcMoreBtn.addEventListener("click",()=>setAltSrc(false,true));
+srcAltBtn.addEventListener("click",()=>setAltSrc(true,true));
 
 // Dropdown-Sortierung auf die Tabellen-Sortierung spiegeln (sonst wirkt das Dropdown in der Tabellen-Ansicht nicht)
 const SORT2TSORT={score:["_total",-1],price:["price",1],perserv:["perserv",1],protein:["protein",-1],sugar:["sugar",1],rating:["rating",-1],reviews:["reviews",-1]};
