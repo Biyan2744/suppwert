@@ -269,6 +269,19 @@ body.has-cart .cmpchip{bottom:74px}
 .cmptbl img{width:52px;height:52px;object-fit:contain;background:var(--imgbg);border-radius:8px;border:1px solid var(--grid);display:block;margin-bottom:5px}
 .cmpclear{border:1px solid var(--line);background:transparent;color:var(--text-2);border-radius:9px;padding:6px 10px;font-size:12px;cursor:pointer;margin-top:10px}
 
+/* Ratgeber */
+.goalbtns{display:flex;flex-wrap:wrap;gap:8px}
+.goalbtn{border:1px solid var(--line);background:var(--surface-1);color:var(--text-2);border-radius:999px;padding:7px 13px;font-size:12.5px;font-weight:600;cursor:pointer}
+.goalbtn:hover{border-color:var(--muted);color:var(--text-1)}
+.goalbtn.on{background:var(--text-1);color:var(--surface-1);border-color:var(--text-1)}
+.rchip .gsc{font-weight:800;color:var(--m-value);margin-left:2px}
+.tips{margin:0;padding-left:18px;font-size:12.5px;color:var(--text-2);line-height:1.6;display:flex;flex-direction:column;gap:7px}
+.tips b{color:var(--text-1)}
+.faq{border-bottom:1px solid var(--grid);padding:9px 0}
+.faq summary{font-size:13px;font-weight:600;cursor:pointer;list-style-position:outside}
+.faq summary:hover{color:var(--m-value)}
+.faq p{font-size:12.5px;color:var(--text-2);margin:7px 0 2px;line-height:1.55}
+
 /* Restock-Radar */
 .radar{background:var(--card);border:1px solid var(--ring);border-radius:var(--r);box-shadow:var(--shadow);padding:13px 15px;margin-top:16px}
 .radar[hidden]{display:none}
@@ -280,7 +293,7 @@ body.has-cart .cmpchip{bottom:74px}
 .rlab.ok{color:var(--ok)}
 .rlab.crit{color:var(--crit)}
 .rchip{font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:999px;border:1px solid var(--line);color:var(--text-1);text-decoration:none;display:inline-flex;align-items:center;gap:6px}
-.rchip::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ok)}
+.rchip::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--dot,var(--ok))}
 .rchip.out{color:var(--muted);text-decoration:line-through}
 .rchip.out::before{background:var(--crit)}
 .rchip:hover{border-color:var(--m-value)}
@@ -407,6 +420,36 @@ body.has-cart .cmpchip{bottom:74px}
         <div class="codebox">Aktueller Code <b>„AKTION"</b>: bis 20 % auf alles / 10 % auf Proteine, plus Staffelrabatt. <b>Codes wechseln wöchentlich</b> – kursierende „bis 50 %"-Codes sind unbestätigt.</div>
         <div id="persoCode" class="codebox" style="display:none;border-style:solid;border-color:var(--acc-riegel)"></div>
         <p class="note">Beliebte Artikel sind <b>oft schnell ausverkauft</b>. 2025/26 sorgte eine weltweite Whey-Knappheit für Engpässe (auch bei dm & Müller bestätigt). Feste Restock-Termine nennt MORE bewusst nicht. CH: morenutrition.ch · AT: zusätzlich dm.at, BIPA, Shop-Apotheke.at.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- RATGEBER -->
+  <section class="panel" id="panel-ratgeber" role="tabpanel">
+    <div class="phead"><h2><span class="hbar" style="--acc:var(--acc-riegel)"></span>Ratgeber & Kaufberatung</h2><p>Was passt zu deinem Ziel, Antworten auf häufige Fragen und Spar-Tipps.</p></div>
+
+    <div class="pnl" style="margin-bottom:16px">
+      <h3>Was passt zu deinem Ziel?</h3>
+      <div class="goalbtns" id="goalbtns"></div>
+      <div class="goalout" id="goalout"></div>
+    </div>
+
+    <div class="buy-grid">
+      <div class="pnl">
+        <h3>Häufige Fragen</h3>
+        <div id="faqs"></div>
+      </div>
+      <div class="pnl">
+        <h3>Spar-Tipps</h3>
+        <ul class="tips">
+          <li><b>Proben zuerst:</b> Viele Pulver gibt es als 25-g-Probe für 2,99 € – Sorte testen, bevor die 600-g-Dose kommt (Proben stehen in der Sorten-Auswahl beim Merken).</li>
+          <li><b>Gratisversand ab 55 €:</b> Der Merkzettel unten zeigt live, wie viel noch fehlt.</li>
+          <li><b>Wechselnde Codes:</b> Aktuell „AKTION" (bis 20 %) – Codes wechseln wöchentlich, kursierende „50 %"-Codes sind meist unbestätigt.</li>
+          <li><b>Bundles & Tasterboxen</b> im Shop sind pro Portion oft günstiger als Einzeldosen (z. B. Chunky-Flavour-Bundle 0,22 €/Portion statt 0,32 €).</li>
+          <li><b>Drogerie-Preise vergleichen:</b> dm/Rossmann/Müller führen Teile des Sortiments – rotierend, aber ohne Versandkosten.</li>
+        </ul>
+        <h3 style="margin-top:20px">Wer ist MORE Nutrition?</h3>
+        <p class="note">Deutsche Supplement-Marke (gegründet 2017), groß geworden über Social Media rund um Mitgründer Christian Wolf; gehört wie ESN zur The Quality Group. Fokus: kalorienreduzierte Alltagsprodukte („Chunky Flavour"), Proteine und Supplements – verkauft primär über den eigenen Shop, zunehmend auch über Drogerien. Diese Seite ist unabhängig und gehört nicht zur Marke.</p>
       </div>
     </div>
   </section>
@@ -728,6 +771,44 @@ function renderJump(){
 function renderRecs(){
   document.getElementById("recs").innerHTML=RECS.map(r=>`<div class="rec" style="--acc:${CATS[r.cat].color}"><div class="tag">${r.tag}</div><div class="nm">${r.name}</div><div class="why">${r.why}</div><div class="mt"><span>${CATS[r.cat].label}</span>${r.score!=null?`<span class="sc">Score ${r.score}</span>`:""}<span style="margin-left:auto">${r.extra}</span></div></div>`).join("");
 }
+/* Ratgeber: Ziel-Kaufberatung (deterministische Regeln auf dem echten Datenbestand) + FAQ */
+const GOALS=[
+  {key:"abnehmen",label:"Abnehmen & Kalorien sparen",ids:["chunky","clear","oilspray","gourmet","zerupbarista","nomoresugar"],note:"Zucker und Kalorien im Alltag ersetzen statt verzichten – plus das kalorienärmste Protein."},
+  {key:"muskeln",label:"Muskelaufbau",ids:["milkshake","clear","proteinbar","creastick","everyworkout"],note:"Viel Protein pro Portion, Kreatin als günstigste Ergänzung, Pre-Workout fürs Training."},
+  {key:"unterwegs",label:"Snacks für unterwegs",ids:["satisbites","proteinbar","tortilla","porridge","waferbar"],note:"Riegel, Chips und Anrühr-Snacks – proteinreich ohne Küche."},
+  {key:"vegan",label:"Vegan",ids:["vegan","veganbar","dessert","wrap","oilspray","bioticgum"],note:"Die pflanzlichen Optionen im Sortiment (den vegan-Filter gibt es auch in jeder Kategorie)."},
+  {key:"beauty",label:"Haut & Beauty",ids:["glow","collagen","skinstructure"],note:"Kollagen-basierte Produkte – Glow Peptides kombiniert Clear Whey mit Kollagen."},
+  {key:"schlaf",label:"Schlaf & Stress",ids:["sleepgum","melatonin","ashwa","harmony"],note:"Melatonin zum Einschlafen, Adaptogene für stressige Phasen. Kein Medizinersatz."}
+];
+let activeGoal=GOALS[0].key;
+function renderGuide(){
+  document.getElementById("goalbtns").innerHTML=GOALS.map(g=>`<button type="button" class="goalbtn${g.key===activeGoal?" on":""}" data-goal="${g.key}">${g.label}</button>`).join("");
+  const g=GOALS.find(x=>x.key===activeGoal);
+  const chips=g.ids.map(id=>{
+    const p=PRODUCTS.find(x=>x.id===id);
+    if(!p)return "";
+    const a=AVAIL[p.avail]||AVAIL["limitiert"];
+    return `<a class="rchip${p.avail==="ausverkauft"?" out":""}" href="#${p.cat}?q=${encodeURIComponent(p.name)}" style="--dot:${a.c}">${escT(p.name)}${p._total!=null?`<span class="gsc tnum">${p._total}</span>`:""}</a>`;
+  }).join("");
+  document.getElementById("goalout").innerHTML=`<p class="note" style="margin:10px 0 8px">${g.note}</p><div class="rrow">${chips}</div>`;
+  document.querySelectorAll(".goalbtn").forEach(b=>b.onclick=()=>{activeGoal=b.dataset.goal;renderGuide();});
+}
+const FAQS=[
+  ["Ist das hier der offizielle MORE-Nutrition-Shop?","Nein. Diese Seite ist ein unabhängiger, redaktioneller Vergleich ohne Verbindung zu MORE Nutrition. Gekauft wird immer im offiziellen Shop oder bei Händlern – der Merkzettel füllt lediglich den MORE-Warenkorb vor."],
+  ["Wie berechnet sich der Score?","Aus drei Teilen: Nährwerte (35 %), Preis-Leistung (30 %) und Geschmack/Reviews (35 %), normalisiert innerhalb der Kategorie. Das Fragezeichen an jedem Score zeigt die Rechnung fürs einzelne Produkt; Details stehen im Info-Tab."],
+  ["Was kostet der Versand?","Deutschland 4,90 €, gratis ab 55 € Bestellwert. Österreich 6,90 €, Schweiz 9,90 € (gratis ab 150 CHF). Im Sommer kann Kühlversand (+3,99 €) dazukommen. Stand Juli 2026, verbindlich ist der Shop."],
+  ["Gibt es gerade einen Rabattcode?","Codes wechseln wöchentlich – aktuell AKTION (bis 20 % / 10 % auf Proteine). Kursierende 50-%-Codes sind meist unbestätigt."],
+  ["Warum ist so vieles ausverkauft?","Beliebte Sorten rotieren schnell, 2025/26 kam eine weltweite Whey-Knappheit dazu. MORE nennt keine festen Restock-Termine – das Restock-Radar auf der Übersicht zeigt, was seit dem letzten Abgleich zurückkam."],
+  ["Wie teste ich Sorten am günstigsten?","Viele Pulver gibt es als 25-g-Probe für 2,99 € – auf den Produktkarten in der Sorten-/Größenliste zu sehen. Zusätzlich verkauft der Shop Tasterboxen mit mehreren Sorten."],
+  ["Welche Produkte sind vegan?","Unter anderem More Vegan Protein, der Vegan Protein Bar, das Protein Dessert, die Wraps und das Ölspray. In jeder Kategorie lässt sich der vegan-Filter setzen."],
+  ["Woher kommen die Daten auf dieser Seite?","Preise, Nährwerte und Scores sind redaktionell kuratiert (Standardgrößen). Die Verfügbarkeit je Sorte kommt direkt aus dem Shopify-Shop von morenutrition.de und wird wöchentlich automatisch abgeglichen – der Stand steht im Footer."]
+];
+function renderFaqs(){
+  document.getElementById("faqs").innerHTML=FAQS.map(f=>`<details class="faq"><summary>${f[0]}</summary><p>${f[1]}</p></details>`).join("");
+  const ld={"@context":"https://schema.org","@type":"FAQPage","mainEntity":FAQS.map(f=>({"@type":"Question","name":f[0],"acceptedAnswer":{"@type":"Answer","text":f[1]}}))};
+  const s=document.createElement("script");s.type="application/ld+json";s.textContent=JSON.stringify(ld);document.head.appendChild(s);
+}
+
 /* Restock-Radar: beobachtete Wechsel zwischen den letzten beiden Abgleichen + Countdown zum
    naechsten planmaessigen Abgleich (Mo 06:00 UTC). KEINE erfundenen Restock-Termine — MORE
    nennt bewusst keine; wir zeigen nur, was die Daten hergeben. */
@@ -857,7 +938,7 @@ function render(){
   updateHash();
 }
 
-const TABS=[["uebersicht","Übersicht",null],...CATORDER.map(c=>[c,CATS[c].label,CATS[c].hex]),["buy","Wo kaufen",null],["info","Info",null]];
+const TABS=[["uebersicht","Übersicht",null],...CATORDER.map(c=>[c,CATS[c].label,CATS[c].hex]),["ratgeber","Ratgeber",null],["buy","Wo kaufen",null],["info","Info",null]];
 function renderTabs(){
   document.getElementById("tabs").innerHTML=TABS.map(t=>`<button class="tab" data-tab="${t[0]}" role="tab" aria-selected="false" aria-controls="${CATS[t[0]]?"panel-products":"panel-"+t[0]}" ${t[2]?`style="--tabc:${t[2]}"`:""}>${t[2]?'<span class="tdot"></span>':''}${t[1]}${CATS[t[0]]?`<span class="tcount">${PRODUCTS.filter(p=>p.cat===t[0]).length}</span>`:""}</button>`).join("");
   document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
@@ -867,6 +948,7 @@ function showTab(tab){
   const isCat=!!CATS[tab];
   document.getElementById("panel-uebersicht").classList.toggle("on",tab==="uebersicht");
   document.getElementById("panel-products").classList.toggle("on",isCat);
+  document.getElementById("panel-ratgeber").classList.toggle("on",tab==="ratgeber");
   document.getElementById("panel-buy").classList.toggle("on",tab==="buy");
   document.getElementById("panel-info").classList.toggle("on",tab==="info");
   if(isCat){activeCat=tab;document.getElementById("search").value="";render();}
@@ -1001,7 +1083,7 @@ function updateHash(){
 function applyHash(){
   const m=location.hash.slice(1);if(!m)return false;
   const qi=m.indexOf("?"),tab=qi<0?m:m.slice(0,qi),qs=qi<0?"":m.slice(qi+1);
-  if(!(CATS[tab]||["uebersicht","buy","info"].includes(tab)))return false;
+  if(!(CATS[tab]||["uebersicht","ratgeber","buy","info"].includes(tab)))return false;
   showTab(tab);
   if(CATS[tab]){ /* Parameter anwenden — leeres qs setzt bewusst auf Defaults zurück (der Hash ist die Wahrheit) */
     const ps=new URLSearchParams(qs);
@@ -1043,7 +1125,7 @@ themeBtn.onclick=()=>{theme=theme==="dark"?"light":"dark";setTheme(theme);};
 
 var _ad=document.getElementById("availDate"); if(_ad)_ad.textContent=AVAIL_DATE;
 var _fd=document.getElementById("footDate"); if(_fd)_fd.textContent=AVAIL_DATE;
-renderTabs();renderKPIs();renderJump();renderRecs();renderNew();renderRetailers();renderAff();renderRadar();render();
+renderTabs();renderKPIs();renderJump();renderRecs();renderNew();renderRetailers();renderAff();renderRadar();renderGuide();renderFaqs();render();
 if(!applyHash())showTab("uebersicht");
 hashReady=true;updateHash();
 renderCart();renderCmpChip();
