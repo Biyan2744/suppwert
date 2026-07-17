@@ -98,6 +98,18 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Kategorie-Kombis + Plus erschafft Slots (18.07.):** (a) Die Kategorie-Chips im
+> Produkte-Reiter sind jetzt **Mehrfachauswahl**: Antippen kombiniert (z. B. Proteinpulver +
+> Snacks nebeneinander als Sektionen), nochmal antippen wählt ab, „Alle" leert; alle 6 an
+> normalisiert auf „Alle". Einzelauswahl bleibt die flache Ansicht + alte `#proteine`-Links,
+> Kombis teilen sich als `#produkte?cats=a,b` (Reihenfolge stabil = CATORDER, unbekannte Keys
+> fallen beim Parsen raus); Tabelle zeigt die Kategorie-Spalte bei allem außer Einzelauswahl.
+> (b) Das **Plus im Vergleich erschafft jetzt ein weiteres leeres Feld** (statt die Galerie
+> für Slot 1/2 zu öffnen — Biyan-Wunsch): `duelExtra` zählt die per Plus erschaffenen leeren
+> Slots, jedes Produkt-Hinzufügen (Galerie-Push, Vergleich-Suche, Karten-Häkchen) verbraucht
+> eines, leere Extra-Slots (ab dem 3.) haben ein eigenes ✕ und sind als div[role=button]
+> gebaut (kein Button-in-Button-HTML). Produkt-Entfernen lässt erschaffene Leerfelder stehen,
+> kollabiert sonst wie bisher auf min. 2.
 > **Restock-Countdown im Header (18.07.):** Recherche bestätigte: der große MORE-Wochen-Restock
 > + die Sonntags-Aktionen starten üblicherweise **sonntags 11:00 Uhr** (Community-dokumentiert:
 > Vorpacklink-Seiten, MORE-App-Push „Sonntag 11 Uhr"; das offizielle Helpcenter nennt bewusst

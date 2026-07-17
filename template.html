@@ -1049,6 +1049,10 @@ function parseVariants(pid){
 
 /* Vergleichs-Auswahl (Session) + Merkzettel (localStorage; als echte App ok, vgl. ROADMAP) */
 let cmp=[]; const CMP_MAX=4;
+/* duelExtra = vom Nutzer per Plus ERSCHAFFENE, noch leere Vergleichsfelder (Biyan: das Plus
+   soll einen weiteren Slot anlegen, nicht Produkt 1/2 fuellen). Jedes Hinzufuegen eines
+   Produkts verbraucht eines davon; leere Extra-Slots haben ein eigenes ✕. */
+let duelExtra=0;
 let cart=[];
 try{cart=JSON.parse(localStorage.getItem("mn-cart")||"[]")||[];}catch(e){cart=[];}
 function saveCart(){try{localStorage.setItem("mn-cart",JSON.stringify(cart));}catch(e){}}
@@ -1385,12 +1389,14 @@ function cardHTML(p){
   </div>`;
 }
 
-let activeCat="alle", view="cards", tsort={key:"_total",dir:-1};
+/* activeCats: MEHRFACH-Auswahl der Kategorie-Chips (Biyan: Kategorien kombinieren, nochmal
+   antippen waehlt ab). Leeres Array = "Alle". Alle 6 gewaehlt wird auf "Alle" normalisiert. */
+let activeCats=[], view="cards", tsort={key:"_total",dir:-1};
 function getFiltered(){
   const q=document.getElementById("search").value.toLowerCase().trim();
   const fA=document.getElementById("fAvail").checked, fV=document.getElementById("fVegan").checked, fS=document.getElementById("fSugar").checked;
   let list=PRODUCTS.filter(p=>{
-    if(activeCat!=="alle"&&p.cat!==activeCat)return false;
+    if(activeCats.length&&!activeCats.includes(p.cat))return false;
     if(fA&&p.avail!=="auf Lager")return false;
     if(fV&&!(p.tags||[]).includes("vegan"))return false;
     if(fS&&!((p.sugar!=null&&p.sugar<=2)||(p.tags||[]).some(t=>/zuckerfrei|zuckerarm|Zucker|Stevia/.test(t))))return false;
@@ -1401,16 +1407,25 @@ function getFiltered(){
   const cmp={score:(a,b)=>num(b._total)-num(a._total)||num(b.rating)-num(a.rating),price:(a,b)=>(a.price==null?Infinity:a.price)-(b.price==null?Infinity:b.price),perserv:(a,b)=>(perServing(a)==null?Infinity:perServing(a))-(perServing(b)==null?Infinity:perServing(b)),protein:(a,b)=>num(b.protein)-num(a.protein),sugar:(a,b)=>(a.sugar==null?Infinity:a.sugar)-(b.sugar==null?Infinity:b.sugar),rating:(a,b)=>num(b.rating)-num(a.rating),reviews:(a,b)=>num(b.reviews)-num(a.reviews)}[s];
   return list.sort(cmp);
 }
-/* Kategorie-Chips im Produkte-Reiter ("Alle" + 6 Kategorien, mit Zaehlern). Chip-Wechsel
+/* Kategorie-Chips im Produkte-Reiter ("Alle" + 6 Kategorien, mit Zaehlern). MEHRFACH-Auswahl:
+   Chips togglen (nochmal antippen = abwaehlen), "Alle" leert die Auswahl. Chip-Wechsel
    behaelt Suche/Filter bei (Verfeinerung statt Reset — Reset macht der Tab-Klick). */
 function renderCatChips(){
   const box=document.getElementById("catchips"); if(!box)return;
-  const mk=(key,label,hex,n)=>`<button type="button" class="catchip${activeCat===key?" on":""}" data-cat="${key}" ${hex?`style="--c:${hex}"`:""} aria-pressed="${activeCat===key}">${hex?'<span class="dot"></span>':""}${label} <span class="cn tnum">${n}</span></button>`;
+  const on=key=>key==="alle"?activeCats.length===0:activeCats.includes(key);
+  const mk=(key,label,hex,n)=>`<button type="button" class="catchip${on(key)?" on":""}" data-cat="${key}" ${hex?`style="--c:${hex}"`:""} aria-pressed="${on(key)}">${hex?'<span class="dot"></span>':""}${label} <span class="cn tnum">${n}</span></button>`;
   box.innerHTML=mk("alle","Alle",null,PRODUCTS.length)+CATORDER.map(c=>mk(c,CATS[c].label,CATS[c].hex,PRODUCTS.filter(p=>p.cat===c).length)).join("");
-  box.querySelectorAll(".catchip").forEach(b=>b.onclick=()=>{activeCat=b.dataset.cat;render();});
+  box.querySelectorAll(".catchip").forEach(b=>b.onclick=()=>{
+    const k=b.dataset.cat;
+    if(k==="alle")activeCats=[];
+    else if(activeCats.includes(k))activeCats=activeCats.filter(x=>x!==k);
+    else activeCats=activeCats.concat(k);
+    if(activeCats.length===CATORDER.length)activeCats=[]; /* alle 6 an = "Alle" */
+    render();
+  });
 }
 function renderTable(list){
-  const alle=activeCat==="alle";
+  const alle=activeCats.length!==1; /* Kategorie-Spalte immer, wenn mehr als eine Kategorie sichtbar ist */
   const cols=[...(alle?[["cat","Kategorie",0]]:[]),["name","Produkt",0],["price","Preis",1],["base","Grundpreis",1],["perserv","€/Port.",1],["protein","Protein",1],["sugar","Zucker",1],["kcal","kcal",1],["rating","Bew.",1],["_total","Score",1],["avail","Verfügbar",0]];
   let h="<thead><tr>"+cols.map(c=>`<th class="${c[2]?'num':''}" data-k="${c[0]}" aria-sort="${tsort.key===c[0]?(tsort.dir>0?"ascending":"descending"):"none"}">${c[1]}${tsort.key===c[0]?`<span class="sortind">${tsort.dir>0?" ▲":" ▼"}</span>`:""}</th>`).join("")+"</tr></thead>";
   const rows=list.map(p=>{const ps=perServing(p),a=AVAIL[p.avail]||AVAIL["limitiert"];const im=p.img?`<img src="${imgURL(p.img)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:"";
@@ -1421,18 +1436,24 @@ function renderTable(list){
 const AVAIL_RANK={"auf Lager":0,"limitiert":1,"ausverkauft":2,"coming soon":3};
 function sortForTable(list){const k=tsort.key,d=tsort.dir,val=p=>k==="perserv"?perServing(p):(k==="base"?(baseInfo(p)?baseInfo(p).v:null):(k==="avail"?AVAIL_RANK[p.avail]:(k==="cat"?CATORDER.indexOf(p.cat):p[k])));return [...list].sort((a,b)=>{let x=val(a),y=val(b);const xn=x==null,yn=y==null;if(xn||yn)return xn&&yn?0:(xn?1:-1);if(typeof x==="string"||typeof y==="string"){return x.toString().localeCompare(y.toString())*d;}return (x-y)*d;});}
 function render(){
-  const list=getFiltered(), alle=activeCat==="alle", c=alle?null:CATS[activeCat];
+  /* alle = keine Auswahl; single = genau 1 Kategorie (flaches Grid wie bisher);
+     ab 2 Kategorien: Sektionen-Ansicht wie "Alle", nur auf die Auswahl beschraenkt */
+  const list=getFiltered(), n=activeCats.length, alle=n===0, single=n===1, grouped=!single;
+  const c=single?CATS[activeCats[0]]:null;
+  const selLabels=CATORDER.filter(x=>activeCats.includes(x)).map(x=>CATS[x].label);
   document.getElementById("catHead").innerHTML=alle
-    ?`<h2><span class="hbar" style="--acc:var(--m-nutri)"></span>Alle Produkte</h2><p>Das komplette Sortiment im Überblick – Suche, Filter und Sortierung wirken über alle Kategorien.</p>`
-    :`<h2><span class="hbar" style="--acc:${c.color}"></span>${c.label}</h2><p>${c.desc}</p>`;
+    ?`<h2><span class="hbar" style="--acc:var(--m-nutri)"></span>Alle Produkte</h2><p>Das komplette Sortiment im Überblick – Suche, Filter und Sortierung wirken über alle Kategorien. Tipp: Kategorie-Chips lassen sich kombinieren.</p>`
+    :single
+    ?`<h2><span class="hbar" style="--acc:${c.color}"></span>${c.label}</h2><p>${c.desc}</p>`
+    :`<h2><span class="hbar" style="--acc:var(--m-nutri)"></span>${n} Kategorien kombiniert</h2><p>${selLabels.join(" · ")} – ein weiterer Tipp auf einen aktiven Chip entfernt die Kategorie wieder.</p>`;
   renderCatChips();
-  document.getElementById("search").placeholder=alle?"In allen Produkten suchen…":"In dieser Kategorie suchen…";
-  document.getElementById("count").textContent=`${list.length} Produkt${list.length!==1?"e":""}${alle?"":` in „${c.label}"`}`;
+  document.getElementById("search").placeholder=alle?"In allen Produkten suchen…":single?"In dieser Kategorie suchen…":"In den gewählten Kategorien suchen…";
+  document.getElementById("count").textContent=`${list.length} Produkt${list.length!==1?"e":""}${alle?"":single?` in „${c.label}"`:` in ${n} Kategorien`}`;
   if(view==="cards"){
     const g=document.getElementById("grid");
     g.style.display="";document.getElementById("tableView").style.display="none";
-    g.classList.toggle("groups",alle);
-    g.innerHTML=(alle
+    g.classList.toggle("groups",grouped);
+    g.innerHTML=(grouped
       ?CATORDER.map(cat=>{const items=list.filter(p=>p.cat===cat);if(!items.length)return "";return `<div class="catsec"><h3 class="csh"><span class="hbar" style="--acc:${CATS[cat].color}"></span>${CATS[cat].label}<span class="csn tnum">${items.length}</span></h3><div class="grid">${items.map(cardHTML).join("")}</div></div>`;}).join("")
       :list.map(cardHTML).join(""))||`<div style="color:var(--muted);padding:26px">Keine Produkte für diese Filter.</div>`;
   }
@@ -1461,8 +1482,8 @@ function showTab(tab){
   document.getElementById("panel-ratgeber").classList.toggle("on",tab==="ratgeber");
   document.getElementById("panel-buy").classList.toggle("on",tab==="buy");
   document.getElementById("panel-info").classList.toggle("on",tab==="info");
-  if(isCat){activeCat=tab;document.getElementById("search").value="";render();}
-  else if(tab==="produkte"){activeCat="alle";document.getElementById("search").value="";render();}
+  if(isCat){activeCats=[tab];document.getElementById("search").value="";render();}
+  else if(tab==="produkte"){activeCats=[];document.getElementById("search").value="";render();}
   window.scrollTo(0,0);
   updateHash();
 }
@@ -1512,7 +1533,7 @@ document.getElementById("grid").addEventListener("change",e=>{
   const pid=c.dataset.cmp;
   if(c.checked){
     if(cmp.length>=CMP_MAX){c.checked=false;flashChip("max. "+CMP_MAX+" Produkte");return;}
-    if(!cmp.includes(pid))cmp.push(pid);
+    if(!cmp.includes(pid)){cmp.push(pid);duelExtra=Math.max(0,duelExtra-1);}
   }else cmp=cmp.filter(x=>x!==pid);
   syncCmp();
 });
@@ -1642,9 +1663,14 @@ function renderDuel(){
        <div class="dname">${escT(p.name)}</div>
        <div class="dmeta">${CATS[p.cat].label} · ${eur(p.price)}</div>
        <div class="dscore" style="color:${scoreColor(p._total)}">${p._total!=null?p._total:"–"}<small>Gesamtscore</small></div></div>`
+    :ix>=2
+    /* Extra-Slots (ab dem 3.) sind per Plus erschaffen und einzeln wieder entfernbar — deshalb
+       div statt button (verschachtelte Buttons waeren invalides HTML) */
+    ?`<div class="dslot empty" data-slot="${ix}" role="button" tabindex="0"><button type="button" class="dx" data-dslotrm aria-label="Leeres Vergleichsfeld ${ix+1} entfernen">✕</button><span class="dhint">Produkt ${ix+1}<br><span>klicken und aus allen Produkten wählen</span></span></div>`
     :`<button type="button" class="dslot empty" data-slot="${ix}"><span class="dhint">Produkt ${ix+1}<br><span>klicken und aus allen Produkten wählen</span></span></button>`;
-  /* Slots dynamisch: mindestens 2, jedes gewaehlte Produkt eines, Plus rechts bis CMP_MAX */
-  const nSlots=Math.max(2,cmp.length), parts=[];
+  /* Slots dynamisch: mindestens 2, jedes gewaehlte Produkt eines, dazu duelExtra leere; Plus rechts bis CMP_MAX */
+  duelExtra=Math.max(0,Math.min(duelExtra,CMP_MAX-cmp.length));
+  const nSlots=Math.min(CMP_MAX,Math.max(2,cmp.length+duelExtra)), parts=[];
   for(let i=0;i<nSlots;i++){
     if(i>0)parts.push(`<div class="dvs">VS</div>`);
     parts.push(slot(cmp[i]?PRODUCTS.find(x=>x.id===cmp[i]):null,i));
@@ -1672,13 +1698,15 @@ function renderDuel(){
   }
   box.innerHTML=`<div class="duelgrid">${parts.join("")}</div>${rows?`<div class="drows">${rows}</div>`:""}`;
   box.querySelectorAll("[data-drm]").forEach(btn=>btn.onclick=e=>{e.stopPropagation();cmp=cmp.filter(x=>x!==btn.dataset.drm);syncCmp();});
+  box.querySelectorAll("[data-dslotrm]").forEach(btn=>btn.onclick=e=>{e.stopPropagation();duelExtra=Math.max(0,duelExtra-1);renderDuel();});
   box.querySelectorAll("[data-slot]").forEach(sl=>{
     const open=()=>openPicker(Number(sl.dataset.slot));
     sl.onclick=open;
     if(sl.tagName!=="BUTTON")sl.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open();}};
   });
   const add=document.getElementById("dadd");
-  if(add)add.onclick=()=>openPicker(cmp.length);
+  /* Plus ERSCHAFFT ein weiteres leeres Feld (statt die Galerie fuer Slot 1/2 zu oeffnen) */
+  if(add)add.onclick=()=>{duelExtra=Math.min(CMP_MAX,nSlots+1)-cmp.length;renderDuel();};
 }
 /* Produkt-Galerie zum Fuellen eines Duell-Slots: ALLE Produkte mit Bild, nach Kategorien
    gruppiert, live durchsuchbar. Bereits gewaehlte sind markiert und gesperrt. */
@@ -1702,7 +1730,7 @@ function openPicker(ix){
   w.querySelectorAll("[data-pick]").forEach(t=>t.onclick=()=>{
     const id=t.dataset.pick;
     if(cmp.includes(id))return;
-    if(pickSlot<cmp.length)cmp[pickSlot]=id; else{if(cmp.length>=CMP_MAX)return;cmp.push(id);}
+    if(pickSlot<cmp.length)cmp[pickSlot]=id; else{if(cmp.length>=CMP_MAX)return;cmp.push(id);duelExtra=Math.max(0,duelExtra-1);} /* fuellt ein leeres Feld -> Extra-Slot verbraucht */
     closePicker();syncCmp();
   });
   const ps=w.querySelector("#picksearch");
@@ -1732,7 +1760,7 @@ function vSearch(){
   box.classList.add("open");
   box.querySelectorAll("[data-vadd]").forEach(b=>b.onclick=()=>{
     if(cmp.length>=CMP_MAX){flashChip("max. "+CMP_MAX+" Produkte");return;}
-    if(!cmp.includes(b.dataset.vadd))cmp.push(b.dataset.vadd);
+    if(!cmp.includes(b.dataset.vadd)){cmp.push(b.dataset.vadd);duelExtra=Math.max(0,duelExtra-1);}
     document.getElementById("vsearch").value="";box.innerHTML="";box.classList.remove("open");
     syncCmp();
   });
@@ -1761,10 +1789,12 @@ function currentTab(){const b=document.querySelector(".tab.on");return b?b.datas
 function updateHash(){
   if(!hashReady)return;
   let tab=currentTab();
-  if(tab==="produkte"&&activeCat!=="alle")tab=activeCat; /* alte #proteine-Links bleiben die Wahrheit */
+  if(tab==="produkte"&&activeCats.length===1)tab=activeCats[0]; /* alte #proteine-Links bleiben die Wahrheit */
   let h="#"+tab;
   if(CATS[tab]||tab==="produkte"){
     const ps=new URLSearchParams();
+    /* Kategorie-KOMBIS (>=2) wandern als cats=a,b in den Hash (Reihenfolge stabil = CATORDER) */
+    if(tab==="produkte"&&activeCats.length>1)ps.set("cats",CATORDER.filter(x=>activeCats.includes(x)).join(","));
     const q=document.getElementById("search").value.trim();if(q)ps.set("q",q);
     const f=[["fAvail","a"],["fVegan","v"],["fSugar","s"]].filter(x=>document.getElementById(x[0]).checked).map(x=>x[1]).join("");if(f)ps.set("f",f);
     const s=document.getElementById("sort").value;if(s!=="score")ps.set("sort",s);
@@ -1821,6 +1851,7 @@ function applyHash(){
   showTab(tab);
   if(CATS[tab]||tab==="produkte"){ /* Parameter anwenden — leeres qs setzt bewusst auf Defaults zurück (der Hash ist die Wahrheit) */
     const ps=new URLSearchParams(qs);
+    if(tab==="produkte")activeCats=(ps.get("cats")||"").split(",").filter(x=>CATS[x]); /* Kombi-Links; unbekannte Keys fallen raus */
     document.getElementById("search").value=ps.get("q")||"";
     const f=ps.get("f")||"";
     document.getElementById("fAvail").checked=f.indexOf("a")>=0;
