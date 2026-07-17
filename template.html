@@ -297,6 +297,9 @@ body.show-alt .altbtn{display:flex}
 .cartbar .go{background:var(--surface-1);color:var(--text-1);border:0;border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:700;cursor:pointer;text-decoration:none;white-space:nowrap}
 .cartbar .go.sec{background:transparent;color:var(--surface-1);border:1px solid var(--ring);opacity:.9}
 .cartbar .ship{opacity:.75;font-size:12px}
+.cartbar .cartx{border:0;background:transparent;color:var(--surface-1);opacity:.65;font-size:14px;cursor:pointer;padding:4px 7px;border-radius:999px;line-height:1;white-space:nowrap;transition:opacity .15s ease,background-color .15s ease}
+.cartbar .cartx:hover{opacity:1}
+.cartbar .cartx.arm{background:var(--crit);color:#fff;opacity:1;font-size:12px;font-weight:700;padding:6px 11px}
 .cartpanel{position:fixed;left:50%;transform:translateX(-50%);bottom:72px;z-index:80;background:var(--card);color:var(--text-1);border:1px solid var(--ring);border-radius:14px;box-shadow:var(--shadow);padding:12px 14px;width:min(440px,calc(100vw - 24px));max-height:50vh;overflow:auto}
 .citem{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--grid);font-size:12.5px}
 .citem .cn{flex:1;min-width:0}
@@ -1350,9 +1353,18 @@ function renderCart(){
   const ship=sum>=55?"Gratisversand ✓":"noch "+eur(55-sum)+" bis Gratisversand (DE)";
   bar.innerHTML=`<span><b class="tnum">${n}</b> Artikel · <b class="tnum">${eur(sum)}</b><span class="ship"> · ${ship}</span></span>`+
     `<button class="go sec" id="cartToggle" aria-expanded="${String(!panel.hidden)}">Merkzettel</button>`+
-    `<a class="go" href="${cartURL()}" target="_blank" rel="noopener">Zum MORE-Warenkorb →</a>`;
+    `<a class="go" href="${cartURL()}" target="_blank" rel="noopener">Zum MORE-Warenkorb →</a>`+
+    `<button class="cartx" id="cartX" aria-label="Merkzettel komplett leeren" title="Merkzettel komplett leeren">✕</button>`;
   bar.hidden=false;
   document.getElementById("cartToggle").onclick=()=>{panel.hidden=!panel.hidden;renderCart();};
+  /* Schnell-Leeren direkt auf der Leiste (Biyan-Wunsch) — Zwei-Klick-Schutz: erster Klick
+     armiert ("Leeren?"), zweiter innerhalb von 2,5 s leert wirklich. Kein Versehens-Wegklick. */
+  const cx=document.getElementById("cartX");
+  cx.onclick=()=>{
+    if(cx.classList.contains("arm")){cart=[];saveCart();renderCart();return;}
+    cx.classList.add("arm");cx.textContent="Leeren?";
+    setTimeout(()=>{if(cx.isConnected){cx.classList.remove("arm");cx.textContent="✕";}},2500);
+  };
   if(!panel.hidden){
     panel.innerHTML=cart.map((i,ix)=>`<div class="citem"><span class="cn">${escT(i.name)}<small>${escT(i.vt)}${i.pr?" · "+eur(i.pr):""}</small></span><span class="q"><button type="button" data-cq="${ix}" data-d="-1" aria-label="Menge verringern">−</button><span class="tnum">${i.q}</span><button type="button" data-cq="${ix}" data-d="1" aria-label="Menge erhöhen">+</button></span><button type="button" class="rm" data-crm="${ix}" aria-label="${escT(i.name)} entfernen">✕</button></div>`).join("")+
       `<div class="cartnote">Der Link öffnet den MORE-Shop mit diesen Positionen vorbefüllt – bestellt wird dort, nicht hier. Preise laut Shop-Varianten, ohne Gewähr.</div>`+
