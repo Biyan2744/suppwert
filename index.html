@@ -212,7 +212,8 @@ td .cdot{width:8px;height:8px;border-radius:50%}
 /* Sorten-Liste in der Karte */
 .vtog{border:0;background:transparent;color:var(--m-value);font-size:11px;font-weight:700;cursor:pointer;padding:0;margin-left:8px;white-space:nowrap}
 .vlist{padding:8px 14px 0;display:flex;flex-wrap:wrap;gap:5px}
-.vitem{font-size:10.5px;padding:2px 8px;border-radius:999px;border:1px solid var(--ring);display:inline-flex;align-items:center;gap:5px;color:var(--text-2)}
+.vitem{font-size:10.5px;padding:2px 8px;border-radius:999px;border:1px solid var(--ring);display:inline-flex;align-items:center;gap:5px;color:var(--text-2);text-decoration:none;cursor:pointer}
+a.vitem:hover{border-color:var(--m-value);color:var(--text-1)}
 .vitem::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ok);flex-shrink:0}
 .vitem.out{color:var(--muted);text-decoration:line-through}
 .vitem.out::before{background:var(--crit)}
@@ -754,7 +755,7 @@ function cardHTML(p){
       <div class="nm">${p.name}</div>
       <div class="pc-price"><span class="pr tnum">${eur(p.price)}</span><span class="avail"><span class="adot" style="background:${a.c}"></span>${a.t}</span></div>
       ${pv?`<div class="varline"><span class="vl">Sorten lieferbar</span><span class="vv tnum">${pv.flavors.filter(f=>f.av).length}/${pv.flavors.length}</span>${pv.flavors.length>4?`<button class="vtog" data-vt="${p.id}" data-more="+${pv.flavors.length-4} weitere ▾" aria-expanded="false" aria-controls="vl-${p.id}">+${pv.flavors.length-4} weitere ▾</button>`:""}</div>`:""}
-      ${pv?`<div class="vlist" id="vl-${p.id}">${pv.flavors.map((f,i)=>`<span class="vitem ${f.av?"":"out"}${i>3?" xtra":""}" title="${esc(f.sizes.map(x=>(x.size||"Standard")+(x.av?" – lieferbar":" – ausverkauft")).join(", "))}">${escT(f.flavor)}</span>`).join("")}${pv.sizes.length>1?`<span class="vsizes">Größen: ${pv.sizes.map(s=>escT(s.size)+(s.label?` (${s.label})`:"")).join(" · ")}</span>`:""}</div>`:""}
+      ${pv?`<div class="vlist" id="vl-${p.id}">${pv.flavors.map((f,i)=>{const best=[...f.sizes].sort((a,b)=>(b.av?1:0)-(a.av?1:0)||b.pr-a.pr)[0];return `<a class="vitem ${f.av?"":"out"}${i>3?" xtra":""}" href="${affLink(p.url+"?variant="+best.vid)}" target="_blank" rel="noopener" title="${esc(f.sizes.map(x=>(x.size||"Standard")+(x.av?" – lieferbar":" – ausverkauft")).join(", "))} – im MORE-Shop öffnen">${escT(f.flavor)}</a>`;}).join("")}${pv.sizes.length>1?`<span class="vsizes">Größen: ${pv.sizes.map(s=>escT(s.size)+(s.label?` (${s.label})`:"")).join(" · ")}</span>`:""}</div>`:""}
     </div>
     <div class="pc-note">${p.note||""}</div>
     ${badges?`<div class="badges">${badges}</div>`:""}
