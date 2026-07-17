@@ -232,6 +232,13 @@ td .cdot{width:8px;height:8px;border-radius:50%}
 
 /* Merkzettel */
 .pcf-r{margin-left:auto;display:inline-flex;gap:8px;align-items:center}
+/* Anbieter-Such-Links: nur sichtbar, wenn der Schalter "andere Anbieter" an ist */
+.alt-row{display:none;padding:9px 14px 0;font-size:11px;color:var(--muted);flex-wrap:wrap;gap:5px;align-items:center}
+body.show-alt .alt-row{display:flex}
+.alt-row .al{font-weight:600}
+.alt-row a{color:var(--text-2);text-decoration:none;font-weight:600}
+.alt-row a:hover{color:var(--m-value);text-decoration:underline}
+.alt-row .asep{color:var(--line)}
 .vname{color:inherit;text-decoration:none}
 .vname:hover{color:var(--m-value)}
 .vitem.out .vname{text-decoration:line-through}
@@ -391,6 +398,7 @@ body.has-cart .cmpchip{bottom:74px}
         <label class="tg"><input type="checkbox" id="fAvail">nur verfügbar</label>
         <label class="tg"><input type="checkbox" id="fVegan">vegan</label>
         <label class="tg"><input type="checkbox" id="fSugar">zuckerarm</label>
+        <label class="tg" title="Such-Links zu Amazon, dm & Co. auf den Karten einblenden – Preise/Verfügbarkeit dort können abweichen"><input type="checkbox" id="fAlt">andere Anbieter</label>
       </div>
       <div class="viewtog"><button id="vCards" class="on">▦ Karten</button><button id="vTable">≡ Tabelle</button></div>
     </div>
@@ -705,6 +713,23 @@ function escT(s){return (s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</
 function varName(t){return t==="Default Title"?"Standardgröße":t;}
 const CARTI=`<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1.6"/><circle cx="19" cy="21" r="1.6"/><path d="M2.5 3h2l2.4 12.5a2 2 0 0 0 2 1.5h9.7a2 2 0 0 0 2-1.6L22 7H6"/></svg>`;
 
+/* Andere Anbieter: ehrliche SUCH-Links (keine Live-Preise — die gibt es nur vom MORE-Shop).
+   Kategorie-Zuordnung aus der kuratierten Haendler-Tabelle; Amazon laeuft durch affLink()
+   und bekommt spaeter automatisch den PartnerNet-Tag. */
+const RETAIL_LINKS=[
+  {label:"Amazon",cats:null,url:q=>affLink("https://www.amazon.de/s?k="+q)},
+  {label:"dm",cats:["proteine","riegel","chunky"],url:q=>"https://www.dm.de/search?query="+q},
+  {label:"Rossmann",cats:["proteine","riegel","chunky"],url:q=>"https://www.rossmann.de/de/search?text="+q},
+  {label:"Müller",cats:["proteine","riegel","chunky","snacks"],url:q=>"https://www.mueller.de/search/?q="+q},
+  {label:"Fitmart",cats:["proteine","riegel","snacks","supplements","chunky"],url:q=>"https://www.fitmart.de/search?query="+q}
+];
+function altLinksHTML(p){
+  const q=encodeURIComponent(("MORE Nutrition "+p.name.replace(/MORE |More /g,"").replace(/[()®]/g," ")).replace(/\s+/g," ").trim());
+  const links=RETAIL_LINKS.filter(r=>!r.cats||r.cats.includes(p.cat));
+  if(!links.length)return "";
+  return `<div class="alt-row"><span class="al">Auch suchen bei:</span>${links.map(r=>`<a href="${r.url(q)}" target="_blank" rel="noopener" title="${r.label}-Suche öffnen – Preis/Verfügbarkeit dort können abweichen">${r.label}</a>`).join('<span class="asep">·</span>')}</div>`;
+}
+
 /* Shopify-Varianten sind "Geschmack / Größe" — fuers UI in beide Dimensionen zerlegen:
    Chips zeigen nur den Geschmack (gemeinsamer Produkt-Praefix wie "Milkshake Style" wird
    gestrippt), die Groessen stehen EINMAL gesammelt mit Preis darunter. */
@@ -897,6 +922,7 @@ function cardHTML(p){
     <div class="pc-note">${p.note||""}</div>
     ${badges?`<div class="badges">${badges}</div>`:""}
     ${mid}
+    ${altLinksHTML(p)}
     <div class="pc-f">${p.rating!=null?`<span class="rate"><span class="st">★</span>${p.rating.toLocaleString("de-DE")}</span>`:""}<span class="pcf-r"><a class="buy" href="${affLink(p.url)}" target="_blank" rel="noopener">Ansehen →</a></span></div>
   </div>`;
 }
@@ -953,6 +979,15 @@ function showTab(tab){
   window.scrollTo(0,0);
   updateHash();
 }
+
+/* "andere Anbieter": Praeferenz (localStorage), kein Filter — blendet nur die Such-Link-Zeile ein/aus */
+const fAltEl=document.getElementById("fAlt");
+try{fAltEl.checked=localStorage.getItem("mn-alt")==="1";}catch(e){}
+document.body.classList.toggle("show-alt",fAltEl.checked);
+fAltEl.addEventListener("change",()=>{
+  document.body.classList.toggle("show-alt",fAltEl.checked);
+  try{localStorage.setItem("mn-alt",fAltEl.checked?"1":"0");}catch(e){}
+});
 
 // Dropdown-Sortierung auf die Tabellen-Sortierung spiegeln (sonst wirkt das Dropdown in der Tabellen-Ansicht nicht)
 const SORT2TSORT={score:["_total",-1],price:["price",1],perserv:["perserv",1],protein:["protein",-1],sugar:["sugar",1],rating:["rating",-1],reviews:["reviews",-1]};
