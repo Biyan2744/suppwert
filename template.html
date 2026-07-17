@@ -309,6 +309,23 @@ body.has-cart .cmpchip{bottom:74px}
 .smartitem .sp{flex-shrink:0}
 .smartfoot{font-size:11px;color:var(--muted);margin:8px 0 10px;line-height:1.5}
 
+/* Fertige Sets (eigener Reiter) */
+.setgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.setcard{background:var(--card);border:1px solid var(--ring);border-top:3px solid var(--acc);border-radius:var(--r);box-shadow:var(--shadow);padding:15px 16px 14px;display:flex;flex-direction:column}
+.sethead{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.sethead h3{font-size:15.5px;letter-spacing:-.2px}
+.setsum{font-weight:750;font-size:15px;white-space:nowrap}
+.setwhy{color:var(--text-2);font-size:12.5px;margin:6px 0 10px;line-height:1.5}
+.setitems{display:flex;flex-direction:column;margin-bottom:9px}
+.setit{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--grid);font-size:12.5px}
+.setit .sn small{display:block;color:var(--muted)}
+.setit .sp{flex-shrink:0;white-space:nowrap}
+.setit.gone .sn b{text-decoration:line-through;color:var(--muted)}
+.setfoot{font-size:11px;color:var(--muted);margin-bottom:11px;line-height:1.5}
+.setadd{margin-top:auto;border:1px solid var(--line);background:var(--surface-1);color:var(--text-1);border-radius:9px;padding:9px 12px;font-size:13px;font-weight:600;cursor:pointer}
+.setadd:hover:not(:disabled){border-color:var(--text-1)}
+.setadd:disabled{opacity:.6;cursor:default}
+
 /* Restock-Radar */
 .radar{background:var(--card);border:1px solid var(--ring);border-radius:var(--r);box-shadow:var(--shadow);padding:13px 15px;margin-top:16px}
 .radar[hidden]{display:none}
@@ -455,6 +472,12 @@ body.has-cart .cmpchip{bottom:74px}
         <p class="note">Beliebte Artikel sind <b>oft schnell ausverkauft</b>. 2025/26 sorgte eine weltweite Whey-Knappheit für Engpässe (auch bei dm & Müller bestätigt). Feste Restock-Termine nennt MORE bewusst nicht. CH: morenutrition.ch · AT: zusätzlich dm.at, BIPA, Shop-Apotheke.at.</p>
       </div>
     </div>
+  </section>
+
+  <!-- SETS -->
+  <section class="panel" id="panel-sets" role="tabpanel">
+    <div class="phead"><h2><span class="hbar" style="--acc:var(--acc-supplements)"></span>Fertige Sets</h2><p>Von uns redaktionell zusammengestellte Produkt-Kombis – ein Klick legt alle lieferbaren Artikel in den Merkzettel. Das sind unsere Empfehlungen aus dem Sortiment, keine Kaufdaten.</p></div>
+    <div class="setgrid" id="setgrid"></div>
   </section>
 
   <!-- RATGEBER -->
@@ -969,6 +992,47 @@ function renderSmart(){
   };
 }
 
+/* Fertige Sets: redaktionell kuratierte Bundles (UNSERE Empfehlung, KEINE Kaufdaten — wir
+   sind kein Shop und sehen nicht, was zusammen gekauft wird). Preise + Verfuegbarkeit werden
+   LIVE aus bestBuyable() abgeleitet: ausverkaufte Posten werden durchgestrichen gezeigt, aus
+   der Summe genommen und nicht mitgelegt — selbstheilend beim woechentlichen Refresh. */
+const SETS=[
+  {key:"muskeln",acc:"--acc-proteine",title:"Muskelaufbau-Set",why:"Whey-Isolat für viel Protein, ein Riegel für unterwegs, Kreatin als günstigste Ergänzung und ein Pre-Workout fürs Training.",ids:["clear","proteinbar","creastick","everyworkout"]},
+  {key:"bestseller",acc:"--acc-riegel",title:"Der Bestseller-Mix",why:"Die meistverkaufte Whey-Casein-Basis, proteinreiche Riegel und der Chunky-Flavour-Trick, um Alltagsessen kalorienärmer zu würzen.",ids:["milkshake","satisbites","chunky"]},
+  {key:"beauty",acc:"--acc-chunky",title:"Beauty-Routine",why:"Clear Whey mit Kollagenpeptiden, pures Kollagen und die Skin-Formel – für Haut, Haare und Gelenke.",ids:["glow","collagen","skinstructure"]},
+  {key:"fruehstueck",acc:"--acc-snacks",title:"Frühstück & Snacks",why:"Pancakes, Porridge, Riegel und herzhafte Chips – proteinreich durch den Tag, auch ohne Küche.",ids:["pancake","porridge","satisbites","tortilla"]},
+  {key:"kochen",acc:"--acc-kochen",title:"Schlank kochen",why:"Öl-Spray statt Öl, kalorienarme Sauce, Zero-Sirup und Gewürze – Kalorien sparen ohne Verzicht.",ids:["oilspray","gourmet","zerupbarista","spices"]},
+  {key:"schlaf",acc:"--acc-supplements",title:"Gute Nacht & Stress",why:"Melatonin-Gummies zum Einschlafen und Adaptogene wie Ashwagandha für stressige Phasen. Kein Ersatz für ärztlichen Rat.",ids:["sleepgum","harmony","ashwa"]}
+];
+function renderSets(){
+  document.getElementById("setgrid").innerHTML=SETS.map(s=>{
+    const rows=s.ids.map(id=>{const p=PRODUCTS.find(x=>x.id===id);return p?{p:p,v:bestBuyable(id)}:null;}).filter(Boolean);
+    const buyable=rows.filter(r=>r.v&&r.v.pr);
+    const sum=buyable.reduce((a,r)=>a+r.v.pr,0);
+    const items=rows.map(r=>r.v&&r.v.pr
+      ? `<div class="setit"><span class="sn"><b>${escT(r.p.name)}</b><small>${escT(r.v.flavor)}${r.v.size?" · "+escT(r.v.size):""}${r.p._total!=null?" · Score "+r.p._total:""}</small></span><span class="sp tnum">${eur(r.v.pr)}</span></div>`
+      : `<div class="setit gone"><span class="sn"><b>${escT(r.p.name)}</b><small>zzt. ausverkauft</small></span><span class="sp">–</span></div>`
+    ).join("");
+    const ship=sum>=55?"Gratisversand erreicht (ab 55 €)":"noch "+eur(55-sum)+" bis Gratisversand";
+    const foot=buyable.length
+      ? `${buyable.length} von ${rows.length} lieferbar · ${ship} · Sorten sind Vorschläge.`
+      : `Gerade ist nichts aus diesem Set lieferbar – der Restock-Radar auf der Übersicht zeigt, wenn etwas zurückkommt.`;
+    return `<div class="setcard" style="--acc:var(${s.acc})">
+      <div class="sethead"><h3>${escT(s.title)}</h3>${buyable.length?`<span class="setsum tnum">${eur(sum)}</span>`:""}</div>
+      <p class="setwhy">${escT(s.why)}</p>
+      <div class="setitems">${items}</div>
+      <div class="setfoot">${foot}</div>
+      <button type="button" class="setadd" data-set="${s.key}"${buyable.length?"":" disabled"}>${buyable.length?`Lieferbare in den Merkzettel (${buyable.length})`:"Gerade nicht lieferbar"}</button>
+    </div>`;
+  }).join("");
+}
+document.getElementById("setgrid").addEventListener("click",e=>{
+  const b=e.target.closest(".setadd"); if(!b||b.disabled)return;
+  const s=SETS.find(x=>x.key===b.dataset.set); if(!s)return;
+  let n=0; s.ids.forEach(id=>{const v=bestBuyable(id);if(v&&v.pr){addToCart(id,v.vid);n++;}});
+  b.textContent=`✓ ${n} im Merkzettel – unten weiter zum Warenkorb`; b.disabled=true;
+});
+
 const FAQS=[
   ["Ist das hier der offizielle MORE-Nutrition-Shop?","Nein. Diese Seite ist ein unabhängiger, redaktioneller Vergleich ohne Verbindung zu MORE Nutrition. Gekauft wird immer im offiziellen Shop oder bei Händlern – der Merkzettel füllt lediglich den MORE-Warenkorb vor."],
   ["Wie berechnet sich der Score?","Aus drei Teilen: Nährwerte (35 %), Preis-Leistung (30 %) und Geschmack/Reviews (35 %), normalisiert innerhalb der Kategorie. Das Fragezeichen an jedem Score zeigt die Rechnung fürs einzelne Produkt; Details stehen im Info-Tab."],
@@ -1114,7 +1178,7 @@ function render(){
   updateHash();
 }
 
-const TABS=[["uebersicht","Übersicht",null],...CATORDER.map(c=>[c,CATS[c].label,CATS[c].hex]),["ratgeber","Ratgeber",null],["buy","Wo kaufen",null],["info","Info",null]];
+const TABS=[["uebersicht","Übersicht",null],...CATORDER.map(c=>[c,CATS[c].label,CATS[c].hex]),["sets","Sets",null],["ratgeber","Ratgeber",null],["buy","Wo kaufen",null],["info","Info",null]];
 function renderTabs(){
   document.getElementById("tabs").innerHTML=TABS.map(t=>`<button class="tab" data-tab="${t[0]}" role="tab" aria-selected="false" aria-controls="${CATS[t[0]]?"panel-products":"panel-"+t[0]}" ${t[2]?`style="--tabc:${t[2]}"`:""}>${t[2]?'<span class="tdot"></span>':''}${t[1]}${CATS[t[0]]?`<span class="tcount">${PRODUCTS.filter(p=>p.cat===t[0]).length}</span>`:""}</button>`).join("");
   document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
@@ -1124,6 +1188,7 @@ function showTab(tab){
   const isCat=!!CATS[tab];
   document.getElementById("panel-uebersicht").classList.toggle("on",tab==="uebersicht");
   document.getElementById("panel-products").classList.toggle("on",isCat);
+  document.getElementById("panel-sets").classList.toggle("on",tab==="sets");
   document.getElementById("panel-ratgeber").classList.toggle("on",tab==="ratgeber");
   document.getElementById("panel-buy").classList.toggle("on",tab==="buy");
   document.getElementById("panel-info").classList.toggle("on",tab==="info");
@@ -1267,7 +1332,7 @@ function updateHash(){
 function applyHash(){
   const m=location.hash.slice(1);if(!m)return false;
   const qi=m.indexOf("?"),tab=qi<0?m:m.slice(0,qi),qs=qi<0?"":m.slice(qi+1);
-  if(!(CATS[tab]||["uebersicht","ratgeber","buy","info"].includes(tab)))return false;
+  if(!(CATS[tab]||["uebersicht","sets","ratgeber","buy","info"].includes(tab)))return false;
   showTab(tab);
   if(CATS[tab]){ /* Parameter anwenden — leeres qs setzt bewusst auf Defaults zurück (der Hash ist die Wahrheit) */
     const ps=new URLSearchParams(qs);
@@ -1309,7 +1374,7 @@ themeBtn.onclick=()=>{theme=theme==="dark"?"light":"dark";setTheme(theme);};
 
 var _ad=document.getElementById("availDate"); if(_ad)_ad.textContent=AVAIL_DATE;
 var _fd=document.getElementById("footDate"); if(_fd)_fd.textContent=AVAIL_DATE;
-renderTabs();renderKPIs();renderJump();renderRecs();renderNew();renderRetailers();renderAff();renderRadar();renderGuide();renderFaqs();render();
+renderTabs();renderKPIs();renderJump();renderRecs();renderNew();renderRetailers();renderAff();renderRadar();renderGuide();renderSets();renderFaqs();render();
 if(!applyHash())showTab("uebersicht");
 hashReady=true;updateHash();
 renderCart();renderCmpChip();

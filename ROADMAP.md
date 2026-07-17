@@ -18,6 +18,12 @@ Priorisierte Ausbaustufen mit Akzeptanzkriterien. Reihenfolge ist ein Vorschlag.
 > Impressum: Biyan will die Privatadresse nicht veröffentlichen und kauft **ganz am Ende**
 > einen Impressum-Service (ladungsfähige Anschrift); bis dahin bleibt Pages aus
 > (Impressumspflicht). Offen: 2 (Restock-Alerts, braucht Backend), 3 (Affiliate).
+> **Sets-Reiter (17.07.):** neuer Tab „Sets" mit 6 redaktionell kuratierten Bundles
+> (Muskelaufbau / Bestseller-Mix / Beauty / Frühstück & Snacks / Schlank kochen / Gute Nacht),
+> Preise+Verfügbarkeit live aus bestBuyable(), 1-Klick legt alle lieferbaren Posten in den
+> Merkzettel. Ehrlich als „unsere Empfehlung, keine Kaufdaten" gelabelt (kein „andere kauften
+> auch" — dafür fehlen uns als Nicht-Shop die Daten; keine echten Influencer-Namen wegen
+> Persönlichkeitsrecht).
 > **Vor-Launch-Politur erledigt (17.07.):** Kategorie-Icon-Platzhalter (Launch ohne
 > Produktfotos sieht gewollt aus), og:image + summary_large_image, robots.txt/sitemap.xml
 > (Domain-abhängig, s. o.), Grundpreise €/kg bzw. €/l auf Karten + als sortierbare
