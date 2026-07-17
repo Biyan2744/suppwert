@@ -98,6 +98,11 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Shop-Fenster (17.07.):** Der „+ andere Anbieter"-Modus zeigt statt einer Dauer-Zeile auf
+> jeder Karte einen kompakten Button „Auch bei anderen Shops", der ein kleines Modal öffnet:
+> pro Produkt die Anbieter als große Link-Zeilen (Amazon = kuratierter Direktlink → später der
+> Affiliate-Link via affLink; Drogerien/Fitmart = Produktsuche). Schließt per x / Scrim / Escape.
+
 ## Rechtliche Leitplanken (Recherche 17.07.2026 — Einschätzung, keine Rechtsberatung)
 - **Seitentyp ist legitim:** unabhängige, redaktionelle Produktvergleiche über eine Marke sind
   zulässig; die Markennennung im Text ist erlaubt (beschreibende Nutzung, § 23 MarkenG).

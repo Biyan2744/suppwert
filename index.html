@@ -260,13 +260,19 @@ td .cdot{width:8px;height:8px;border-radius:50%}
 /* Merkzettel */
 .pcf-r{margin-left:auto;display:inline-flex;gap:8px;align-items:center}
 /* Anbieter-Such-Links: nur sichtbar, wenn der Schalter "andere Anbieter" an ist */
-.alt-row{display:none;padding:9px 14px 0;font-size:11px;color:var(--muted);flex-wrap:wrap;gap:5px;align-items:center}
-body.show-alt .alt-row{display:flex}
-.alt-row .al{font-weight:600}
-.alt-row a{color:var(--text-2);text-decoration:none;font-weight:600}
-.alt-row a:hover{color:var(--m-value);text-decoration:underline}
-.alt-row a.adirect{color:var(--m-value)}
-.alt-row .asep{color:var(--line)}
+.altbtn{display:none;margin:10px 14px 0;align-items:center;justify-content:center;gap:7px;border:1px solid var(--line);background:var(--surface-1);color:var(--text-2);border-radius:10px;padding:9px 12px;font-size:12.5px;font-weight:600;cursor:pointer;transition:border-color .15s ease,color .15s ease}
+body.show-alt .altbtn{display:flex}
+.altbtn:hover{border-color:var(--m-value);color:var(--m-value)}
+.shopbox{max-width:420px}
+.shopprod{font-size:13px;color:var(--muted);margin:2px 0 14px}
+.shoplist{display:flex;flex-direction:column;gap:8px}
+.shoplink{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;text-decoration:none;color:var(--text-1);transition:border-color .15s ease,background-color .15s ease}
+.shoplink:hover{border-color:var(--m-value);background:var(--plane)}
+.shoplink .sl-l{font-size:14.5px;font-weight:700}
+.shoplink .sl-t{font-size:12px;color:var(--muted);font-weight:600;white-space:nowrap}
+.shoplink.direct{border-color:color-mix(in srgb,var(--m-value) 45%,var(--line))}
+.shoplink.direct .sl-t{color:var(--m-value)}
+.shopnote{font-size:11px;color:var(--muted);line-height:1.5;margin-top:14px}
 .vname{color:inherit;text-decoration:none}
 .vname:hover{color:var(--m-value)}
 .vitem.out .vname{text-decoration:line-through}
@@ -380,7 +386,7 @@ body.has-cart .cmpchip{bottom:74px}
 ::selection{background:var(--m-value);color:#fff}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
 @media print{
-  header.top,.tabbar,.toolbar,.cartbar,.cartpanel,.cmpchip,.cmpwrap,.skip,.viewtog,.vadd,.srcsw{display:none!important}
+  header.top,.tabbar,.toolbar,.cartbar,.cartpanel,.cmpchip,.cmpwrap,.skip,.viewtog,.vadd,.srcsw,.altbtn{display:none!important}
   .foot{padding-bottom:20px}
   .pc{box-shadow:none;border-color:var(--line)}
   body{background:#fff}
@@ -597,6 +603,7 @@ body.has-cart .cmpchip{bottom:74px}
 <!-- Vergleichsmodus -->
 <button class="cmpchip" id="cmpchip" hidden></button>
 <div class="cmpwrap" id="cmpwrap" hidden role="dialog" aria-modal="true" aria-label="Produktvergleich"></div>
+<div class="cmpwrap" id="shopov" hidden role="dialog" aria-modal="true" aria-label="Andere Shops"></div>
 
 <script>
 const IMG = {
@@ -815,6 +822,7 @@ function esc(s){return (s||"").replace(/"/g,"&quot;");}
 function escT(s){return (s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 function varName(t){return t==="Default Title"?"Standardgröße":t;}
 const CARTI=`<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1.6"/><circle cx="19" cy="21" r="1.6"/><path d="M2.5 3h2l2.4 12.5a2 2 0 0 0 2 1.5h9.7a2 2 0 0 0 2-1.6L22 7H6"/></svg>`;
+const BAGI=`<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 4 6v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6l-2-4Z"/><path d="M4 6h16"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>`;
 
 /* Andere Anbieter: Amazon bekommt KURATIERTE Direkt-Links (AMZ-Map unten, je Produkt
    verifiziert; fehlt ein Eintrag, gab es kein sauberes Amazon-Listing -> Such-Link-Fallback).
@@ -858,14 +866,21 @@ const RETAIL_LINKS=[
   {label:"Müller",cats:["proteine","riegel","chunky","snacks"],url:q=>"https://www.mueller.de/search/?q="+q},
   {label:"Fitmart",cats:["proteine","riegel","snacks","supplements","chunky"],url:q=>"https://www.fitmart.de/search?query="+q}
 ];
-function altLinksHTML(p){
+/* Shop-Links je Produkt: Amazon als kuratierter DIREKT-Link (durch affLink -> spaeterer
+   PartnerNet-Tag), Drogerien als Suche. Rueckgabe als Datenliste — die Anzeige (Popup)
+   baut openShops() daraus. */
+function shopLinks(p){
   const q=encodeURIComponent(("MORE Nutrition "+p.name.replace(/MORE |More /g,"").replace(/[()®]/g," ")).replace(/\s+/g," ").trim());
-  const links=RETAIL_LINKS.filter(r=>!r.cats||r.cats.includes(p.cat)).map(r=>{
-    if(r.label==="Amazon"&&AMZ[p.id]) return {label:"Amazon",href:affLink(AMZ[p.id]),title:"Dieses Produkt direkt bei Amazon ansehen – Preis/Verfügbarkeit dort können abweichen",direct:true};
-    return {label:r.label,href:r.url(q),title:r.label+"-Suche öffnen – Preis/Verfügbarkeit dort können abweichen",direct:false};
+  return RETAIL_LINKS.filter(r=>!r.cats||r.cats.includes(p.cat)).map(r=>{
+    if(r.label==="Amazon"&&AMZ[p.id]) return {label:"Amazon",href:affLink(AMZ[p.id]),direct:true};
+    return {label:r.label,href:r.url(q),direct:false};
   });
-  if(!links.length)return "";
-  return `<div class="alt-row"><span class="al">Auch bei:</span>${links.map(r=>`<a href="${r.href}" target="_blank" rel="noopener" class="${r.direct?"adirect":""}" title="${r.title}">${r.label}${r.direct?" ↗":""}</a>`).join('<span class="asep">·</span>')}</div>`;
+}
+/* Kompakter Button auf der Karte (nur im "+ andere Anbieter"-Modus sichtbar) — oeffnet das
+   Shop-Fenster statt einer Dauer-Zeile auf jeder Karte (Biyan-Wunsch). */
+function altButtonHTML(p){
+  if(!shopLinks(p).length)return "";
+  return `<button type="button" class="altbtn" data-shop="${p.id}">${BAGI}Auch bei anderen Shops</button>`;
 }
 
 /* Shopify-Varianten sind "Geschmack / Größe" — fuers UI in beide Dimensionen zerlegen:
@@ -1176,7 +1191,7 @@ function cardHTML(p){
     <div class="pc-note">${p.note||""}</div>
     ${badges?`<div class="badges">${badges}</div>`:""}
     ${mid}
-    ${altLinksHTML(p)}
+    ${altButtonHTML(p)}
     <div class="pc-f">${p.rating!=null?`<span class="rate"><span class="st">★</span>${p.rating.toLocaleString("de-DE")}</span>`:""}<span class="pcf-r"><a class="buy" href="${affLink(p.url)}" target="_blank" rel="noopener">Ansehen →</a></span></div>
   </div>`;
 }
@@ -1264,6 +1279,8 @@ document.getElementById("grid").addEventListener("click",e=>{
   if(vt){const el=document.getElementById("vl-"+vt.dataset.vt);const open=el.classList.toggle("open");vt.setAttribute("aria-expanded",String(open));vt.textContent=open?"weniger ▴":vt.dataset.more;return;}
   const sp=e.target.closest(".spop-btn");
   if(sp){const el=document.getElementById("sp-"+sp.dataset.sp);el.hidden=!el.hidden;sp.setAttribute("aria-expanded",String(!el.hidden));return;}
+  const sh=e.target.closest(".altbtn");
+  if(sh){openShops(sh.dataset.shop);return;}
   const va=e.target.closest(".vadd");
   if(va){
     addToCart(va.dataset.pid,Number(va.dataset.vid));
@@ -1350,7 +1367,23 @@ function openCmp(){
   w.querySelector(".x").focus();
 }
 function closeCmp(){document.getElementById("cmpwrap").hidden=true;}
-document.addEventListener("keydown",e=>{if(e.key==="Escape")closeCmp();});
+/* Shop-Fenster: kleines Modal mit den Anbieter-Links des Produkts (Amazon-Direktlink =
+   spaeter der Affiliate-Link via affLink; Drogerien = Suche). Muster wie der Vergleich. */
+function openShops(pid){
+  const p=PRODUCTS.find(x=>x.id===pid); if(!p)return;
+  const links=shopLinks(p); if(!links.length)return;
+  const w=document.getElementById("shopov");
+  w.innerHTML=`<div class="cmpbox shopbox"><h3>Auch bei anderen Shops <button type="button" class="x" aria-label="Schließen">✕</button></h3>
+    <div class="shopprod">${escT(p.name)}</div>
+    <div class="shoplist">${links.map(l=>`<a class="shoplink${l.direct?" direct":""}" href="${l.href}" target="_blank" rel="noopener"><span class="sl-l">${escT(l.label)}</span><span class="sl-t">${l.direct?"Direkt zum Produkt":"Produktsuche"} ↗</span></a>`).join("")}</div>
+    <div class="shopnote">Preise und Verfügbarkeit können bei anderen Anbietern abweichen – verbindlich ist der jeweilige Shop. Live-Preise gibt es nur vom MORE-Shop.</div></div>`;
+  w.hidden=false;
+  w.querySelector(".x").onclick=closeShops;
+  w.onclick=e=>{if(e.target===w)closeShops();};
+  w.querySelector(".x").focus();
+}
+function closeShops(){document.getElementById("shopov").hidden=true;}
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeCmp();closeShops();}});
 
 /* Deep-Links: #tab?q=&f=avs&sort=&view=table — teilbare Zustände, replaceState (kein History-Spam) */
 let hashReady=false;
