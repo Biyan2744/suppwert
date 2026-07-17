@@ -18,6 +18,13 @@ Priorisierte Ausbaustufen mit Akzeptanzkriterien. Reihenfolge ist ein Vorschlag.
 > Impressum: Biyan will die Privatadresse nicht veröffentlichen und kauft **ganz am Ende**
 > einen Impressum-Service (ladungsfähige Anschrift); bis dahin bleibt Pages aus
 > (Impressumspflicht). Offen: 2 (Restock-Alerts, braucht Backend), 3 (Affiliate).
+> **Modern-Refresh (17.07.):** Hero als Verlaufs-Panel (Markengrün→Card + dezenter Gold-Glow,
+> 22px-Radius) mit größerer Display-Typo und integrierten Trust-Pills; Design-Tokens moderner
+> (Radius 14→16px, weichere/gestufte Schatten + neues --shadow-lg); Kennzahlen-Kacheln größer
+> mit Hover-Lift; Abschnitts-Überschriften mit grünem Akzent-Tick; Kategorie-Chips + Karten
+> mit lebendigerem Hover. Hero-H1 auf „Alle MORE-Nutrition-Produkte im ehrlichen Vergleich"
+> (Suppwert-konsistent, ohne das beim bildlosen Launch unzutreffende „echte Produktbilder").
+> Beide Themes AA-kontraststark geprüft.
 > **Empfehlungen-Tab + schlanke Übersicht (17.07.):** Übersicht auf eine ruhige Landeseite
 > reduziert (Hero, KPIs, Trust, Restock-Radar, Kategorie-Sprung); die Best-of-Inhalte
 > (Bestenlisten, Top-Empfehlungen, Neu im Shop) in einen neuen Reiter „Empfehlungen"
