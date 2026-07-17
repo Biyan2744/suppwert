@@ -18,8 +18,12 @@ Priorisierte Ausbaustufen mit Akzeptanzkriterien. Reihenfolge ist ein Vorschlag.
 > Impressum: Biyan will die Privatadresse nicht veröffentlichen und kauft **ganz am Ende**
 > einen Impressum-Service (ladungsfähige Anschrift); bis dahin bleibt Pages aus
 > (Impressumspflicht). Offen: 2 (Restock-Alerts, braucht Backend), 3 (Affiliate).
-> **Sets-Reiter (17.07.):** neuer Tab „Sets" mit 6 redaktionell kuratierten Bundles
-> (Muskelaufbau / Bestseller-Mix / Beauty / Frühstück & Snacks / Schlank kochen / Gute Nacht),
+> **Sets-Reiter (17.07.):** neuer Tab „Sets" mit 7 redaktionell kuratierten Bundles
+> (Protein-Fasten / Muskelaufbau / Bestseller-Mix / Beauty / Frühstück & Snacks / Schlank
+> kochen / Gute Nacht). Das Protein-Fasten-Set verweist BESCHREIBEND auf die WPF-Methode von
+> MORE-Gründer Christian Wolf (öffentlich dokumentiert, Buch + offizielle MPF-Box) und ist
+> bewusst NICHT „WPF Starter Paket" genannt (keine Anmutung des offiziellen Wolf-/MORE-Produkts;
+> Produkte auf der echt dokumentierten Methode grundiert; Hinweis auf die offizielle MPF-Box im Text).
 > Preise+Verfügbarkeit live aus bestBuyable(), 1-Klick legt alle lieferbaren Posten in den
 > Merkzettel. Ehrlich als „unsere Empfehlung, keine Kaufdaten" gelabelt (kein „andere kauften
 > auch" — dafür fehlen uns als Nicht-Shop die Daten; keine echten Influencer-Namen wegen
