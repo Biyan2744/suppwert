@@ -67,6 +67,8 @@ header.top{background:var(--surface-1);border-bottom:1px solid var(--grid);posit
 .brand b{font-size:16px;letter-spacing:-.2px;font-weight:800}
 .brand .bt span{font-size:11.5px;color:var(--muted)}
 .indep{font-size:11px;font-weight:600;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 10px;white-space:nowrap}
+.nextsync{font-size:11px;font-weight:600;color:var(--text-2);border:1px solid var(--line);border-radius:999px;padding:4px 10px;white-space:nowrap}
+@media(max-width:960px){.nextsync{display:none}}
 .top-sp{flex:1}
 .tbtn{border:1px solid var(--line);background:transparent;color:var(--text-2);border-radius:10px;padding:7px 11px;font-size:13px;cursor:pointer;display:inline-flex;gap:6px;align-items:center;white-space:nowrap}
 .tbtn:hover{border-color:var(--muted);color:var(--text-1)}
@@ -504,6 +506,7 @@ body.has-cart .cmpchip{bottom:74px}
       <span class="bt"><b>Suppwert</b><span>Unabhängiger MORE-Nutrition-Vergleich</span></span>
     </a>
     <div class="top-sp"></div>
+    <span class="nextsync tnum" id="nextSync" hidden title="Die Live-Verfügbarkeit wird jeden Montag um 06:00 UTC automatisch mit dem MORE-Shop abgeglichen – echter Zähler, kein Countdown-Trick."></span>
     <span class="indep">Unabhängig · kein offizieller Shop</span>
     <button class="tbtn" id="themeBtn">🌙 <span id="themeLbl">Dunkel</span></button>
   </div>
@@ -709,6 +712,7 @@ body.has-cart .cmpchip{bottom:74px}
 <div class="cmpwrap" id="cmpwrap" hidden role="dialog" aria-modal="true" aria-label="Produktvergleich"></div>
 <div class="cmpwrap" id="shopov" hidden role="dialog" aria-modal="true" aria-label="Andere Shops"></div>
 <div class="cmpwrap" id="pickov" hidden role="dialog" aria-modal="true" aria-label="Produkt wählen"></div>
+<div class="cmpwrap" id="shareov" hidden role="dialog" aria-modal="true" aria-label="Geteilter Merkzettel"></div>
 
 <script>
 const IMG = {
@@ -1242,7 +1246,12 @@ function renderRadar(){
     (rows.length?rows.join(""):`<div class="rrow"><span class="rlab">Keine Verfügbarkeits-Wechsel seit dem letzten Abgleich.</span></div>`)+
     `<div class="rnote">MORE nennt keine festen Restock-Termine – der Radar zeigt beobachtete Änderungen zwischen den automatischen Abgleichen.</div>`;
   el.hidden=false;
-  const tick=()=>{const n=document.getElementById("rnext");if(n)n.textContent=`Nächster Abgleich in ${fmtCountdown(nextRefreshDate()-new Date())}`;};
+  /* tickt zusaetzlich den Header-Timer (Biyan-Wunsch: Countdown oben sichtbar) */
+  const tick=()=>{
+    const cd=fmtCountdown(nextRefreshDate()-new Date());
+    const n=document.getElementById("rnext");if(n)n.textContent=`Nächster Abgleich in ${cd}`;
+    const h=document.getElementById("nextSync");if(h){h.textContent=`⟳ Daten-Update in ${cd}`;h.hidden=false;}
+  };
   tick();setInterval(tick,6e4);
 }
 
@@ -1468,9 +1477,24 @@ function renderCart(){
   };
   if(!panel.hidden){
     panel.innerHTML=cart.map((i,ix)=>`<div class="citem"><span class="cn">${escT(i.name)}<small>${escT(i.vt)}${i.pr?" · "+eur(i.pr):""}</small></span><span class="q"><button type="button" data-cq="${ix}" data-d="-1" aria-label="Menge verringern">−</button><span class="tnum">${i.q}</span><button type="button" data-cq="${ix}" data-d="1" aria-label="Menge erhöhen">+</button></span><button type="button" class="rm" data-crm="${ix}" aria-label="${escT(i.name)} entfernen">✕</button></div>`).join("")+
-      `<div class="cartnote">Der Link öffnet den MORE-Shop mit diesen Positionen vorbefüllt – bestellt wird dort, nicht hier. Preise laut Shop-Varianten, ohne Gewähr.</div>`+
+      `<div class="cartnote">Der Link öffnet den MORE-Shop mit diesen Positionen vorbefüllt – bestellt wird dort, nicht hier. Preise laut Shop-Varianten, ohne Gewähr. „Merkzettel teilen" erzeugt einen Link, über den andere genau diese Zusammenstellung übernehmen können – ideal, um deinen Warenkorb weiterzugeben.</div>`+
+      `<button class="cmpclear" id="cartShare">Merkzettel teilen</button>`+
       `<button class="cmpclear" id="cartClear">Merkzettel leeren</button>`;
     document.getElementById("cartClear").onclick=()=>{cart=[];saveCart();renderCart();};
+    /* Creator-Teilen (Biyan-Idee 'Warenkorb hochladen, damit andere ihn uebernehmen'):
+       ohne Backend als LINK — der Merkzettel wird als #warenkorb=vid:qty,... kodiert,
+       der Empfaenger bekommt beim Oeffnen einen Uebernehmen-Dialog. */
+    document.getElementById("cartShare").onclick=async()=>{
+      const url=location.href.split("#")[0]+"#warenkorb="+cart.map(i=>i.vid+":"+i.q).join(",");
+      const btn=document.getElementById("cartShare");
+      if(navigator.share){
+        try{await navigator.share({title:"Suppwert-Merkzettel",text:"Mein MORE-Merkzettel auf Suppwert – Link öffnen und übernehmen:",url:url});return;}
+        catch(e){if(e&&e.name==="AbortError")return;}
+      }
+      try{await navigator.clipboard.writeText(url);btn.textContent="✓ Link kopiert!";}
+      catch(e){window.prompt("Link zum Teilen kopieren:",url);}
+      setTimeout(()=>{if(btn.isConnected)btn.textContent="Merkzettel teilen";},1600);
+    };
     panel.querySelectorAll("[data-cq]").forEach(b=>b.onclick=()=>{const ix=Number(b.dataset.cq);cart[ix].q+=Number(b.dataset.d);if(cart[ix].q<1)cart.splice(ix,1);saveCart();renderCart();});
     panel.querySelectorAll("[data-crm]").forEach(b=>b.onclick=()=>{cart.splice(Number(b.dataset.crm),1);saveCart();renderCart();});
   }
@@ -1657,7 +1681,7 @@ function openShops(pid){
   w.querySelector(".x").focus();
 }
 function closeShops(){document.getElementById("shopov").hidden=true;}
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeCmp();closeShops();closePicker();}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeCmp();closeShops();closePicker();closeShare();}});
 
 /* Deep-Links: #tab?q=&f=avs&sort=&view=table — teilbare Zustände, replaceState (kein History-Spam) */
 let hashReady=false;
@@ -1677,8 +1701,49 @@ function updateHash(){
   }
   if(location.hash!==h)history.replaceState(null,"",h);
 }
+/* Geteilten Merkzettel (#warenkorb=vid:qty,...) validieren und zur Uebernahme anbieten —
+   NIE stillschweigend uebernehmen, der Dialog zeigt vorher Posten + Summe. Unbekannte
+   Varianten-IDs (Produkt inzwischen weg) werden ehrlich uebersprungen. */
+function openCartImport(str){
+  const items=[];
+  str.split(",").slice(0,40).forEach(pair=>{
+    const parts=pair.split(":"), vid=Number(parts[0]);
+    let q=Math.floor(Number(parts[1]||1));
+    if(!vid||!isFinite(q))return;
+    q=Math.min(Math.max(q,1),99);
+    for(const pid in VARIANTS){
+      const v=(VARIANTS[pid]||[]).find(x=>x[0]===vid);
+      if(v){items.push({pid:pid,vid:vid,q:q,pr:v[3]||0});return;}
+    }
+  });
+  history.replaceState(null,"","#uebersicht");
+  showTab("uebersicht");
+  if(!items.length)return;
+  const sum=items.reduce((a,i)=>a+i.pr*i.q,0), n=items.reduce((a,i)=>a+i.q,0);
+  const w=document.getElementById("shareov");
+  w.innerHTML=`<div class="cmpbox shopbox"><h3>Geteilter Merkzettel <button type="button" class="x" aria-label="Schließen">✕</button></h3>
+    <div class="shopprod">${n} Artikel · ${eur(sum)}</div>
+    <div class="setitems">${items.map(i=>{
+      const p=PRODUCTS.find(x=>x.id===i.pid);
+      const px=parseVariants(i.pid).parsed.find(x=>x.vid===i.vid);
+      return `<div class="setit"><span class="sn"><b>${i.q>1?`${i.q}× `:""}${escT(p?p.name:"Produkt")}</b><small>${px?escT(px.flavor+(px.size?" · "+px.size:"")):""}</small></span><span class="sp tnum">${eur(i.pr*i.q)}</span></div>`;
+    }).join("")}</div>
+    <div class="shopnote">Jemand hat dir diese Zusammenstellung geteilt. Übernehmen ${cart.length?`ersetzt deine aktuellen ${cart.length} Position(en) im Merkzettel`:"füllt deinen Merkzettel"} – bestellt wird wie immer erst im MORE-Shop, nicht hier.</div>
+    <button type="button" class="setadd" id="impOk">Merkzettel übernehmen (${n} Artikel)</button></div>`;
+  w.hidden=false;
+  w.querySelector(".x").onclick=closeShare;
+  w.onclick=e=>{if(e.target===w)closeShare();};
+  document.getElementById("impOk").onclick=()=>{
+    cart=[];
+    items.forEach(i=>{for(let k=0;k<i.q;k++)addToCart(i.pid,i.vid);});
+    closeShare();
+  };
+  w.querySelector(".x").focus();
+}
+function closeShare(){document.getElementById("shareov").hidden=true;}
 function applyHash(){
   const m=location.hash.slice(1);if(!m)return false;
+  if(m.startsWith("warenkorb=")){openCartImport(m.slice(10));return true;}
   const qi=m.indexOf("?"),tab=qi<0?m:m.slice(0,qi),qs=qi<0?"":m.slice(qi+1);
   if(!(CATS[tab]||["uebersicht","produkte","vergleich","empfehlungen","sets","ratgeber","buy","info"].includes(tab)))return false;
   showTab(tab);

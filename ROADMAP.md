@@ -98,6 +98,15 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Header-Timer + Creator-Merkzettel-Sharing (18.07.):** (a) Der Header zeigt jetzt dauerhaft
+> den ehrlichen Countdown „⟳ Daten-Update in X Tagen Y Std." (nächster Montags-Abgleich,
+> gleiche Quelle wie der Radar-Countdown; unter 960 px ausgeblendet). Bewusst KEIN
+> Produkt-Release-Timer — MORE nennt keine Termine, wir erfinden keine. (b) „Merkzettel
+> teilen" im Merkzettel-Panel erzeugt einen Link (#warenkorb=vid:qty,…), über den andere die
+> Zusammenstellung übernehmen können (navigator.share, sonst Clipboard) — die Creator-Idee
+> ohne Backend: Empfänger sehen einen Bestätigungs-Dialog mit Posten + Summe (nichts wird
+> still überschrieben), unbekannte Varianten-IDs werden übersprungen, Übernahme ersetzt den
+> eigenen Merkzettel und führt in den normalen 1-Klick-Warenkorb-Flow.
 > **Duell-Slots klickbar + Produkt-Galerie + Plus (17.07.):** Jedes Vergleichsfeld ist
 > anklickbar und öffnet eine Galerie aller Produkte (Bilder bzw. Icon-Platzhalter, nach
 > Kategorien gruppiert, live durchsuchbar; bereits gewählte gesperrt mit „✓ im Vergleich");
