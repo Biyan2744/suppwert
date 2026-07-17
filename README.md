@@ -20,6 +20,7 @@ Python-Generator für die Verfügbarkeits-Updates.
 | `.github/workflows/refresh.yml` | Wöchentlicher Auto-Refresh via GitHub Actions inkl. Pages-Deploy (nach Push auf GitHub aktiv). |
 | `.github/workflows/pages.yml` | GitHub-Pages-Deploy bei jedem Push auf `main`. |
 | `fonts/` | Inter als lokale woff2 (latin-Subset). |
+| `impressum.html` / `datenschutz.html` | Rechtsseiten (bis zur Veröffentlichung mit markierten Platzhaltern statt echter Personendaten). |
 | `live.json` | Aktuelle Live-Daten (Verfügbarkeit je Variante, neue Produkte, Datum). |
 | `CLAUDE.md` | Projekt-Brief & Konventionen (für Claude Code / Entwickler:innen). |
 | `ROADMAP.md` | Nächste Ausbaustufen mit Akzeptanzkriterien. |

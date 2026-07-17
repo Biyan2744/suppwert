@@ -9,8 +9,10 @@ Priorisierte Ausbaustufen mit Akzeptanzkriterien. Reihenfolge ist ein Vorschlag.
 > Zubehör-Lunchpot und bleibt draußen). Hosting für 4 ist entschieden: **GitHub Pages** —
 > Deploy-Workflows liegen bereit (`pages.yml` bei jedem Push, `refresh.yml`-Deploy-Job nach
 > dem wöchentlichen Refresh); es fehlt nur noch der Push in ein GitHub-Repo + einmalig
-> Settings → Pages → Source „GitHub Actions". Offen: 2 (Restock-Alerts, braucht Backend),
-> 3 (Affiliate scharf schalten), Impressum/Datenschutz aus 6.
+> Settings → Pages → Source „GitHub Actions". Impressum + Datenschutzerklärung aus 6 sind
+> als Seiten fertig (im Footer verlinkt) — es fehlen nur noch die echten Betreiber-Angaben
+> für die markierten Platzhalter (Name/Anschrift/E-Mail; **vor dem Push ausfüllen**).
+> Offen: 2 (Restock-Alerts, braucht Backend), 3 (Affiliate scharf schalten).
 
 ## 1. 1-Klick-Warenkorb (vorbefüllter Shopify-Link) — *statisch, kein Backend* ✅
 Kunden stellen auf der Seite einen Warenkorb zusammen und landen per Klick im MORE-Shop mit
