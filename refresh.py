@@ -53,18 +53,31 @@ def main():
         time.sleep(0.4)
 
     heute = date.today()
+
+    # Tages-Snapshot + Restock-Radar: ehrlich beobachtete Zustandswechsel zwischen den letzten
+    # beiden Abgleichen (MORE nennt keine Restock-Termine — wir erfinden auch keine)
+    hist_path = ROOT / "history.json"
+    hist = json.loads(hist_path.read_text(encoding="utf-8")) if hist_path.exists() else {}
+    hist[heute.isoformat()] = live
+    hist = dict(sorted(hist.items()))
+    hist_path.write_text(json.dumps(hist, ensure_ascii=False), encoding="utf-8")
+    dates = sorted(hist.keys())
+    data["restocks"] = {}
+    if len(dates) >= 2:
+        prev = hist[dates[-2]]
+        pd = date.fromisoformat(dates[-2])
+        data["restocks"] = {
+            "since": f"{pd.day}. {MONATE[pd.month - 1]} {pd.year}",
+            "back": [k for k, v in live.items() if k in prev and prev[k][0] == 0 and v[0] > 0],
+            "gone": [k for k, v in live.items() if k in prev and prev[k][0] > 0 and v[0] == 0],
+        }
+    print(f"history.json: {len(hist)} Snapshot(s), Radar: +{len(data['restocks'].get('back', []))}/-{len(data['restocks'].get('gone', []))}")
+
     data["availDate"] = f"{heute.day}. {MONATE[heute.month - 1]} {heute.year}"
     data["live"] = live
     data["variants"] = variants
     (ROOT / "live.json").write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
     print(f"live.json: {len(live)} Produkte, Stand {data['availDate']}" + (f", {len(fails)} Fallbacks: {fails}" if fails else ""))
-
-    # Tages-Snapshot fuer Verlaufs-Auswertungen ("seit X ausverkauft", Restock-Muster)
-    hist_path = ROOT / "history.json"
-    hist = json.loads(hist_path.read_text(encoding="utf-8")) if hist_path.exists() else {}
-    hist[heute.isoformat()] = live
-    hist_path.write_text(json.dumps(hist, ensure_ascii=False), encoding="utf-8")
-    print(f"history.json: {len(hist)} Snapshot(s)")
 
     # Neue Katalog-Produkte nur VORSCHLAGEN (newProducts bleibt kuratiert)
     try:
