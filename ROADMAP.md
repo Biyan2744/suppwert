@@ -11,8 +11,10 @@ Priorisierte Ausbaustufen mit Akzeptanzkriterien. Reihenfolge ist ein Vorschlag.
 > ist damit **aktiv**; sein Deploy-Job schlägt fehl, bis Pages aktiviert ist — erwartet.
 > `pages.yml` (Deploy je Push) ist **manuell deaktiviert** (`gh workflow enable pages` zum
 > Reaktivieren). **Launch-Checkliste, erst NACH gekauftem Impressum:** (a) Platzhalter in
-> impressum.html/datenschutz.html füllen + Entwurfsboxen raus, (b) Settings → Pages →
-> Source „GitHub Actions", (c) `gh workflow enable pages`, (d) 404-Seite live nachtesten.
+> impressum.html/datenschutz.html füllen + Entwurfsboxen raus, (b) solange keine
+> Bildfreigabe von MORE vorliegt: `SHOW_PRODUCT_IMGS=false` in template.html + regenerieren
+> (Schalter existiert, beide Modi verifiziert), (c) Settings → Pages → Source
+> „GitHub Actions", (d) `gh workflow enable pages`, (e) 404-Seite live nachtesten.
 > Impressum: Biyan will die Privatadresse nicht veröffentlichen und kauft **ganz am Ende**
 > einen Impressum-Service (ladungsfähige Anschrift); bis dahin bleibt Pages aus
 > (Impressumspflicht). Offen: 2 (Restock-Alerts, braucht Backend), 3 (Affiliate).

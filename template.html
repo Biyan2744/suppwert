@@ -652,7 +652,12 @@ const PRODUCTS = [
 {id:"moremelade",cat:"kochen",name:"Moremelade",note:"Fruchtaufstrich mit reduziertem Zucker, 3 Sorten.",price:4.99,size:"250 g",servings:null,rating:null,reviews:null,flavors:"3 Sorten",avail:"auf Lager",tags:["Zucker reduziert"],url:"https://morenutrition.de/products/moremelade"},
 {id:"nutbutter",cat:"kochen",name:"Nut Butter",note:"Proteinreiches Nussmus in drei Sorten – frisch zurück im Shop.",price:11.99,size:"250 g",servings:null,rating:null,reviews:null,flavors:"3 Sorten",avail:"ausverkauft",tags:["Neu"],url:"https://morenutrition.de/products/nut-butter"}
 ];
-PRODUCTS.forEach(p=>{ p.img = IMG[p.id]||null; });
+/* LAUNCH-SCHALTER Produktbilder: Die Fotos in img/ stammen von morenutrition.de und sind
+   ohne Lizenz abmahnbar (ROADMAP "Rechtliche Leitplanken"). Solange keine Freigabe von MORE
+   vorliegt, MUSS die Seite oeffentlich mit SHOW_PRODUCT_IMGS=false laufen — dann rendern
+   alle Karten den farbigen Namens-Platzhalter (div.ph), Tabelle/Vergleich lassen das Bild weg. */
+const SHOW_PRODUCT_IMGS = true;
+PRODUCTS.forEach(p=>{ p.img = SHOW_PRODUCT_IMGS ? (IMG[p.id]||null) : null; });
 const AVAIL_DATE = "__AVAIL_DATE__";
 const LIVE = __LIVE__;
 const VARIANTS = __VARIANTS__; /* je Produkt: [[variantId, Sortenname, 1|0 kaufbar, Preis], ...] */
