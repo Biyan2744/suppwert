@@ -47,7 +47,7 @@ header.top{background:var(--surface-1);border-bottom:1px solid var(--grid);posit
 .tbtn:hover{border-color:var(--muted);color:var(--text-1)}
 
 /* Tab bar */
-.tabbar{background:var(--surface-1);border-bottom:1px solid var(--grid);position:sticky;top:55px;z-index:45}
+.tabbar{background:var(--surface-1);border-bottom:1px solid var(--grid);position:sticky;top:var(--headh,64px);z-index:45}
 .tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
 .tabs::-webkit-scrollbar{display:none}
 .tab{border:0;background:transparent;color:var(--text-2);padding:13px 15px 11px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;border-bottom:2.5px solid transparent;display:inline-flex;align-items:center;gap:7px}
@@ -146,11 +146,12 @@ select.sort{border:1px solid var(--line);background:var(--surface-1);color:var(-
 .buy:hover{opacity:.88}
 
 /* Table */
-.tblwrap{overflow-x:auto;border:1px solid var(--ring);border-radius:var(--r);background:var(--card);box-shadow:var(--shadow)}
+.tblwrap{overflow:auto;max-height:72vh;border:1px solid var(--ring);border-radius:var(--r);background:var(--card);box-shadow:var(--shadow)}
 table{border-collapse:collapse;width:100%;font-size:13px;min-width:820px}
 th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--grid);white-space:nowrap}
 th{position:sticky;top:0;background:var(--surface-1);font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);cursor:pointer;user-select:none;z-index:2}
 th:hover{color:var(--text-1)}
+th .sortind{font-size:9px;letter-spacing:0}
 th.num,td.num{text-align:right}
 tbody tr:hover{background:var(--plane)}
 td .ct{display:inline-flex;align-items:center;gap:6px}
@@ -191,7 +192,6 @@ td .cdot{width:8px;height:8px;border-radius:50%}
   .kpis{grid-template-columns:repeat(2,1fr)}
   .recs{grid-template-columns:1fr}
   .buy-grid{grid-template-columns:1fr}
-  .tabbar{top:55px}
 }
 @media(max-width:520px){ .kpis{grid-template-columns:1fr} .grid{grid-template-columns:1fr 1fr;gap:10px} }
 @media(max-width:380px){ .grid{grid-template-columns:1fr} }
@@ -205,12 +205,12 @@ td .cdot{width:8px;height:8px;border-radius:50%}
     <button class="tbtn" id="themeBtn">🌙 <span id="themeLbl">Dunkel</span></button>
   </div>
 </header>
-<div class="tabbar"><div class="wrap"><div class="tabs" id="tabs"></div></div></div>
+<div class="tabbar"><div class="wrap"><div class="tabs" id="tabs" role="tablist" aria-label="Bereiche"></div></div></div>
 <div class="wrap"><div id="affBar" class="affbar" style="display:none"></div></div>
 
 <div class="wrap">
   <!-- ÜBERSICHT -->
-  <section class="panel" id="panel-uebersicht">
+  <section class="panel" id="panel-uebersicht" role="tabpanel">
     <div class="hero">
       <h1>MORE Nutrition – Produktvergleich & Empfehlungen</h1>
       <p class="lead">Alle Kategorien der Marke auf einen Blick – mit echten Produktbildern, transparentem Score für Proteine, Riegel & Snacks, klaren Kauf-Tipps und Bezugsquellen. Wähle oben einen Reiter.</p>
@@ -226,11 +226,11 @@ td .cdot{width:8px;height:8px;border-radius:50%}
   </section>
 
   <!-- PRODUKTE (shared for 6 category tabs) -->
-  <section class="panel" id="panel-products">
+  <section class="panel" id="panel-products" role="tabpanel">
     <div class="phead" id="catHead"></div>
     <div class="toolbar">
-      <input class="search" id="search" placeholder="In dieser Kategorie suchen…">
-      <select class="sort" id="sort">
+      <input class="search" id="search" placeholder="In dieser Kategorie suchen…" aria-label="In dieser Kategorie suchen">
+      <select class="sort" id="sort" aria-label="Sortieren">
         <option value="score">Sortieren: Bestbewertet</option>
         <option value="price">Preis (aufsteigend)</option>
         <option value="perserv">€ pro Portion</option>
@@ -252,7 +252,7 @@ td .cdot{width:8px;height:8px;border-radius:50%}
   </section>
 
   <!-- WO KAUFEN -->
-  <section class="panel" id="panel-buy">
+  <section class="panel" id="panel-buy" role="tabpanel">
     <div class="phead"><h2><span class="hbar" style="--acc:var(--acc-kochen)"></span>🛒 Wo bekommt man MORE Nutrition?</h2><p>Offizieller Shop + große Händler · Stand Juli 2026</p></div>
     <div class="buy-grid">
       <div class="pnl">
@@ -275,7 +275,7 @@ td .cdot{width:8px;height:8px;border-radius:50%}
   </section>
 
   <!-- INFO -->
-  <section class="panel" id="panel-info">
+  <section class="panel" id="panel-info" role="tabpanel">
     <div class="phead"><h2><span class="hbar" style="--acc:var(--muted)"></span>ℹ️ Methodik & Hinweise</h2></div>
     <div class="method">
       <p>Für die vergleichbaren Kategorien <b>Proteinpulver, Riegel und Snacks</b> berechnet die Seite je Produkt drei Teil-Scores und daraus einen Gesamtscore (0–100). Normalisiert wird jeweils <b>innerhalb der Kategorie</b> (bester Wert = 100). Fehlt ein Wert, fließt er nicht ein und die Gewichte werden anteilig neu verteilt.</p>
@@ -293,7 +293,7 @@ td .cdot{width:8px;height:8px;border-radius:50%}
         <span><i style="background:var(--warn)"></i>limitiert</span>
         <span><i style="background:var(--crit)"></i>ausverkauft</span>
       </div>
-      <p class="note">„€/Portion" ist – außer bei ausgewiesenen Grundpreisen – aus Preis ÷ Portionen berechnet. Nährwerte je Portion; Pudding/Porridge/Pancakes zubereitet (höherer Zucker beim Pudding stammt v. a. aus der Milch). „k.A." = nicht ausgewiesen. Produktbilder & Daten von morenutrition.de; ausgelistete Artikel (z. B. Nut Butter, Choco-Toppings) sind nicht enthalten. Werte sind eine Momentaufnahme.</p>
+      <p class="note">„€/Portion" ist – außer bei ausgewiesenen Grundpreisen – aus Preis ÷ Portionen berechnet. Nährwerte je Portion; Pudding/Porridge/Pancakes zubereitet (höherer Zucker beim Pudding stammt v. a. aus der Milch). „k.A." = nicht ausgewiesen. Produktbilder & Daten von morenutrition.de; ausgelistete Artikel (z. B. Choco-Toppings) sind nicht enthalten. Werte sind eine Momentaufnahme.</p>
       <div class="disc"><b>Hinweis:</b> Unabhängiger, informativer Vergleich ohne Verbindung zu MORE Nutrition. Keine Kauf-, Ernährungs- oder Gesundheitsberatung. Preise, Nährwerte, Sorten und Verfügbarkeit ändern sich laufend – verbindlich ist ausschließlich der jeweilige Shop. Angaben ohne Gewähr. Marken-/Produktnamen gehören ihren Eigentümern.</div>
       <div class="srcs"><b>Quellen:</b> morenutrition.de (Produkt- & Kollektionsseiten, Helpcenter) · kaufda.de · supermarktcheck.de · dm.de · rossmann.de · mueller.de · amazon.de · fitmart.de · t-online.de (Whey-Engpass) · morenutrition.ch</div>
     </div>
@@ -372,7 +372,7 @@ const PRODUCTS = [
 {id:"dessert",cat:"snacks",name:"More Protein Dessert (Brownie)",note:"Veganer Brownie-Style-Dessertmix, 23 g Protein & 0,5 g Zucker.",price:22.99,size:"600 g",servings:8,protein:23,sugar:0.5,kcal:209,rating:null,reviews:null,flavors:"Brownie",avail:"ausverkauft",tags:["vegan"],url:"https://morenutrition.de/products/more-protein-dessert"},
 
 {id:"chunky",cat:"chunky",name:"Chunky Flavour (Original)",note:"Geschmackspulver: süßt wie ~50 g Zucker mit nur 6–12 kcal.",price:15.99,size:"150 g",servings:50,rating:null,reviews:null,flavors:"17 Sorten",avail:"limitiert",tags:["Zucker sparen","glutenfrei"],pick:"top",pickTxt:"Vielseitigster Zuckersparer",url:"https://morenutrition.de/products/chunky-flavour"},
-{id:"stevia",cat:"chunky",name:"Stevia Chunky Flavour",note:"Süße auf 100 % Stevia-Basis, nur 0,5 g Zucker pro Portion.",price:11.99,size:"150 g",servings:50,rating:null,reviews:null,flavors:"2 Sorten",avail:"ausverkauft",tags:["Stevia","zuckerfrei"],pick:"value",pickTxt:"Günstigster / Portion",url:"https://morenutrition.de/products/stevia-chunky-flavour"},
+{id:"stevia",cat:"chunky",name:"Stevia Chunky Flavour",note:"Süße auf 100 % Stevia-Basis, nur 0,5 g Zucker pro Portion.",price:11.99,size:"150 g",servings:50,rating:null,reviews:null,flavors:"2 Sorten",avail:"ausverkauft",tags:["Stevia","zuckerfrei"],pick:"value",pickTxt:"Günstigste Einzeldose",url:"https://morenutrition.de/products/stevia-chunky-flavour"},
 {id:"chunkybundle",cat:"chunky",name:"Chunky Flavour Bundle",note:"3 × 150 g im Set – günstiger pro Dose, ideal zum Testen.",price:32.99,size:"3 × 150 g",servings:150,rating:null,reviews:null,flavors:"frei wählbar",avail:"limitiert",tags:["Set"],url:"https://morenutrition.de/products/chunky-flavour-bundle"},
 
 {id:"creagum",cat:"supplements",name:"Creatine+ Gummies",note:"3 g Kreatin + Carnitin als Gummidrops – ohne Anrühren.",price:29.99,size:"60 Gummies",servings:20,rating:null,reviews:null,avail:"ausverkauft",tags:["Kreatin","Gummies","zuckerfrei"],url:"https://morenutrition.de/products/creatine-gummies"},
@@ -387,7 +387,7 @@ const PRODUCTS = [
 {id:"curcu",cat:"supplements",name:"Curcu-More (Kurkuma)",note:"Hochdosiertes Kurkuma/Curcumin mit Brokkoli & Piperin.",price:29.99,size:"210 Kapseln",servings:30,rating:null,reviews:null,avail:"ausverkauft",tags:["Kurkuma"],url:"https://morenutrition.de/products/curcu-more-v2"},
 {id:"harmony",cat:"supplements",name:"More Harmony",note:"Adaptogene (Ashwagandha, Maca, L-Theanin) gegen Stress.",price:29.99,size:"90 Kapseln",servings:30,rating:null,reviews:null,avail:"ausverkauft",tags:["Stress"],url:"https://morenutrition.de/products/more-harmony"},
 {id:"cycle",cat:"supplements",name:"Cycle Balance",note:"Zyklus-Support mit B6, Mönchspfeffer, Magnesium & Eisen.",price:24.99,size:"120 Kapseln",servings:30,rating:null,reviews:null,avail:"ausverkauft",tags:["Frauen"],url:"https://morenutrition.de/products/cycle-balance"},
-{id:"collagen",cat:"supplements",name:"MORE Collagen+",note:"12 g Kollagen + Hyaluron + Vitamin C – Beauty-Drink. Meist verfügbar.",price:29.99,size:"300 g",servings:20,rating:null,reviews:null,avail:"auf Lager",tags:["Beauty","Kollagen"],pick:"popular",pickTxt:"Verfügbarer Beauty-Tipp",url:"https://morenutrition.de/products/more-collagen"},
+{id:"collagen",cat:"supplements",name:"MORE Collagen+",note:"12 g Kollagen + Hyaluron + Vitamin C – Beauty-Drink. Meist verfügbar.",price:29.99,size:"300 g",servings:20,rating:null,reviews:null,avail:"auf Lager",tags:["Beauty","Kollagen"],pick:"popular",pickTxt:"Beauty-Tipp",url:"https://morenutrition.de/products/more-collagen"},
 {id:"fiber",cat:"supplements",name:"Fiber Mix",note:"5 g Ballaststoffe pro Portion + Bakterienkulturen.",price:19.99,size:"180 g",servings:22,rating:null,reviews:null,avail:"ausverkauft",tags:["Ballaststoffe"],url:"https://morenutrition.de/products/fiber-mix"},
 {id:"everyworkout",cat:"supplements",name:"Every Workout (Pre-Workout)",note:"Citrullin + Kreatin + 120 mg Koffein – Energie fürs Training.",price:34.99,size:"270 g",servings:15,rating:null,reviews:null,avail:"ausverkauft",tags:["Pre-Workout","Koffein"],pick:"top",pickTxt:"Pre-Workout-Tipp",url:"https://morenutrition.de/products/every-workout-4-0"},
 
@@ -404,7 +404,7 @@ const PRODUCTS = [
 ];
 PRODUCTS.forEach(p=>{ p.img = IMG[p.id]||null; });
 const AVAIL_DATE = "17. Juli 2026";
-const LIVE = {"milkshake": [7, 17], "clear": [18, 21], "icedcoffee": [12, 21], "matcha": [11, 13], "chai": [1, 3], "milkyccino": [2, 6], "vegan": [3, 9], "glow": [4, 4], "satisbites": [6, 10], "proteinbar": [3, 8], "veganbar": [3, 3], "waferbar": [0, 1], "pudding": [1, 2], "porridge": [1, 1], "pancake": [2, 2], "griess": [1, 1], "milchreis": [1, 1], "dessert": [0, 2], "chunky": [14, 31], "stevia": [4, 4], "chunkybundle": [0, 1], "creagum": [1, 1], "bioticgum": [1, 1], "sleepgum": [1, 1], "creastick": [2, 2], "dailybiotic": [1, 1], "ashwa": [1, 1], "enzyme": [0, 1], "melatonin": [1, 1], "mineral": [1, 1], "curcu": [1, 1], "harmony": [1, 1], "cycle": [1, 1], "collagen": [7, 8], "fiber": [2, 2], "everyworkout": [4, 4], "saucenback": [4, 7], "saucenfix": [3, 3], "oilspray": [3, 3], "gourmet": [4, 9], "nomoresugar": [0, 1], "spices": [1, 2], "zerupbarista": [11, 11], "wrap": [1, 1], "salsa": [0, 1], "moremelade": [2, 3]};
+const LIVE = {"milkshake": [7, 17], "clear": [18, 21], "icedcoffee": [13, 21], "matcha": [11, 13], "chai": [1, 3], "milkyccino": [2, 6], "vegan": [3, 9], "glow": [4, 4], "satisbites": [6, 10], "proteinbar": [3, 8], "veganbar": [3, 3], "waferbar": [0, 1], "pudding": [1, 2], "porridge": [1, 1], "pancake": [2, 2], "griess": [1, 1], "milchreis": [1, 1], "dessert": [0, 2], "chunky": [14, 31], "stevia": [4, 4], "chunkybundle": [0, 1], "creagum": [1, 1], "bioticgum": [1, 1], "sleepgum": [1, 1], "creastick": [2, 2], "dailybiotic": [1, 1], "ashwa": [1, 1], "enzyme": [0, 1], "melatonin": [1, 1], "mineral": [1, 1], "curcu": [1, 1], "harmony": [1, 1], "cycle": [1, 1], "collagen": [7, 8], "fiber": [2, 2], "everyworkout": [4, 4], "saucenback": [4, 7], "saucenfix": [3, 3], "oilspray": [3, 3], "gourmet": [4, 9], "nomoresugar": [0, 1], "spices": [1, 2], "zerupbarista": [11, 11], "wrap": [1, 1], "salsa": [0, 1], "moremelade": [2, 3]};
 const NEWPRODUCTS = [{"name": "Protein Tortilla Chips", "type": "Snack", "handle": "protein-tortilla-chips"}, {"name": "More FIZI", "type": "Drink", "handle": "fizi"}, {"name": "Essentials O3-D3-K2", "type": "Supplement", "handle": "essentials-o3-d3-k2"}, {"name": "DAILY100", "type": "Food", "handle": "daily100"}, {"name": "Skin Structure Formula", "type": "Beauty", "handle": "skin-structure-formula"}, {"name": "More Breakfast Cup", "type": "Snack", "handle": "more-breakfast-cup"}, {"name": "Nut Butter", "type": "Food", "handle": "nut-butter"}, {"name": "Magnesium Complex Sticks", "type": "Supplement", "handle": "magnesium-complex-sticks"}, {"name": "Iron+ Sticks", "type": "Supplement", "handle": "iron-sticks"}];
 PRODUCTS.forEach(p=>{ const l=LIVE[p.id]; if(l){ p.varAvail=l[0]; p.varTotal=l[1]; p.avail = l[0]===0?"ausverkauft":(l[0]>=l[1]?"auf Lager":"limitiert"); } });
 
@@ -460,14 +460,14 @@ function catWinner(cat){ const m=Math.max(...PRODUCTS.filter(p=>p.cat===cat&&p._
 function topOf(cat){ return PRODUCTS.filter(p=>p.cat===cat&&p._total!=null).sort((a,b)=>b._total-a._total)[0]; }
 
 const RECS=[
-  (()=>{const p=topOf("proteine");return{tag:"Bestes Proteinpulver",name:p.name,why:"Höchster Gesamtscore der Pulver – starke Nährwerte, Preis-Leistung & Top-Bewertung.",cat:"proteine",score:p._total,extra:p.rating+"★"};})(),
-  (()=>{const p=topOf("riegel");return{tag:"Bester Proteinriegel",name:p.name,why:"Führt die Riegel im Score an – viel Protein, wenig Zucker, sehr beliebt.",cat:"riegel",score:p._total,extra:p.rating+"★"};})(),
-  (()=>{const p=topOf("snacks");return{tag:"Bester Snack",name:p.name,why:"Bester Snack-Score – hohe Proteindichte pro Kalorie und starke Reviews.",cat:"snacks",score:p._total,extra:p.rating+"★"};})(),
+  (()=>{const p=topOf("proteine");return{tag:"Bestes Proteinpulver",name:p.name,why:"Höchster Gesamtscore der Pulver – starke Nährwerte, Preis-Leistung & Top-Bewertung.",cat:"proteine",score:p._total,extra:p.rating.toLocaleString("de-DE")+"★"};})(),
+  (()=>{const p=topOf("riegel");return{tag:"Bester Proteinriegel",name:p.name,why:"Führt die Riegel im Gesamtscore an – Nährwerte, Preis-Leistung & Beliebtheit kombiniert.",cat:"riegel",score:p._total,extra:p.rating.toLocaleString("de-DE")+"★"};})(),
+  (()=>{const p=topOf("snacks");return{tag:"Bester Snack",name:p.name,why:"Bester Snack-Score – hohe Proteindichte pro Kalorie und starke Reviews.",cat:"snacks",score:p._total,extra:p.rating.toLocaleString("de-DE")+"★"};})(),
   {tag:"Meistbewertet",name:"Protein Iced Coffee",why:"Mit ~28.000 Bewertungen das populärste Produkt der Marke.",cat:"proteine",score:null,extra:"~28.000 Reviews"},
   {tag:"Kalorienärmstes Protein",name:"More Clear Protein",why:"25 g Protein, 0 g Zucker, nur 104 kcal – klar & erfrischend.",cat:"proteine",score:null,extra:"104 kcal"},
   {tag:"Preistipp Kreatin",name:"Creatine + Carnitine Sticks",why:"3 g Kreatin pro Portion für ca. 0,67 € – günstigste Kreatin-Option.",cat:"supplements",score:null,extra:"~0,67 €/Port."},
   {tag:"Zucker sparen",name:"Chunky Flavour",why:"Süßt wie ~50 g Zucker mit nur 6–12 kcal – 17 Sorten.",cat:"chunky",score:null,extra:"~0,32 €/Port."},
-  {tag:"Verfügbarer Beauty-Tipp",name:"MORE Collagen+",why:"12 g Kollagen + Hyaluron & Vitamin C – und aktuell meist auf Lager.",cat:"supplements",score:null,extra:"auf Lager"},
+  (()=>{const p=PRODUCTS.find(x=>x.id==="collagen");return{tag:"Beauty-Tipp",name:p.name,why:"12 g Kollagen + Hyaluron & Vitamin C – der Beauty-Drink der Marke.",cat:"supplements",score:null,extra:p.avail};})(),
   {tag:"Küchen-Essential",name:"2 KCALS Ölspray",why:"Nur 2 kcal pro Sprühstoß statt eines Schusses Öl.",cat:"kochen",score:null,extra:"5,99 €"}
 ];
 
@@ -515,7 +515,7 @@ function cardHTML(p){
   let mid="";
   if(isProt){
     mid=`<div class="ministat">
-      <div class="ms"><div class="mv tnum">${p.protein==null?"–":p.protein+"g"}</div><div class="ml">Protein</div></div>
+      <div class="ms"><div class="mv tnum">${p.protein==null?"–":p.protein.toLocaleString("de-DE")+"g"}</div><div class="ml">Protein</div></div>
       <div class="ms"><div class="mv tnum">${p.sugar==null?"–":p.sugar.toLocaleString("de-DE")+"g"}</div><div class="ml">Zucker</div></div>
       <div class="ms"><div class="mv tnum">${p.kcal==null?"–":p.kcal}</div><div class="ml">kcal</div></div>
     </div>
@@ -553,7 +553,7 @@ function getFiltered(){
     if(p.cat!==activeCat)return false;
     if(fA&&p.avail!=="auf Lager")return false;
     if(fV&&!(p.tags||[]).includes("vegan"))return false;
-    if(fS&&!(p.tags||[]).some(t=>/zuckerfrei|zuckerarm|Zucker|Stevia/.test(t)))return false;
+    if(fS&&!((p.sugar!=null&&p.sugar<=2)||(p.tags||[]).some(t=>/zuckerfrei|zuckerarm|Zucker|Stevia/.test(t))))return false;
     if(q){const hay=(p.name+" "+p.note+" "+(p.tags||[]).join(" ")).toLowerCase();if(!hay.includes(q))return false;}
     return true;
   });
@@ -563,13 +563,14 @@ function getFiltered(){
 }
 function renderTable(list){
   const cols=[["name","Produkt",0],["price","Preis",1],["perserv","€/Port.",1],["protein","Protein",1],["sugar","Zucker",1],["kcal","kcal",1],["rating","Bew.",1],["_total","Score",1],["avail","Verfügbar",0]];
-  let h="<thead><tr>"+cols.map(c=>`<th class="${c[2]?'num':''}" data-k="${c[0]}">${c[1]}</th>`).join("")+"</tr></thead>";
+  let h="<thead><tr>"+cols.map(c=>`<th class="${c[2]?'num':''}" data-k="${c[0]}" aria-sort="${tsort.key===c[0]?(tsort.dir>0?"ascending":"descending"):"none"}">${c[1]}${tsort.key===c[0]?`<span class="sortind">${tsort.dir>0?" ▲":" ▼"}</span>`:""}</th>`).join("")+"</tr></thead>";
   const rows=list.map(p=>{const ps=perServing(p),a=AVAIL[p.avail]||AVAIL["limitiert"];const im=p.img?`<img src="${imgURL(p.img)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:"";
-    return `<tr><td><span class="tprod">${im}${p.name}</span></td><td class="num tnum">${eur(p.price)}</td><td class="num tnum">${ps==null?"–":eur(ps)}</td><td class="num tnum">${p.protein==null?"–":p.protein+" g"}</td><td class="num tnum">${p.sugar==null?"–":p.sugar.toLocaleString("de-DE")+" g"}</td><td class="num tnum">${p.kcal==null?"–":p.kcal}</td><td class="num tnum">${p.rating==null?"–":p.rating.toLocaleString("de-DE")+"★"}</td><td class="num">${p._total==null?"–":`<span class="scorepill" style="background:${scoreColor(p._total)}">${p._total}</span>`}</td><td><span style="color:${a.c}">●</span> ${a.t}</td></tr>`;}).join("");
+    return `<tr><td><span class="tprod">${im}${p.name}</span></td><td class="num tnum">${eur(p.price)}</td><td class="num tnum">${ps==null?"–":eur(ps)}</td><td class="num tnum">${p.protein==null?"–":p.protein.toLocaleString("de-DE")+" g"}</td><td class="num tnum">${p.sugar==null?"–":p.sugar.toLocaleString("de-DE")+" g"}</td><td class="num tnum">${p.kcal==null?"–":p.kcal}</td><td class="num tnum">${p.rating==null?"–":p.rating.toLocaleString("de-DE")+"★"}</td><td class="num">${p._total==null?"–":`<span class="scorepill" style="background:${scoreColor(p._total)}">${p._total}</span>`}</td><td><span style="color:${a.c}">●</span> ${a.t}</td></tr>`;}).join("");
   const tbl=document.getElementById("tbl"); tbl.innerHTML=h+"<tbody>"+rows+"</tbody>";
   tbl.querySelectorAll("th").forEach(th=>th.onclick=()=>{const k=th.dataset.k;tsort.dir=tsort.key===k?-tsort.dir:(["name","avail"].includes(k)?1:-1);tsort.key=k;render();});
 }
-function sortForTable(list){const k=tsort.key,d=tsort.dir,val=p=>k==="perserv"?perServing(p):p[k];return [...list].sort((a,b)=>{let x=val(a),y=val(b);if(typeof x==="string"||typeof y==="string"){return (x||"").toString().localeCompare((y||"").toString())*d;}x=x==null?-Infinity:x;y=y==null?-Infinity:y;return (x-y)*d;});}
+const AVAIL_RANK={"auf Lager":0,"limitiert":1,"ausverkauft":2,"coming soon":3};
+function sortForTable(list){const k=tsort.key,d=tsort.dir,val=p=>k==="perserv"?perServing(p):(k==="avail"?AVAIL_RANK[p.avail]:p[k]);return [...list].sort((a,b)=>{let x=val(a),y=val(b);const xn=x==null,yn=y==null;if(xn||yn)return xn&&yn?0:(xn?1:-1);if(typeof x==="string"||typeof y==="string"){return x.toString().localeCompare(y.toString())*d;}return (x-y)*d;});}
 function render(){
   const list=getFiltered(), c=CATS[activeCat];
   document.getElementById("catHead").innerHTML=`<h2><span class="hbar" style="--acc:${c.color}"></span>${c.label}</h2><p>${c.desc}</p>`;
@@ -580,23 +581,31 @@ function render(){
 
 const TABS=[["uebersicht","Übersicht",null],...CATORDER.map(c=>[c,CATS[c].label,CATS[c].hex]),["buy","Wo kaufen",null],["info","Info",null]];
 function renderTabs(){
-  document.getElementById("tabs").innerHTML=TABS.map(t=>`<button class="tab" data-tab="${t[0]}" ${t[2]?`style="--tabc:${t[2]}"`:""}>${t[2]?'<span class="tdot"></span>':''}${t[1]}${CATS[t[0]]?`<span class="tcount">${PRODUCTS.filter(p=>p.cat===t[0]).length}</span>`:""}</button>`).join("");
+  document.getElementById("tabs").innerHTML=TABS.map(t=>`<button class="tab" data-tab="${t[0]}" role="tab" aria-selected="false" aria-controls="${CATS[t[0]]?"panel-products":"panel-"+t[0]}" ${t[2]?`style="--tabc:${t[2]}"`:""}>${t[2]?'<span class="tdot"></span>':''}${t[1]}${CATS[t[0]]?`<span class="tcount">${PRODUCTS.filter(p=>p.cat===t[0]).length}</span>`:""}</button>`).join("");
   document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 }
 function showTab(tab){
-  document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("on",b.dataset.tab===tab));
+  document.querySelectorAll(".tab").forEach(b=>{const on=b.dataset.tab===tab;b.classList.toggle("on",on);b.setAttribute("aria-selected",on?"true":"false");});
   const isCat=!!CATS[tab];
   document.getElementById("panel-uebersicht").classList.toggle("on",tab==="uebersicht");
   document.getElementById("panel-products").classList.toggle("on",isCat);
   document.getElementById("panel-buy").classList.toggle("on",tab==="buy");
   document.getElementById("panel-info").classList.toggle("on",tab==="info");
   if(isCat){activeCat=tab;document.getElementById("search").value="";render();}
-  window.scrollTo({top:0,behavior:"instant"in window?"instant":"auto"});
+  window.scrollTo(0,0);
 }
 
+// Dropdown-Sortierung auf die Tabellen-Sortierung spiegeln (sonst wirkt das Dropdown in der Tabellen-Ansicht nicht)
+const SORT2TSORT={score:["_total",-1],price:["price",1],perserv:["perserv",1],protein:["protein",-1],sugar:["sugar",1],rating:["rating",-1],reviews:["reviews",-1]};
+document.getElementById("sort").addEventListener("change",()=>{const m=SORT2TSORT[document.getElementById("sort").value];if(m){tsort.key=m[0];tsort.dir=m[1];}});
 ["search","sort","fAvail","fVegan","fSugar"].forEach(id=>{const el=document.getElementById(id);el.addEventListener(el.tagName==="INPUT"&&el.type!=="checkbox"?"input":"change",render);});
 document.getElementById("vCards").onclick=()=>{view="cards";document.getElementById("vCards").classList.add("on");document.getElementById("vTable").classList.remove("on");render();};
 document.getElementById("vTable").onclick=()=>{view="table";document.getElementById("vTable").classList.add("on");document.getElementById("vCards").classList.remove("on");render();};
+// Tabbar-Sticky-Offset = echte Header-Höhe (fester 55px-Wert lag unter der realen Höhe → Überlappung)
+const _hdr=document.querySelector("header.top");
+function setHeadH(){document.documentElement.style.setProperty("--headh",_hdr.offsetHeight+"px");}
+setHeadH();window.addEventListener("resize",setHeadH);
+
 const themeBtn=document.getElementById("themeBtn");
 function setTheme(t){document.documentElement.setAttribute("data-theme",t);document.getElementById("themeLbl").textContent=t==="dark"?"Hell":"Dunkel";themeBtn.firstChild.textContent=t==="dark"?"☀️ ":"🌙 ";}
 let theme=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"; setTheme(theme);

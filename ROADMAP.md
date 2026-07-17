@@ -34,8 +34,9 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
 
 ## 4. Deployment & automatischer Rebuild
 - Statisches Hosting: Netlify / Vercel / Cloudflare Pages / GitHub Pages.
-- Wöchentlichen Verfügbarkeits-Refresh von der Cowork-Scheduled-Task auf **CI** umziehen
-  (z. B. GitHub Actions: Handles abrufen → `live.json` schreiben → `generate.py` → deploy).
+- Wöchentlichen Verfügbarkeits-Refresh von der Cowork-Scheduled-Task auf **CI** umziehen —
+  `refresh.py` erledigt bereits Abruf + `live.json` + Regeneration in einem Lauf
+  (GitHub Actions muss es nur wöchentlich ausführen und deployen).
   Achtung: die Abfrage muss die Shopify-`.js`/`.json`-Endpunkte serverseitig lesen.
 - **Akzeptanz:** Push deployt automatisch; wöchentlicher Job aktualisiert die Verfügbarkeit ohne
   manuelles Zutun.

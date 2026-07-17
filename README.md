@@ -14,6 +14,7 @@ Python-Generator für die Verfügbarkeits-Updates.
 | `index.html` / `more-nutrition-vergleich.html` | Die fertige Seite (identisch). Einfach im Browser öffnen. |
 | `template.html` | Seiten-Vorlage mit Platzhaltern `__AVAIL_DATE__`, `__LIVE__`, `__NEWPRODUCTS__`. |
 | `generate.py` | Erzeugt die Seite aus Vorlage + `live.json`. |
+| `refresh.py` | Holt die Live-Verfügbarkeit von morenutrition.de, schreibt `live.json` und regeneriert die Seite. |
 | `live.json` | Aktuelle Live-Daten (Verfügbarkeit je Variante, neue Produkte, Datum). |
 | `CLAUDE.md` | Projekt-Brief & Konventionen (für Claude Code / Entwickler:innen). |
 | `ROADMAP.md` | Nächste Ausbaustufen mit Akzeptanzkriterien. |

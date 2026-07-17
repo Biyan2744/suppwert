@@ -20,9 +20,12 @@ Affiliate) — siehe `ROADMAP.md`.
 
 ### Build / Run
 ```bash
-python3 generate.py template.html live.json index.html   # Seite neu erzeugen
+python3 refresh.py                                        # Live-Verfügbarkeit holen + Seite neu erzeugen
+python3 generate.py template.html live.json index.html    # nur Seite neu erzeugen (ohne Netz)
 # oder Datei einfach direkt im Browser öffnen
 ```
+`refresh.py` aktualisiert NUR `availDate` + `live` (mit Retry/Backoff gegen Shopify-503) und
+schlägt neue Katalog-Produkte lediglich als Kandidaten vor — `newProducts` bleibt kuratiert.
 Kein Test-Framework vorhanden. **Verifikation via Headless-Browser** (empfohlen):
 Playwright/Chromium laden `index.html`, auf `pageerror`/console-errors prüfen und Screenshots
 machen. `net::ERR_...`/„Failed to load resource" von Bild-URLs sind KEINE JS-Fehler (externe CDN).
