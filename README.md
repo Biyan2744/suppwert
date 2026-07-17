@@ -1,4 +1,4 @@
-# MORE Nutrition – Produktvergleich
+# Suppwert – unabhängiger Produktvergleich für MORE Nutrition
 
 Interaktive Vergleichsseite für Produkte der Marke **MORE Nutrition**: alle Kategorien mit
 Preisen, Nährwerten, Bewertungen, einem transparenten Score, **Live-Verfügbarkeit je Variante**,

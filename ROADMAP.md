@@ -66,6 +66,21 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+## Rechtliche Leitplanken (Recherche 17.07.2026 — Einschätzung, keine Rechtsberatung)
+- **Seitentyp ist legitim:** unabhängige, redaktionelle Produktvergleiche über eine Marke sind
+  zulässig; die Markennennung im Text ist erlaubt (beschreibende Nutzung, § 23 MarkenG).
+- **Marke nicht im Eigennamen:** Domain/Repo/Wortmarke ohne „MORE" (BGH I ZR 236/16; Fall
+  IKEAhackers). → Erledigt durch Umbenennung in **Suppwert** (17.07.); Domain-Kandidat
+  suppwert.de war zum Recherchezeitpunkt frei (DENIC-RDAP 404) — Registrierung macht Biyan.
+- **Produktbilder = offenes Risiko:** die 54 Fotos von morenutrition.de sind ohne Lizenz
+  abmahnbar (Unterlassung + Schadensersatz je Bild). Vor dem Live-Gang: Farb-Platzhalter
+  (onerror-Fallback existiert) ODER Freigabe von MORE (in Partner-Bewerbung mit anfragen).
+  Biyan hat entschieden, das Repo trotz der Bilder vorerst public zu lassen (17.07.).
+- **Beim Aktivieren von Affiliate:** Kennzeichnungspflicht (§ 5a UWG/§ 6 DDG) — Werbehinweis-Bar
+  ist verkabelt; Datenschutz-Abschnitt 5 VORHER aktualisieren.
+- **Ranking-Transparenz** (P2B/UWG): Hauptparameter offenlegen — durch die öffentliche
+  Score-Methodik bereits erfüllt.
+
 ## Bekannte Nuancen
 - `.js`-Preis = oft nur Probengröße → Preise bleiben kuratiert.
 - Externe Produktbilder (Shopify-CDN) laden je nach Umgebung; `onerror`-Fallback vorhanden.

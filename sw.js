@@ -3,7 +3,7 @@
      nie eine veraltete Seite sehen; der Cache ist nur Offline-Fallback.
    - Assets (Bilder, Fonts, Manifest): stale-while-revalidate — aendern sich praktisch nie.
    Externe Hosts (Shopify-CDN) laufen bewusst am Cache vorbei. */
-const CACHE = "mn-vergleich-v2";
+const CACHE = "suppwert-v3";
 self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", e => {
   e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));

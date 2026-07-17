@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MORE Nutrition – Produktvergleich & Empfehlungen</title>
-<meta name="description" content="Unabhängiger Produktvergleich für MORE Nutrition: alle Kategorien mit Preisen, Nährwerten, Bewertungen, transparentem Score und Live-Verfügbarkeit je Sorte – plus Merkzettel mit 1-Klick-Warenkorb.">
-<meta property="og:title" content="MORE Nutrition – Produktvergleich & Empfehlungen">
-<meta property="og:description" content="Alle MORE-Produkte im Vergleich: Preise, Nährwerte, Scores & Live-Verfügbarkeit je Sorte.">
+<title>Suppwert – unabhängiger Produktvergleich für MORE Nutrition</title>
+<meta name="description" content="Suppwert: unabhängiger Produktvergleich für MORE-Nutrition-Produkte – alle Kategorien mit Preisen, Nährwerten, Bewertungen, transparentem Score und Live-Verfügbarkeit je Sorte, plus Merkzettel mit 1-Klick-Warenkorb.">
+<meta property="og:title" content="Suppwert – unabhängiger Produktvergleich für MORE Nutrition">
+<meta property="og:description" content="Alle MORE-Nutrition-Produkte im Vergleich: Preise, Nährwerte, Scores & Live-Verfügbarkeit je Sorte.">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="de_DE">
 <meta name="twitter:card" content="summary">
@@ -357,8 +357,8 @@ body.has-cart .cmpchip{bottom:74px}
 <header class="top">
   <div class="wrap top-in">
     <a class="brand" href="#uebersicht" aria-label="Zur Übersicht">
-      <svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#1baf7a"/><path d="M14 46V20h7l7.5 12.5L36 20h7v26h-6.5V31.5L29.5 43h-2L20.5 31.5V46z" fill="#fff"/><circle cx="49" cy="17" r="6" fill="#eda100"/></svg>
-      <span class="bt"><b>MORE Vergleich</b><span>Unabhängiger Produktvergleich</span></span>
+      <svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#1baf7a"/><circle cx="32" cy="32" r="18" fill="none" stroke="#fff" stroke-width="4"/><g transform="rotate(45 32 32)"><path d="M32 17L38 32H26Z" fill="#fff"/><path d="M32 47L38 32H26Z" fill="#eda100"/></g></svg>
+      <span class="bt"><b>Suppwert</b><span>Unabhängiger MORE-Nutrition-Vergleich</span></span>
     </a>
     <div class="top-sp"></div>
     <span class="indep">Unabhängig · kein offizieller Shop</span>
@@ -507,7 +507,7 @@ body.has-cart .cmpchip{bottom:74px}
 <footer class="foot">
   <div class="wrap foot-in">
     <div class="fcol">
-      <div class="fbrand">MORE Vergleich</div>
+      <div class="fbrand">Suppwert</div>
       <p>Unabhängiger, redaktioneller Produktvergleich für das Sortiment von MORE Nutrition – ohne Verbindung zu MORE Nutrition. Keine Kauf-, Ernährungs- oder Gesundheitsberatung.</p>
     </div>
     <div class="fcol">
@@ -1222,7 +1222,7 @@ renderCart();renderCmpChip();
 
 /* SEO: strukturierte Daten direkt aus dem Produktbestand */
 (function(){
-  const ld={"@context":"https://schema.org","@type":"ItemList","name":"MORE Nutrition Produktvergleich","numberOfItems":PRODUCTS.length,
+  const ld={"@context":"https://schema.org","@type":"ItemList","name":"Suppwert – unabhängiger Produktvergleich für MORE Nutrition","numberOfItems":PRODUCTS.length,
     "itemListElement":PRODUCTS.map((p,i)=>({"@type":"ListItem","position":i+1,"item":Object.assign({"@type":"Product","name":p.name,"url":p.url},
       p.rating!=null&&p.reviews?{"aggregateRating":{"@type":"AggregateRating","ratingValue":p.rating,"reviewCount":p.reviews}}:{})}))};
   const s=document.createElement("script");s.type="application/ld+json";s.textContent=JSON.stringify(ld);document.head.appendChild(s);

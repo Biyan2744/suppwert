@@ -1,6 +1,16 @@
-# CLAUDE.md — MORE Nutrition Produktvergleich
+# CLAUDE.md — Suppwert (Produktvergleich für MORE Nutrition)
 
 Kontext & Konventionen für Claude Code. Bitte vor Änderungen lesen.
+
+## Namensregel (Markenrecht — WICHTIG, 17.07.2026)
+Der Eigenname der Seite ist **Suppwert** (Fantasiewort, Domain-Kandidat suppwert.de).
+„MORE Nutrition" darf überall **beschreibend** genannt werden („unabhängiger Vergleich für
+MORE-Nutrition-Produkte"), aber **NIE** als Teil des Eigennamens, der Domain, des Repo-Namens
+oder der Wortmarke/des Logos (BGH I ZR 236/16: fremde Marke im Domainnamen ist auch für
+Anbieter von Originalware unzulässig; Fall IKEAhackers). Offen bleibt die **Bildfrage**:
+die 54 Produktfotos stammen von morenutrition.de und sind ohne Lizenz abmahnbar — vor dem
+Live-Gang entweder durch die vorhandenen Farb-Platzhalter ersetzen oder Freigabe von MORE
+einholen (Teil der Partner-Bewerbung, siehe BEWERBUNG-NOTIZEN.md lokal).
 
 ## Was das Projekt ist
 Ein **Produktvergleich für MORE Nutrition** (deutsche Supplement-Marke, morenutrition.de).
