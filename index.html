@@ -434,7 +434,9 @@ body.has-cart .cmpchip{bottom:74px}
 .setform input{border:1px solid var(--line);background:var(--surface-1);color:var(--text-1);border-radius:10px;padding:9px 12px;font-size:13.5px}
 .setform input::placeholder{color:var(--muted)}
 .setgen{margin-bottom:16px}
-.setgen h3{font-size:15px}
+.setgen summary{font-size:15px;font-weight:800;letter-spacing:-.2px;cursor:pointer;user-select:none}
+.setgen summary:hover{color:var(--m-value)}
+.setgen[open] summary{margin-bottom:2px}
 .setgen .goalbtns{margin-top:10px}
 .setalts a{color:var(--m-value);text-decoration:none;font-weight:600}
 .setalts a:hover{text-decoration:underline}
@@ -651,9 +653,12 @@ body.has-cart .cmpchip{bottom:74px}
       <button type="button" class="catchip" id="setSrcAlt" aria-pressed="false">+ andere Anbieter</button>
       <button type="button" class="catchip" id="setNew">＋ Eigenes Set erstellen &amp; teilen</button>
     </div>
-    <div class="pnl setgen">
-      <h3>Set aus dem aktuellen Bestand generieren</h3>
-      <p class="note" style="margin-top:6px">Wähle ein Thema – aus den <b>gerade lieferbaren</b> Produkten entsteht ein sinnvolles Set: kuratierte Themen-Pools, beste Scores zuerst, Ziel ist die Gratisversand-Schwelle. Deterministisch, kein Zufalls-Kram.</p>
+    <!-- Zuklappbar (Biyan: der Generator ist sonst zu dominant, wenn man ihn nicht braucht) —
+         natives details/summary, standardmaessig ZU; ein erzeugter Vorschlag bleibt beim
+         Zuklappen erhalten und ist beim naechsten Aufklappen wieder da -->
+    <details class="pnl setgen">
+      <summary>Set aus dem aktuellen Bestand generieren</summary>
+      <p class="note" style="margin-top:8px">Wähle ein Thema – aus den <b>gerade lieferbaren</b> Produkten entsteht ein sinnvolles Set: kuratierte Themen-Pools, beste Scores zuerst, Ziel ist die Gratisversand-Schwelle. Deterministisch, kein Zufalls-Kram.</p>
       <div class="goalbtns" id="sgThemes"></div>
       <div class="smart-ctl">
         <label for="sgBudget">Budget:</label>
@@ -666,7 +671,7 @@ body.has-cart .cmpchip{bottom:74px}
         <button type="button" class="goalbtn" id="sgGo">Set generieren</button>
       </div>
       <div id="sgOut"></div>
-    </div>
+    </details>
     <div class="setgrid" id="setgrid"></div>
     <div class="sub-h">Creator- &amp; Community-Sets</div>
     <p class="note" id="comnote"></p>

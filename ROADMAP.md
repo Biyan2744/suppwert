@@ -98,7 +98,9 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
-> **Sets-Ausbau II: Bestands-Generator + Anbieter-Wahl (18.07.):** (a) „Set aus dem aktuellen
+> **Sets-Ausbau II: Bestands-Generator + Anbieter-Wahl (18.07.):** *(Nachtrag: Generator-Box
+> ist zuklappbar — natives details/summary, startet zu; ein generierter Vorschlag überlebt
+> das Zuklappen.)* (a) „Set aus dem aktuellen
 > Bestand generieren": Themen-Chips (die 6 kuratierten GOALS-Pools aus dem Ratgeber) + Budget
 > → deterministisches Set NUR aus gerade lieferbaren Produkten via smartCart (Score-Rangfolge,
 > Versandschwellen-Logik) — „sinnvoll statt Kram", weil nur thematisch kuratierte Pools in
