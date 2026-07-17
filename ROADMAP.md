@@ -98,6 +98,13 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Kopf-an-Kopf-Duell im Vergleich (17.07., Vorbild UserBenchmark):** Die Vergleichsseite
+> zeigt die ersten beiden gewählten Produkte als großes Duell — zwei Karten mit Bild/Platzhalter,
+> Name, Preis und großem Score, „VS" in der Mitte, leere Slots als gestrichelte Einladung.
+> Darunter 10 Metrik-Zeilen (Preis, Grundpreis, €/Portion, Portionen, Protein, Zucker,
+> Proteindichte, Score, Bewertung, Beliebtheit): Gewinner grün + „+X %"-Vorteil + Richtungs-
+> balken; identische Werte ehrlich „gleich"; Zeilen ohne Daten entfallen. Detail-Tabelle
+> („Alle Details") bleibt darunter und deckt auch Produkt 3–4 ab.
 > **Produkte-Reiter statt 6 Kategorie-Reitern (17.07.):** Die Tab-Leiste schrumpft von 13 auf
 > 8 Reiter. Ein Reiter „Produkte" bündelt alles: Kategorie-Chips („Alle" + 6 Kategorien mit
 > Zählern) als Filter, Standard „Alle" zeigt alle 56 gruppiert in Kategorie-Sektionen mit
