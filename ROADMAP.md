@@ -98,6 +98,11 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Vergleich-Reiter + Portionen (17.07.):** Neuer Tab „Vergleich" – Produkte per Suche
+> hinzufügen und bis zu 4 direkt gegenüberstellen (inline-Tabelle, gleiche cmp-Auswahl wie die
+> Karten-Häkchen, beide Wege synchron; Kapazität von 3 auf 4 erhöht). Vergleichstabelle +
+> Produktkarten zeigen jetzt „Portionen gesamt" bzw. „Größe · N Portionen", wo die Daten es
+> hergeben (servings-Feld; bei 1-Portion-/servingslosen Produkten weggelassen).
 > **Shop-Fenster (17.07.):** Der „+ andere Anbieter"-Modus zeigt statt einer Dauer-Zeile auf
 > jeder Karte einen kompakten Button „Auch bei anderen Shops", der ein kleines Modal öffnet:
 > pro Produkt die Anbieter als große Link-Zeilen (Amazon = kuratierter Direktlink → später der
