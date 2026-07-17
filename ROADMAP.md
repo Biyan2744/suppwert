@@ -98,6 +98,13 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Katalog-Vollständigkeit (17.07.):** kompletten Live-Katalog (104 Einträge) gegen unsere
+> Produkte abgeglichen. Ergebnis: nur 2 echte Einzelprodukte fehlten → hinzugefügt
+> (**Zerup Zero Sirup** 65 ml/48 Sorten; **Every Workout 3.0**, die günstigere Altversion,
+> bestehendes umbenannt in „4.0"). Jetzt 56 Produkte. Die restlichen ~48 Katalog-Einträge sind
+> bewusst ausgeschlossen (15 Bücher, 12 Bundles/Multipacks, ~11 Tasterboxen/Sets/Starterkits,
+> 5 Zubehör, Gutschein/Pfand/Kühlpack) — keine vergleichbaren Einzelprodukte. Falls Bundles
+> doch gewünscht: eigene Entscheidung (verzerren den €/Portion-Vergleich, rotieren stark).
 > **Vergleich-Reiter + Portionen (17.07.):** Neuer Tab „Vergleich" – Produkte per Suche
 > hinzufügen und bis zu 4 direkt gegenüberstellen (inline-Tabelle, gleiche cmp-Auswahl wie die
 > Karten-Häkchen, beide Wege synchron; Kapazität von 3 auf 4 erhöht). Vergleichstabelle +
