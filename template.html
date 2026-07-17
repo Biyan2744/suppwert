@@ -433,6 +433,11 @@ body.has-cart .cmpchip{bottom:74px}
 .setform{display:flex;flex-direction:column;gap:8px;margin:12px 0 4px}
 .setform input{border:1px solid var(--line);background:var(--surface-1);color:var(--text-1);border-radius:10px;padding:9px 12px;font-size:13.5px}
 .setform input::placeholder{color:var(--muted)}
+.setgen{margin-bottom:16px}
+.setgen h3{font-size:15px}
+.setgen .goalbtns{margin-top:10px}
+.setalts a{color:var(--m-value);text-decoration:none;font-weight:600}
+.setalts a:hover{text-decoration:underline}
 .rchip .gsc{font-weight:800;color:var(--m-value);margin-left:2px}
 .tips{margin:0;padding-left:18px;font-size:12.5px;color:var(--text-2);line-height:1.6;display:flex;flex-direction:column;gap:7px}
 .tips b{color:var(--text-1)}
@@ -642,7 +647,25 @@ body.has-cart .cmpchip{bottom:74px}
     <div class="phead"><h2><span class="hbar" style="--acc:var(--acc-supplements)"></span>Fertige Sets</h2><p>Von uns redaktionell zusammengestellte Produkt-Kombis – ein Klick legt alle lieferbaren Artikel in den Merkzettel. Das sind unsere Empfehlungen aus dem Sortiment, keine Kaufdaten.</p></div>
     <div class="setctl">
       <button type="button" class="catchip" id="setAvail" aria-pressed="false">Nur komplett lieferbare Sets</button>
+      <button type="button" class="catchip on" id="setSrcMore" aria-pressed="true">Nur MORE-Shop</button>
+      <button type="button" class="catchip" id="setSrcAlt" aria-pressed="false">+ andere Anbieter</button>
       <button type="button" class="catchip" id="setNew">＋ Eigenes Set erstellen &amp; teilen</button>
+    </div>
+    <div class="pnl setgen">
+      <h3>Set aus dem aktuellen Bestand generieren</h3>
+      <p class="note" style="margin-top:6px">Wähle ein Thema – aus den <b>gerade lieferbaren</b> Produkten entsteht ein sinnvolles Set: kuratierte Themen-Pools, beste Scores zuerst, Ziel ist die Gratisversand-Schwelle. Deterministisch, kein Zufalls-Kram.</p>
+      <div class="goalbtns" id="sgThemes"></div>
+      <div class="smart-ctl">
+        <label for="sgBudget">Budget:</label>
+        <select id="sgBudget" class="sort">
+          <option value="55">bis ~55 € (Gratisversand)</option>
+          <option value="75">bis ~75 €</option>
+          <option value="100">bis ~100 €</option>
+          <option value="150">bis ~150 €</option>
+        </select>
+        <button type="button" class="goalbtn" id="sgGo">Set generieren</button>
+      </div>
+      <div id="sgOut"></div>
     </div>
     <div class="setgrid" id="setgrid"></div>
     <div class="sub-h">Creator- &amp; Community-Sets</div>
@@ -1212,6 +1235,16 @@ const SETS=[
 /* Anklick-Option "Nur komplett lieferbare Sets" (Biyan) — filtert Sets, in denen gerade
    mindestens ein Artikel ausverkauft ist; die Zahl der ausgeblendeten wird ehrlich genannt. */
 let setsOnlyAvail=false;
+/* Anbieter-Wahl "Nur MORE-Shop / + andere Anbieter" (Biyan: wenn nicht alles bei MORE
+   lieferbar ist, muss man auf mehrere Shops verteilen): im Alt-Modus zeigen AUSVERKAUFTE
+   Set-Posten die Anbieter-Links aus shopLinks() (Amazon-Direktlink wo kuratiert, sonst
+   Produktsuche). EHRLICH bleibt: der 1-Klick-Warenkorb kann nur MORE befuellen, andere
+   Anbieter werden separat bestellt und haben bei uns keine Live-Preise/-Verfuegbarkeit. */
+let setsAltSrc=false;
+function setAltLinksHTML(p){
+  const ls=shopLinks(p); if(!ls.length)return "";
+  return ` · <span class="setalts">bei ${ls.map(l=>`<a href="${l.href}" target="_blank" rel="noopener" title="${l.direct?"Direkt zum Produkt":"Produktsuche beim Anbieter"}">${escT(l.label)}${l.direct?" ↗":""}</a>`).join(" · ")}</span>`;
+}
 function renderSets(){
   let hidden=0;
   document.getElementById("setgrid").innerHTML=SETS.map(s=>{
@@ -1221,7 +1254,7 @@ function renderSets(){
     const sum=buyable.reduce((a,r)=>a+r.v.pr,0);
     const items=rows.map(r=>r.v&&r.v.pr
       ? `<div class="setit"><span class="sn"><b>${escT(r.p.name)}</b><small>${escT(r.v.flavor)}${r.v.size?" · "+escT(r.v.size):""}${r.p._total!=null?" · Score "+r.p._total:""}</small></span><span class="sp tnum">${eur(r.v.pr)}</span></div>`
-      : `<div class="setit gone"><span class="sn"><b>${escT(r.p.name)}</b><small>zzt. ausverkauft</small></span><span class="sp">–</span></div>`
+      : `<div class="setit gone"><span class="sn"><b>${escT(r.p.name)}</b><small>zzt. ausverkauft${setsAltSrc?setAltLinksHTML(r.p):""}</small></span><span class="sp">–</span></div>`
     ).join("");
     const ship=sum>=55?"Gratisversand erreicht (ab 55 €)":"noch "+eur(55-sum)+" bis Gratisversand";
     const foot=buyable.length
@@ -1234,7 +1267,9 @@ function renderSets(){
       <div class="setfoot">${foot}</div>
       <button type="button" class="setadd" data-set="${s.key}"${buyable.length?"":" disabled"}>${buyable.length?`Lieferbare in den Merkzettel (${buyable.length})`:"Gerade nicht lieferbar"}</button>
     </div>`;
-  }).join("")+(hidden?`<div class="note">${hidden} Set${hidden!==1?"s":""} ausgeblendet – dort ist gerade mindestens ein Artikel ausverkauft.</div>`:"");
+  }).join("")
+    +(hidden?`<div class="note">${hidden} Set${hidden!==1?"s":""} ausgeblendet – dort ist gerade mindestens ein Artikel ausverkauft.</div>`:"")
+    +(setsAltSrc?`<div class="note">Anbieter-Ansicht: Der 1-Klick-Merkzettel kann nur den MORE-Warenkorb befüllen. Ausverkaufte Posten zeigen Links zu anderen Anbietern – dort bestellst du separat; Preise und Verfügbarkeit dort kennen wir nicht (kein Live-Abgleich).</div>`:"");
   renderComSets();
 }
 document.getElementById("setgrid").addEventListener("click",e=>{
@@ -1250,6 +1285,50 @@ document.getElementById("setAvail").onclick=()=>{
   renderSets();
 };
 document.getElementById("setNew").onclick=()=>openSetBuilder();
+function setSetsSrc(alt){
+  setsAltSrc=alt;
+  const m=document.getElementById("setSrcMore"),a=document.getElementById("setSrcAlt");
+  m.classList.toggle("on",!alt);a.classList.toggle("on",alt);
+  m.setAttribute("aria-pressed",String(!alt));a.setAttribute("aria-pressed",String(alt));
+  renderSets();
+}
+document.getElementById("setSrcMore").onclick=()=>setSetsSrc(false);
+document.getElementById("setSrcAlt").onclick=()=>setSetsSrc(true);
+
+/* Set-GENERATOR aus dem Bestand (Biyan: 'aus den Sachen, die da sind, Sets generieren — aber
+   nur sinnvolle'): nutzt die KURATIERTEN GOALS-Themen-Pools + den deterministischen smartCart
+   aus dem Ratgeber (nur lieferbare Standardgroessen, Score-Rangfolge, Versandschwellen-Logik).
+   'Sinnvoll' heisst hier: nur thematisch kuratierte Produkte kommen in Frage, die Auswahl ist
+   die Score-Rangfolge — kein Zufall, kein Zusammenwuerfeln nach reiner Verfuegbarkeit. */
+let sgGoal=GOALS[0].key;
+function renderSetGen(){
+  const box=document.getElementById("sgThemes"); if(!box)return;
+  box.innerHTML=GOALS.map(g=>`<button type="button" class="goalbtn${g.key===sgGoal?" on":""}" data-sg="${g.key}">${g.label}</button>`).join("");
+  box.querySelectorAll("[data-sg]").forEach(b=>b.onclick=()=>{sgGoal=b.dataset.sg;document.getElementById("sgOut").innerHTML="";renderSetGen();});
+}
+document.getElementById("sgGo").onclick=()=>{
+  const g=GOALS.find(x=>x.key===sgGoal);
+  const r=smartCart(sgGoal,Number(document.getElementById("sgBudget").value));
+  const out=document.getElementById("sgOut");
+  if(!r.items.length){out.innerHTML=`<p class="note" style="margin-top:10px">Für „${g.label}" ist gerade nichts lieferbar – der Restock-Radar auf der Übersicht zeigt, wenn etwas zurückkommt.</p>`;return;}
+  out.innerHTML=`<div class="smartbox">
+    <div class="smarthead"><b>${g.label} – aus dem Bestand</b><span class="tnum">${eur(r.sum)}</span></div>
+    ${r.items.map(it=>`<div class="smartitem"><span class="sn">${it.q>1?`<b class="tnum">${it.q}×</b> `:""}${escT(it.p.name)}<small>${escT(it.v.flavor)}${it.v.size?" · "+escT(it.v.size):""}${it.p._total!=null?` · Score ${it.p._total}`:""}</small></span><span class="tnum sp">${eur(it.v.pr*it.q)}</span></div>`).join("")}
+    <div class="smartfoot">${r.reached?"Gratisversand-Schwelle erreicht (ab 55 €)":"Ziel nicht ganz erreicht – mehr ist für dieses Thema gerade nicht lieferbar"} · nur gerade lieferbare Produkte · Sorten sind Vorschläge.</div>
+    <div class="setacts"><button type="button" class="goalbtn" id="sgAdd">In den Merkzettel legen</button><button type="button" class="goalbtn" id="sgSave">Als Set speichern &amp; teilen</button></div>
+  </div>`;
+  document.getElementById("sgAdd").onclick=()=>{
+    r.items.forEach(it=>{for(let k=0;k<it.q;k++)addToCart(it.p.id,it.v.vid);});
+    const b=document.getElementById("sgAdd");b.textContent="✓ Im Merkzettel – unten weiter zum Warenkorb";b.disabled=true;
+  };
+  document.getElementById("sgSave").onclick=()=>{
+    const cs={n:(g.label+" – aus dem Bestand").slice(0,40),c:"",i:r.items.map(it=>[it.v.vid,it.q]),ts:Date.now()};
+    const key=JSON.stringify([cs.n,cs.i]);
+    if(!comSets.some(x=>JSON.stringify([x.n,x.i])===key)){comSets.unshift(cs);comSets=comSets.slice(0,20);saveComSets();renderComSets();}
+    shareSetLink(cs,document.getElementById("sgSave"),"Als Set speichern & teilen");
+  };
+};
+renderSetGen();
 
 /* Creator- & Community-Sets OHNE Backend (gleiche Linie wie das Merkzettel-Teilen b972acf):
    ein Set = Name (+ optionaler Creator-Name) + Varianten-Posten, kodiert als
@@ -1299,7 +1378,7 @@ function renderComSets(){
     const sum=buyable.reduce((a,r)=>a+r.px.pr*r.q,0);
     const items=rows.map(r=>r.px.av&&r.px.pr
       ? `<div class="setit"><span class="sn"><b>${r.q>1?`${r.q}× `:""}${escT(r.p.name)}</b><small>${escT(r.px.flavor)}${r.px.size?" · "+escT(r.px.size):""}</small></span><span class="sp tnum">${eur(r.px.pr*r.q)}</span></div>`
-      : `<div class="setit gone"><span class="sn"><b>${r.q>1?`${r.q}× `:""}${escT(r.p.name)}</b><small>zzt. ausverkauft</small></span><span class="sp">–</span></div>`
+      : `<div class="setit gone"><span class="sn"><b>${r.q>1?`${r.q}× `:""}${escT(r.p.name)}</b><small>zzt. ausverkauft${setsAltSrc?setAltLinksHTML(r.p):""}</small></span><span class="sp">–</span></div>`
     ).join("")||`<div class="setit gone"><span class="sn"><b>Kein Posten mehr im Sortiment</b></span><span class="sp">–</span></div>`;
     const when=cs.ts?new Date(cs.ts).toLocaleDateString("de-DE"):"";
     return `<div class="setcard" style="--acc:var(--m-value)">

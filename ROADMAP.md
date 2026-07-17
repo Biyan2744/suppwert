@@ -98,6 +98,17 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Sets-Ausbau II: Bestands-Generator + Anbieter-Wahl (18.07.):** (a) „Set aus dem aktuellen
+> Bestand generieren": Themen-Chips (die 6 kuratierten GOALS-Pools aus dem Ratgeber) + Budget
+> → deterministisches Set NUR aus gerade lieferbaren Produkten via smartCart (Score-Rangfolge,
+> Versandschwellen-Logik) — „sinnvoll statt Kram", weil nur thematisch kuratierte Pools in
+> Frage kommen, kein Verfügbarkeits-Zusammenwürfeln. Ergebnis: „In den Merkzettel" +
+> „Als Set speichern & teilen" (läuft in die Community-Sektion + `#set=`-Link). (b) Anbieter-
+> Wahl „Nur MORE-Shop / + andere Anbieter" als Chip-Paar: im Alt-Modus zeigen AUSVERKAUFTE
+> Posten in kuratierten + Community-Sets die Anbieter-Links aus shopLinks() (Amazon-Direktlink
+> wo kuratiert, sonst Produktsuche) — so verteilt man die Bestellung auf mehrere Shops, wenn
+> MORE nicht alles hat. Ehrlichkeits-Note bleibt: 1-Klick-Warenkorb kann nur MORE befüllen,
+> andere Anbieter separat bestellen, dort keine Live-Preise/-Verfügbarkeit.
 > **Sets-Ausbau: Verfügbarkeits-Filter + Creator-/Community-Sets (18.07.):** (a) Anklick-Option
 > „Nur komplett lieferbare Sets" über dem Set-Grid – blendet Sets aus, in denen gerade mindestens
 > ein Artikel ausverkauft ist, und nennt die Zahl ehrlich. (b) Neue Sektion „Creator- &
