@@ -427,7 +427,9 @@ body.has-cart .cmpchip{bottom:74px}
 .goalbtn:hover{border-color:var(--muted);color:var(--text-1)}
 .goalbtn.on{background:var(--text-1);color:var(--surface-1);border-color:var(--text-1)}
 /* Sets: Anklick-Optionen oben, Creator-Zeile + Aktions-Buttons auf Community-Karten, Builder-Formular */
-.setctl{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px}
+.setctl{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.setsearch{flex:1 1 100%;max-width:420px}
+@media(min-width:700px){.setsearch{flex:0 1 300px}}
 .setby{font-size:11.5px;color:var(--muted);font-weight:600;margin:-3px 0 6px}
 .setacts{display:flex;gap:8px;margin-top:9px}
 .setform{display:flex;flex-direction:column;gap:8px;margin:12px 0 4px}
@@ -648,6 +650,7 @@ body.has-cart .cmpchip{bottom:74px}
   <section class="panel" id="panel-sets" role="tabpanel">
     <div class="phead"><h2><span class="hbar" style="--acc:var(--acc-supplements)"></span>Fertige Sets</h2><p>Von uns redaktionell zusammengestellte Produkt-Kombis – ein Klick legt alle lieferbaren Artikel in den Merkzettel. Das sind unsere Empfehlungen aus dem Sortiment, keine Kaufdaten.</p></div>
     <div class="setctl">
+      <input class="search setsearch" id="setSearch" placeholder="Sets durchsuchen (Name, Produkt, Creator)…" aria-label="Sets durchsuchen" autocomplete="off">
       <button type="button" class="catchip" id="setAvail" aria-pressed="false">Nur komplett lieferbare Sets</button>
       <button type="button" class="catchip on" id="setSrcMore" aria-pressed="true">Nur MORE-Shop</button>
       <button type="button" class="catchip" id="setSrcAlt" aria-pressed="false">+ andere Anbieter</button>
@@ -1246,14 +1249,23 @@ let setsOnlyAvail=false;
    Produktsuche). EHRLICH bleibt: der 1-Klick-Warenkorb kann nur MORE befuellen, andere
    Anbieter werden separat bestellt und haben bei uns keine Live-Preise/-Verfuegbarkeit. */
 let setsAltSrc=false;
+/* Sets-Suche (Biyan): filtert kuratierte UND Community-Sets live — Treffer in Set-Name,
+   Beschreibung, enthaltenen Produktnamen und Creator-Name. */
+let setsQuery="";
+function setMatches(q,texts){
+  if(!q)return true;
+  return texts.some(t=>(t||"").toLowerCase().includes(q));
+}
 function setAltLinksHTML(p){
   const ls=shopLinks(p); if(!ls.length)return "";
   return ` · <span class="setalts">bei ${ls.map(l=>`<a href="${l.href}" target="_blank" rel="noopener" title="${l.direct?"Direkt zum Produkt":"Produktsuche beim Anbieter"}">${escT(l.label)}${l.direct?" ↗":""}</a>`).join(" · ")}</span>`;
 }
 function renderSets(){
-  let hidden=0;
+  let hidden=0,miss=0;
+  const q=setsQuery;
   document.getElementById("setgrid").innerHTML=SETS.map(s=>{
     const rows=s.ids.map(id=>{const p=PRODUCTS.find(x=>x.id===id);return p?{p:p,v:bestBuyable(id)}:null;}).filter(Boolean);
+    if(!setMatches(q,[s.title,s.why].concat(rows.map(r=>r.p.name)))){miss++;return "";}
     const buyable=rows.filter(r=>r.v&&r.v.pr);
     if(setsOnlyAvail&&buyable.length<rows.length){hidden++;return "";}
     const sum=buyable.reduce((a,r)=>a+r.v.pr,0);
@@ -1273,6 +1285,7 @@ function renderSets(){
       <button type="button" class="setadd" data-set="${s.key}"${buyable.length?"":" disabled"}>${buyable.length?`Lieferbare in den Merkzettel (${buyable.length})`:"Gerade nicht lieferbar"}</button>
     </div>`;
   }).join("")
+    +(q&&miss===SETS.length?`<div class="note">Kein Set passt zu „${escT(q)}" – die Suche prüft Set-Namen, Beschreibungen und enthaltene Produkte.</div>`:"")
     +(hidden?`<div class="note">${hidden} Set${hidden!==1?"s":""} ausgeblendet – dort ist gerade mindestens ein Artikel ausverkauft.</div>`:"")
     +(setsAltSrc?`<div class="note">Anbieter-Ansicht: Der 1-Klick-Merkzettel kann nur den MORE-Warenkorb befüllen. Ausverkaufte Posten zeigen Links zu anderen Anbietern – dort bestellst du separat; Preise und Verfügbarkeit dort kennen wir nicht (kein Live-Abgleich).</div>`:"");
   renderComSets();
@@ -1299,6 +1312,10 @@ function setSetsSrc(alt){
 }
 document.getElementById("setSrcMore").onclick=()=>setSetsSrc(false);
 document.getElementById("setSrcAlt").onclick=()=>setSetsSrc(true);
+document.getElementById("setSearch").oninput=()=>{
+  setsQuery=document.getElementById("setSearch").value.trim().toLowerCase();
+  renderSets();
+};
 
 /* Set-GENERATOR aus dem Bestand (Biyan: 'aus den Sachen, die da sind, Sets generieren — aber
    nur sinnvolle'): nutzt die KURATIERTEN GOALS-Themen-Pools + den deterministischen smartCart
@@ -1375,9 +1392,11 @@ function renderComSets(){
     return;
   }
   note.textContent="Per Link geteilte Sets, die du gespeichert hast – sie liegen nur in deinem Browser. Preise und Verfügbarkeit kommen live vom Shop-Abgleich.";
-  let hidden=0;
+  let hidden=0,miss=0;
+  const q=setsQuery;
   grid.innerHTML=comSets.map((cs,ix)=>{
     const rows=cs.i.map(it=>comSetRow(it[0],it[1])).filter(Boolean);
+    if(!setMatches(q,[cs.n,cs.c].concat(rows.map(r=>r.p.name)))){miss++;return "";}
     const buyable=rows.filter(r=>r.px.av&&r.px.pr);
     if(setsOnlyAvail&&(!rows.length||buyable.length<rows.length)){hidden++;return "";}
     const sum=buyable.reduce((a,r)=>a+r.px.pr*r.q,0);
@@ -1394,7 +1413,9 @@ function renderComSets(){
       <button type="button" class="setadd" data-comadd="${ix}"${buyable.length?"":" disabled"}>${buyable.length?`Lieferbare in den Merkzettel (${buyable.length})`:"Gerade nicht lieferbar"}</button>
       <div class="setacts"><button type="button" class="goalbtn" data-comshare="${ix}">Link teilen</button><button type="button" class="goalbtn" data-comrm="${ix}">✕ Entfernen</button></div>
     </div>`;
-  }).join("")+(hidden?`<div class="note">${hidden} gespeichertes Set${hidden!==1?"s":""} ausgeblendet – nicht komplett lieferbar.</div>`:"");
+  }).join("")
+    +(q&&miss===comSets.length?`<div class="note">Kein gespeichertes Set passt zu „${escT(q)}".</div>`:"")
+    +(hidden?`<div class="note">${hidden} gespeichertes Set${hidden!==1?"s":""} ausgeblendet – nicht komplett lieferbar.</div>`:"");
   grid.querySelectorAll("[data-comadd]").forEach(b=>b.onclick=()=>{
     const cs=comSets[Number(b.dataset.comadd)]; if(!cs)return;
     let n=0;
