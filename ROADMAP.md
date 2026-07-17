@@ -4,17 +4,18 @@ Priorisierte Ausbaustufen mit Akzeptanzkriterien. Reihenfolge ist ein Vorschlag.
 
 > **Stand 17.07.2026:** Punkt 1 (Merkzettel + 1-Klick-Warenkorb) ist umgesetzt, ebenso
 > Vergleichsmodus, Deep-Links, Sorten-Anzeige, Score-Popover, PWA/SEO-Grundausstattung,
-> lokale Produktbilder und der CI-Workflow (`.github/workflows/refresh.yml` — aktiv nach
-> GitHub-Push). Punkt 5 ist für 8 Neuprodukte erledigt (Breakfast Cup entpuppte sich als
-> Zubehör-Lunchpot und bleibt draußen). Hosting für 4 ist entschieden: **GitHub Pages** —
-> Deploy-Workflows liegen bereit (`pages.yml` bei jedem Push, `refresh.yml`-Deploy-Job nach
-> dem wöchentlichen Refresh); es fehlt nur noch der Push in ein GitHub-Repo + einmalig
-> Settings → Pages → Source „GitHub Actions". Impressum + Datenschutzerklärung aus 6 sind
-> als Seiten fertig (im Footer verlinkt), die Betreiber-Angaben bleiben vorerst Platzhalter:
-> Biyan will die Privatadresse nicht veröffentlichen und kauft **ganz am Ende** einen
-> Impressum-Service (ladungsfähige Anschrift) — erst dann werden die Platzhalter gefüllt.
-> Solange sie leer sind, Pages noch nicht scharf schalten (Impressumspflicht).
-> Offen: 2 (Restock-Alerts, braucht Backend), 3 (Affiliate scharf schalten).
+> lokale Produktbilder. Punkt 5 ist für 8 Neuprodukte erledigt (Breakfast Cup entpuppte
+> sich als Zubehör-Lunchpot und bleibt draußen).
+> **Veröffentlichung:** Repo ist gepusht → https://github.com/Biyan2744/more-nutrition-vergleich
+> (public, nötig für kostenloses Pages). Der wöchentliche CI-Refresh (`refresh.yml`, Mo 06:00 UTC)
+> ist damit **aktiv**; sein Deploy-Job schlägt fehl, bis Pages aktiviert ist — erwartet.
+> `pages.yml` (Deploy je Push) ist **manuell deaktiviert** (`gh workflow enable pages` zum
+> Reaktivieren). **Launch-Checkliste, erst NACH gekauftem Impressum:** (a) Platzhalter in
+> impressum.html/datenschutz.html füllen + Entwurfsboxen raus, (b) Settings → Pages →
+> Source „GitHub Actions", (c) `gh workflow enable pages`, (d) 404-Seite live nachtesten.
+> Impressum: Biyan will die Privatadresse nicht veröffentlichen und kauft **ganz am Ende**
+> einen Impressum-Service (ladungsfähige Anschrift); bis dahin bleibt Pages aus
+> (Impressumspflicht). Offen: 2 (Restock-Alerts, braucht Backend), 3 (Affiliate).
 
 ## 1. 1-Klick-Warenkorb (vorbefüllter Shopify-Link) — *statisch, kein Backend* ✅
 Kunden stellen auf der Seite einen Warenkorb zusammen und landen per Klick im MORE-Shop mit
