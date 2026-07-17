@@ -218,6 +218,8 @@ td .cdot{width:8px;height:8px;border-radius:50%}
 .vitem.out::before{background:var(--crit)}
 .vitem .vpr{color:var(--text-1);font-weight:700;margin-left:2px}
 .vitem.out .vpr{color:var(--muted)}
+.vitem.xtra{display:none}
+.vlist.open .vitem.xtra{display:inline-flex}
 
 /* Score-Popover */
 .spop-btn{border:1px solid var(--line);background:transparent;color:var(--muted);width:16px;height:16px;border-radius:50%;font-size:10px;font-weight:700;cursor:pointer;padding:0;line-height:1;margin-left:6px;vertical-align:1px}
@@ -720,8 +722,8 @@ function cardHTML(p){
     <div class="pc-b">
       <div class="nm">${p.name}</div>
       <div class="pc-price"><span class="pr tnum">${eur(p.price)}</span><span class="avail"><span class="adot" style="background:${a.c}"></span>${a.t}</span></div>
-      ${p.varTotal?`<div class="varline"><span class="vl">Varianten (Sorten/Größen) lieferbar</span><span class="vv tnum">${p.varAvail}/${p.varTotal}</span>${vs.length?`<button class="vtog" data-vt="${p.id}" aria-expanded="false" aria-controls="vl-${p.id}">Sorten ▾</button>`:""}</div>`:""}
-      ${vs.length?`<div class="vlist" id="vl-${p.id}" hidden>${vs.map(v=>`<span class="vitem ${v[2]?"":"out"}">${escT(varName(v[1]))}${vMulti&&v[3]?`<b class="vpr tnum">${eur(v[3])}</b>`:""}</span>`).join("")}</div>`:""}
+      ${p.varTotal?`<div class="varline"><span class="vl">Sorten/Größen lieferbar</span><span class="vv tnum">${p.varAvail}/${p.varTotal}</span>${vs.length>3?`<button class="vtog" data-vt="${p.id}" data-more="+${vs.length-3} weitere ▾" aria-expanded="false" aria-controls="vl-${p.id}">+${vs.length-3} weitere ▾</button>`:""}</div>`:""}
+      ${vs.length?`<div class="vlist" id="vl-${p.id}">${[...vs].sort((a,b)=>b[2]-a[2]||(b[3]||0)-(a[3]||0)).map((v,i)=>`<span class="vitem ${v[2]?"":"out"}${i>2?" xtra":""}">${escT(varName(v[1]))}${vMulti&&v[3]?`<b class="vpr tnum">${eur(v[3])}</b>`:""}</span>`).join("")}</div>`:""}
     </div>
     <div class="pc-note">${p.note||""}</div>
     ${badges?`<div class="badges">${badges}</div>`:""}
@@ -792,7 +794,7 @@ document.getElementById("vTable").onclick=()=>{view="table";document.getElementB
 /* ---------- Karten-Interaktionen (Delegation, weil das Grid bei jedem render() neu entsteht) ---------- */
 document.getElementById("grid").addEventListener("click",e=>{
   const vt=e.target.closest(".vtog");
-  if(vt){const el=document.getElementById("vl-"+vt.dataset.vt);el.hidden=!el.hidden;vt.setAttribute("aria-expanded",String(!el.hidden));vt.textContent=el.hidden?"Sorten ▾":"Sorten ▴";return;}
+  if(vt){const el=document.getElementById("vl-"+vt.dataset.vt);const open=el.classList.toggle("open");vt.setAttribute("aria-expanded",String(open));vt.textContent=open?"weniger ▴":vt.dataset.more;return;}
   const sp=e.target.closest(".spop-btn");
   if(sp){const el=document.getElementById("sp-"+sp.dataset.sp);el.hidden=!el.hidden;sp.setAttribute("aria-expanded",String(!el.hidden));return;}
   const vb=e.target.closest(".vpick button");
@@ -878,7 +880,7 @@ function openCmp(){
     cmpRow("Geschmack",p=>p._taste)+
     cmpRow("Bewertung",p=>p.rating==null?null:de(p.rating)+"★"+(p.reviews?` (${de(p.reviews)})`:""))+
     cmpRow("Verfügbarkeit",p=>{const a=AVAIL[p.avail]||AVAIL["limitiert"];return `<span style="color:${a.c}">●</span> ${a.t}`;})+
-    cmpRow("Sorten lieferbar",p=>p.varTotal?`${p.varAvail}/${p.varTotal}`:null)+
+    cmpRow("Sorten lieferbar",p=>{if(!p.varTotal)return null;const av=(VARIANTS[p.id]||[]).filter(v=>v[2]).map(v=>varName(v[1]));return `${p.varAvail}/${p.varTotal}${av.length?`<br><span style="color:var(--muted);font-size:11px">${escT(av.slice(0,4).join(", "))}${av.length>4?" …":""}</span>`:""}`;})+
     cmpRow("",p=>`<a class="buy" href="${affLink(p.url)}" target="_blank" rel="noopener">Ansehen →</a>`)+
     `</tbody></table></div><button type="button" class="cmpclear" id="cmpClear">Auswahl leeren</button></div>`;
   w.hidden=false;
