@@ -1,7 +1,10 @@
 # Woechentlicher Verfuegbarkeits-Refresh: holt Live-Daten von morenutrition.de,
 # regeneriert index.html und committet das Ergebnis. Aktiv, sobald das Repo auf
 # GitHub liegt (Settings -> Actions erlauben). Fuer GitHub Pages zusaetzlich
-# Settings -> Pages -> Source: "GitHub Actions" waehlen und den Deploy-Job unten aktivieren.
+# Settings -> Pages -> Source: "GitHub Actions" waehlen.
+# Der Deploy-Job unten ist noetig, weil der Bot-Push mit GITHUB_TOKEN den
+# Push-Workflow (pages.yml) NICHT ausloest — der woechentliche Refresh deployt
+# deshalb hier selbst.
 name: refresh
 
 on:
@@ -30,18 +33,20 @@ jobs:
           git diff --cached --quiet || git commit -m "Auto-Refresh Verfuegbarkeit ($(date -u +%F))"
           git push
 
-  # Optionaler Pages-Deploy — einkommentieren, wenn GitHub Pages (Source: Actions) aktiv ist:
-  # deploy:
-  #   needs: refresh
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     pages: write
-  #     id-token: write
-  #   environment:
-  #     name: github-pages
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with: { ref: main }
-  #     - uses: actions/upload-pages-artifact@v3
-  #       with: { path: "." }
-  #     - uses: actions/deploy-pages@v4
+  deploy:
+    needs: refresh
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main }
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: "." }
+      - uses: actions/deploy-pages@v4

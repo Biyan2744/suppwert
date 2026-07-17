@@ -17,7 +17,9 @@ Python-Generator für die Verfügbarkeits-Updates.
 | `refresh.py` | Holt die Live-Verfügbarkeit (inkl. Varianten/Preisen) von morenutrition.de, schreibt `live.json` + `history.json` und regeneriert die Seite. |
 | `img/` | Lokal gecachte Produktbilder (640 px, von Shopify). |
 | `manifest.json` / `sw.js` / `favicon.svg` | PWA-Grundausstattung (installierbar, Offline-Cache über http). |
-| `.github/workflows/refresh.yml` | Wöchentlicher Auto-Refresh via GitHub Actions (nach Push auf GitHub aktiv). |
+| `.github/workflows/refresh.yml` | Wöchentlicher Auto-Refresh via GitHub Actions inkl. Pages-Deploy (nach Push auf GitHub aktiv). |
+| `.github/workflows/pages.yml` | GitHub-Pages-Deploy bei jedem Push auf `main`. |
+| `fonts/` | Inter als lokale woff2 (latin-Subset). |
 | `live.json` | Aktuelle Live-Daten (Verfügbarkeit je Variante, neue Produkte, Datum). |
 | `CLAUDE.md` | Projekt-Brief & Konventionen (für Claude Code / Entwickler:innen). |
 | `ROADMAP.md` | Nächste Ausbaustufen mit Akzeptanzkriterien. |

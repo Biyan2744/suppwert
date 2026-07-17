@@ -1,0 +1,7 @@
+# Python
+__pycache__/
+*.pyc
+
+# OS-Muell
+.DS_Store
+Thumbs.db

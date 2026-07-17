@@ -6,8 +6,11 @@ Priorisierte Ausbaustufen mit Akzeptanzkriterien. Reihenfolge ist ein Vorschlag.
 > Vergleichsmodus, Deep-Links, Sorten-Anzeige, Score-Popover, PWA/SEO-Grundausstattung,
 > lokale Produktbilder und der CI-Workflow (`.github/workflows/refresh.yml` — aktiv nach
 > GitHub-Push). Punkt 5 ist für 8 Neuprodukte erledigt (Breakfast Cup entpuppte sich als
-> Zubehör-Lunchpot und bleibt draußen). Offen: 2 (Restock-Alerts, braucht Backend),
-> 3 (Affiliate scharf schalten), Hosting-Entscheidung für 4, Impressum/Datenschutz aus 6.
+> Zubehör-Lunchpot und bleibt draußen). Hosting für 4 ist entschieden: **GitHub Pages** —
+> Deploy-Workflows liegen bereit (`pages.yml` bei jedem Push, `refresh.yml`-Deploy-Job nach
+> dem wöchentlichen Refresh); es fehlt nur noch der Push in ein GitHub-Repo + einmalig
+> Settings → Pages → Source „GitHub Actions". Offen: 2 (Restock-Alerts, braucht Backend),
+> 3 (Affiliate scharf schalten), Impressum/Datenschutz aus 6.
 
 ## 1. 1-Klick-Warenkorb (vorbefüllter Shopify-Link) — *statisch, kein Backend* ✅
 Kunden stellen auf der Seite einen Warenkorb zusammen und landen per Klick im MORE-Shop mit
