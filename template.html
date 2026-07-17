@@ -220,6 +220,8 @@ td .cdot{width:8px;height:8px;border-radius:50%}
 .vitem.out .vpr{color:var(--muted)}
 .vitem.xtra{display:none}
 .vlist.open .vitem.xtra{display:inline-flex}
+.vsizes{flex-basis:100%;font-size:11px;color:var(--muted);padding-top:2px;display:none}
+.vlist.open .vsizes{display:block}
 
 /* Score-Popover */
 .spop-btn{border:1px solid var(--line);background:transparent;color:var(--muted);width:16px;height:16px;border-radius:50%;font-size:10px;font-weight:700;cursor:pointer;padding:0;line-height:1;margin-left:6px;vertical-align:1px}
@@ -640,6 +642,37 @@ function esc(s){return (s||"").replace(/"/g,"&quot;");}
 function escT(s){return (s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 function varName(t){return t==="Default Title"?"Standardgröße":t;}
 
+/* Shopify-Varianten sind "Geschmack / Größe" — fuers UI in beide Dimensionen zerlegen:
+   Chips zeigen nur den Geschmack (gemeinsamer Produkt-Praefix wie "Milkshake Style" wird
+   gestrippt), die Groessen stehen EINMAL gesammelt mit Preis darunter. */
+function parseVariants(pid){
+  const vs=VARIANTS[pid]||[];
+  const parsed=vs.map(v=>{
+    const parts=String(v[1]).split(" / ");
+    let size=null,flavor=v[1];
+    if(parts.length>1&&/\d/.test(parts[parts.length-1])){size=parts.pop();flavor=parts.join(" / ");}
+    if(flavor==="Default Title")flavor="Standard";
+    return {vid:v[0],flavor:flavor,size:size,av:!!v[2],pr:v[3]||0};
+  });
+  const names=[...new Set(parsed.map(x=>x.flavor))];
+  if(names.length>1){
+    let words=names[0].split(" "),n=words.length;
+    for(const nm of names){const w=nm.split(" ");let i=0;while(i<n&&i<w.length&&w[i]===words[i])i++;n=i;}
+    while(n>0&&names.some(nm=>nm.split(" ").slice(n).join(" ")===""))n--;
+    if(n>=2){const pre=words.slice(0,n).join(" ")+" ";parsed.forEach(x=>{if(x.flavor.indexOf(pre)===0)x.flavor=x.flavor.slice(pre.length);});}
+  }
+  const fmap=new Map();
+  parsed.forEach(x=>{
+    if(!fmap.has(x.flavor))fmap.set(x.flavor,{flavor:x.flavor,av:false,sizes:[]});
+    const g=fmap.get(x.flavor);g.av=g.av||x.av;g.sizes.push(x);
+  });
+  const flavors=[...fmap.values()].sort((a,b)=>(b.av?1:0)-(a.av?1:0));
+  const smap=new Map();
+  parsed.forEach(x=>{const k=x.size||"";if(!k)return;if(!smap.has(k))smap.set(k,{size:k,prices:new Set()});if(x.pr)smap.get(k).prices.add(x.pr);});
+  const sizes=[...smap.values()].map(s=>{const a=[...s.prices];return {size:s.size,label:a.length===1?eur(a[0]):(a.length?"ab "+eur(Math.min(...a)):null),min:a.length?Math.min(...a):0};}).sort((a,b)=>b.min-a.min);
+  return {parsed:parsed,flavors:flavors,sizes:sizes,multiPrice:new Set(parsed.map(x=>x.pr)).size>1};
+}
+
 /* Vergleichs-Auswahl (Session) + Merkzettel (localStorage; als echte App ok, vgl. ROADMAP) */
 let cmp=[];
 let cart=[];
@@ -691,9 +724,7 @@ function meter(label,val,color){ if(val==null)return `<div class="mrow"><span cl
 
 function cardHTML(p){
   const c=CATS[p.cat], a=AVAIL[p.avail]||AVAIL["limitiert"], ps=perServing(p), isProt=PROTEIN_CATS.includes(p.cat);
-  const vs=VARIANTS[p.id]||[], vBuy=vs.filter(v=>v[2]);
-  /* Preis nur zeigen, wenn die Varianten unterschiedlich kosten (Groessen-Varianten wie FIZI 1er/6er/12er) */
-  const vMulti=new Set(vs.map(v=>v[3])).size>1;
+  const vs=VARIANTS[p.id]||[], vBuy=vs.filter(v=>v[2]), pv=vs.length?parseVariants(p.id):null;
   const img = p.img ? `<img src="${imgURL(p.img)}" alt="${esc(p.name)}" data-cat="${p.cat}" data-name="${esc(p.name)}" loading="lazy" onerror="imgFail(this)">` : `<div class="ph" style="--acc:${c.color}">${esc(p.name)}</div>`;
   const cmpchk=`<label class="cmpchk"><input type="checkbox" data-cmp="${p.id}" ${cmp.includes(p.id)?"checked":""} aria-label="${esc(p.name)} vergleichen">Vergleichen</label>`;
   const win = p.pick ? `<span class="tp">★ ${p.pickTxt||"Tipp"}</span>` : (isProt&&p._total!=null&&p._total===catWinner(p.cat)?`<span class="tp">★ Kategorie-Sieger</span>`:"");
@@ -722,8 +753,8 @@ function cardHTML(p){
     <div class="pc-b">
       <div class="nm">${p.name}</div>
       <div class="pc-price"><span class="pr tnum">${eur(p.price)}</span><span class="avail"><span class="adot" style="background:${a.c}"></span>${a.t}</span></div>
-      ${p.varTotal?`<div class="varline"><span class="vl">Sorten/Größen lieferbar</span><span class="vv tnum">${p.varAvail}/${p.varTotal}</span>${vs.length>3?`<button class="vtog" data-vt="${p.id}" data-more="+${vs.length-3} weitere ▾" aria-expanded="false" aria-controls="vl-${p.id}">+${vs.length-3} weitere ▾</button>`:""}</div>`:""}
-      ${vs.length?`<div class="vlist" id="vl-${p.id}">${[...vs].sort((a,b)=>b[2]-a[2]||(b[3]||0)-(a[3]||0)).map((v,i)=>`<span class="vitem ${v[2]?"":"out"}${i>2?" xtra":""}">${escT(varName(v[1]))}${vMulti&&v[3]?`<b class="vpr tnum">${eur(v[3])}</b>`:""}</span>`).join("")}</div>`:""}
+      ${pv?`<div class="varline"><span class="vl">Sorten lieferbar</span><span class="vv tnum">${pv.flavors.filter(f=>f.av).length}/${pv.flavors.length}</span>${pv.flavors.length>4?`<button class="vtog" data-vt="${p.id}" data-more="+${pv.flavors.length-4} weitere ▾" aria-expanded="false" aria-controls="vl-${p.id}">+${pv.flavors.length-4} weitere ▾</button>`:""}</div>`:""}
+      ${pv?`<div class="vlist" id="vl-${p.id}">${pv.flavors.map((f,i)=>`<span class="vitem ${f.av?"":"out"}${i>3?" xtra":""}" title="${esc(f.sizes.map(x=>(x.size||"Standard")+(x.av?" – lieferbar":" – ausverkauft")).join(", "))}">${escT(f.flavor)}</span>`).join("")}${pv.sizes.length>1?`<span class="vsizes">Größen: ${pv.sizes.map(s=>escT(s.size)+(s.label?` (${s.label})`:"")).join(" · ")}</span>`:""}</div>`:""}
     </div>
     <div class="pc-note">${p.note||""}</div>
     ${badges?`<div class="badges">${badges}</div>`:""}
@@ -820,8 +851,8 @@ function merken(btn){
   if(vs.length===1){addToCart(pid,vs[0][0]);flashMk(btn);return;}
   const vp=document.getElementById("vp-"+pid);
   if(!vp.hidden){vp.hidden=true;return;}
-  const mp=new Set((VARIANTS[pid]||[]).map(v=>v[3])).size>1;
-  vp.innerHTML=`<span class="vph">Sorte wählen:</span>`+vs.map(v=>`<button type="button" data-pid="${pid}" data-vid="${v[0]}">${escT(varName(v[1]))}${mp&&v[3]?` · ${eur(v[3])}`:""}</button>`).join("");
+  const P=parseVariants(pid);
+  vp.innerHTML=`<span class="vph">Sorte wählen:</span>`+P.parsed.filter(x=>x.av).map(x=>`<button type="button" data-pid="${pid}" data-vid="${x.vid}">${escT(x.flavor)}${x.size?` · ${escT(x.size)}`:""}${P.multiPrice&&x.pr?` · ${eur(x.pr)}`:""}</button>`).join("");
   vp.hidden=false;
 }
 function flashMk(btn){if(!btn)return;const t=btn.textContent;btn.textContent="✓ Gemerkt";btn.classList.add("done");setTimeout(()=>{btn.textContent=t;btn.classList.remove("done");},1400);}
@@ -829,7 +860,8 @@ function addToCart(pid,vid){
   const p=PRODUCTS.find(x=>x.id===pid), v=(VARIANTS[pid]||[]).find(x=>x[0]===vid);
   if(!p||!v)return;
   const hit=cart.find(i=>i.vid===vid);
-  if(hit)hit.q++;else cart.push({vid:vid,pid:pid,name:p.name,vt:varName(v[1]),pr:v[3]||0,q:1});
+  const px=parseVariants(pid).parsed.find(x=>x.vid===vid);
+  if(hit)hit.q++;else cart.push({vid:vid,pid:pid,name:p.name,vt:px?px.flavor+(px.size?" · "+px.size:""):varName(v[1]),pr:v[3]||0,q:1});
   saveCart();renderCart();
 }
 function cartURL(){return affLink("https://morenutrition.de/cart/"+cart.map(i=>i.vid+":"+i.q).join(","));}
@@ -880,7 +912,7 @@ function openCmp(){
     cmpRow("Geschmack",p=>p._taste)+
     cmpRow("Bewertung",p=>p.rating==null?null:de(p.rating)+"★"+(p.reviews?` (${de(p.reviews)})`:""))+
     cmpRow("Verfügbarkeit",p=>{const a=AVAIL[p.avail]||AVAIL["limitiert"];return `<span style="color:${a.c}">●</span> ${a.t}`;})+
-    cmpRow("Sorten lieferbar",p=>{if(!p.varTotal)return null;const av=(VARIANTS[p.id]||[]).filter(v=>v[2]).map(v=>varName(v[1]));return `${p.varAvail}/${p.varTotal}${av.length?`<br><span style="color:var(--muted);font-size:11px">${escT(av.slice(0,4).join(", "))}${av.length>4?" …":""}</span>`:""}`;})+
+    cmpRow("Sorten lieferbar",p=>{if(!(VARIANTS[p.id]||[]).length)return null;const P=parseVariants(p.id);const av=P.flavors.filter(f=>f.av).map(f=>f.flavor);return `${av.length}/${P.flavors.length}${av.length?`<br><span style="color:var(--muted);font-size:11px">${escT(av.slice(0,4).join(", "))}${av.length>4?" …":""}</span>`:""}`;})+
     cmpRow("",p=>`<a class="buy" href="${affLink(p.url)}" target="_blank" rel="noopener">Ansehen →</a>`)+
     `</tbody></table></div><button type="button" class="cmpclear" id="cmpClear">Auswahl leeren</button></div>`;
   w.hidden=false;
