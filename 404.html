@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Seite nicht gefunden – MORE Vergleich</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#fcfcfb">
+<script>
+/* GitHub Pages liefert 404.html fuer JEDEN fehlenden Pfad (beliebige Tiefe) aus.
+   Auf einer *.github.io-PROJEKT-Seite ist das erste Pfadsegment immer der Repo-Name
+   -> <base> auf die Projektwurzel, damit relative Pfade (Fonts/Favicon/Link) stimmen.
+   Ueberall sonst (localhost, spaetere Custom-Domain) ist "/" die Wurzel. */
+(function(){
+  var seg = location.pathname.split("/").filter(Boolean);
+  var root = (location.hostname.slice(-10) === ".github.io" && seg.length) ? "/" + seg[0] + "/" : "/";
+  document.write('<base href="' + root + '">');
+})();
+</script>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+@font-face{font-family:"Inter";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/inter-400.woff2) format("woff2")}
+@font-face{font-family:"Inter";font-style:normal;font-weight:700;font-display:swap;src:url(fonts/inter-700.woff2) format("woff2")}
+@font-face{font-family:"Inter";font-style:normal;font-weight:800;font-display:swap;src:url(fonts/inter-800.woff2) format("woff2")}
+:root{
+  --surface-1:#fcfcfb; --plane:#f4f4f1; --card:#ffffff;
+  --text-1:#0b0b0b; --text-2:#52514e; --muted:#898781;
+  --grid:#e6e5df; --line:#c3c2b7;
+  --shadow:0 1px 2px rgba(11,11,11,.05),0 4px 16px rgba(11,11,11,.05);
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --surface-1:#1a1a19; --plane:#0d0d0d; --card:#212120;
+    --text-1:#ffffff; --text-2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --line:#383835;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35);
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%}
+body{background:var(--plane);color:var(--text-1);font-family:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;display:flex;align-items:center;justify-content:center;padding:18px}
+.card{background:var(--card);border:1px solid var(--grid);border-radius:var(--r);box-shadow:var(--shadow);padding:34px 30px;max-width:440px;text-align:center}
+.logo{width:44px;height:44px;border-radius:11px}
+h1{font-size:22px;letter-spacing:-.3px;line-height:1.25;margin:14px 0 6px}
+p{margin:6px 0 0;color:var(--text-2);font-size:14.5px}
+.code{color:var(--muted);font-size:12.5px;margin-top:2px}
+a.btn{display:inline-block;margin-top:18px;background:var(--text-1);color:var(--plane);text-decoration:none;font-weight:700;font-size:14px;border-radius:10px;padding:10px 18px}
+</style>
+</head>
+<body>
+  <div class="card">
+    <svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#1baf7a"/><path d="M14 46V20h7l7.5 12.5L36 20h7v26h-6.5V31.5L29.5 43h-2L20.5 31.5V46z" fill="#fff"/><circle cx="49" cy="17" r="6" fill="#eda100"/></svg>
+    <h1>Diese Seite gibt es nicht</h1>
+    <p class="code">Fehler 404 – Adresse nicht gefunden</p>
+    <p>Vielleicht wurde die Seite verschoben oder der Link enthält einen Tippfehler. Der Produktvergleich selbst ist weiterhin da.</p>
+    <a class="btn" href=".">Zum Produktvergleich</a>
+  </div>
+</body>
+</html>

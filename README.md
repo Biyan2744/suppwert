@@ -21,6 +21,7 @@ Python-Generator für die Verfügbarkeits-Updates.
 | `.github/workflows/pages.yml` | GitHub-Pages-Deploy bei jedem Push auf `main`. |
 | `fonts/` | Inter als lokale woff2 (latin-Subset). |
 | `impressum.html` / `datenschutz.html` | Rechtsseiten (bis zur Veröffentlichung mit markierten Platzhaltern statt echter Personendaten). |
+| `404.html` | Fehlerseite für GitHub Pages (base-Pfad wird zur Laufzeit berechnet). |
 | `live.json` | Aktuelle Live-Daten (Verfügbarkeit je Variante, neue Produkte, Datum). |
 | `CLAUDE.md` | Projekt-Brief & Konventionen (für Claude Code / Entwickler:innen). |
 | `ROADMAP.md` | Nächste Ausbaustufen mit Akzeptanzkriterien. |
