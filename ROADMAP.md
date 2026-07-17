@@ -10,8 +10,10 @@ Priorisierte Ausbaustufen mit Akzeptanzkriterien. Reihenfolge ist ein Vorschlag.
 > Deploy-Workflows liegen bereit (`pages.yml` bei jedem Push, `refresh.yml`-Deploy-Job nach
 > dem wöchentlichen Refresh); es fehlt nur noch der Push in ein GitHub-Repo + einmalig
 > Settings → Pages → Source „GitHub Actions". Impressum + Datenschutzerklärung aus 6 sind
-> als Seiten fertig (im Footer verlinkt) — es fehlen nur noch die echten Betreiber-Angaben
-> für die markierten Platzhalter (Name/Anschrift/E-Mail; **vor dem Push ausfüllen**).
+> als Seiten fertig (im Footer verlinkt), die Betreiber-Angaben bleiben vorerst Platzhalter:
+> Biyan will die Privatadresse nicht veröffentlichen und kauft **ganz am Ende** einen
+> Impressum-Service (ladungsfähige Anschrift) — erst dann werden die Platzhalter gefüllt.
+> Solange sie leer sind, Pages noch nicht scharf schalten (Impressumspflicht).
 > Offen: 2 (Restock-Alerts, braucht Backend), 3 (Affiliate scharf schalten).
 
 ## 1. 1-Klick-Warenkorb (vorbefüllter Shopify-Link) — *statisch, kein Backend* ✅
