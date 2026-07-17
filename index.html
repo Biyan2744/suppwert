@@ -420,6 +420,11 @@ body.has-cart .cmpchip{bottom:74px}
     <div class="radar" id="radar" hidden></div>
     <div class="sub-h">Schnell zu einer Kategorie</div>
     <div class="jump" id="jump"></div>
+  </section>
+
+  <!-- EMPFEHLUNGEN -->
+  <section class="panel" id="panel-empfehlungen" role="tabpanel">
+    <div class="phead"><h2><span class="hbar" style="--acc:var(--gold)"></span>Empfehlungen & Bestenlisten</h2><p>Rekordhalter, Top-Picks und neue Produkte – auf einen Blick, aus dem echten Sortiment berechnet.</p></div>
     <div class="sub-h">Bestenlisten <span style="font-weight:400;color:var(--muted);font-size:13px">– Rekordhalter aus den Produktdaten berechnet</span></div>
     <div class="bestgrid" id="best"></div>
     <div class="sub-h">Top-Empfehlungen</div>
@@ -1204,7 +1209,7 @@ function render(){
   updateHash();
 }
 
-const TABS=[["uebersicht","Übersicht",null],...CATORDER.map(c=>[c,CATS[c].label,CATS[c].hex]),["sets","Sets",null],["ratgeber","Ratgeber",null],["buy","Wo kaufen",null],["info","Info",null]];
+const TABS=[["uebersicht","Übersicht",null],...CATORDER.map(c=>[c,CATS[c].label,CATS[c].hex]),["empfehlungen","Empfehlungen",null],["sets","Sets",null],["ratgeber","Ratgeber",null],["buy","Wo kaufen",null],["info","Info",null]];
 function renderTabs(){
   document.getElementById("tabs").innerHTML=TABS.map(t=>`<button class="tab" data-tab="${t[0]}" role="tab" aria-selected="false" aria-controls="${CATS[t[0]]?"panel-products":"panel-"+t[0]}" ${t[2]?`style="--tabc:${t[2]}"`:""}>${t[2]?'<span class="tdot"></span>':''}${t[1]}${CATS[t[0]]?`<span class="tcount">${PRODUCTS.filter(p=>p.cat===t[0]).length}</span>`:""}</button>`).join("");
   document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
@@ -1214,6 +1219,7 @@ function showTab(tab){
   const isCat=!!CATS[tab];
   document.getElementById("panel-uebersicht").classList.toggle("on",tab==="uebersicht");
   document.getElementById("panel-products").classList.toggle("on",isCat);
+  document.getElementById("panel-empfehlungen").classList.toggle("on",tab==="empfehlungen");
   document.getElementById("panel-sets").classList.toggle("on",tab==="sets");
   document.getElementById("panel-ratgeber").classList.toggle("on",tab==="ratgeber");
   document.getElementById("panel-buy").classList.toggle("on",tab==="buy");
@@ -1358,7 +1364,7 @@ function updateHash(){
 function applyHash(){
   const m=location.hash.slice(1);if(!m)return false;
   const qi=m.indexOf("?"),tab=qi<0?m:m.slice(0,qi),qs=qi<0?"":m.slice(qi+1);
-  if(!(CATS[tab]||["uebersicht","sets","ratgeber","buy","info"].includes(tab)))return false;
+  if(!(CATS[tab]||["uebersicht","empfehlungen","sets","ratgeber","buy","info"].includes(tab)))return false;
   showTab(tab);
   if(CATS[tab]){ /* Parameter anwenden — leeres qs setzt bewusst auf Defaults zurück (der Hash ist die Wahrheit) */
     const ps=new URLSearchParams(qs);
