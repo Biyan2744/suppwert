@@ -98,6 +98,20 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Restock-Countdown im Header (18.07.):** Recherche bestätigte: der große MORE-Wochen-Restock
+> + die Sonntags-Aktionen starten üblicherweise **sonntags 11:00 Uhr** (Community-dokumentiert:
+> Vorpacklink-Seiten, MORE-App-Push „Sonntag 11 Uhr"; das offizielle Helpcenter nennt bewusst
+> KEINE Termine — deshalb überall „ohne Gewähr"). Neuer prominenter Countdown-Chip mittig im
+> Header (dunkles Markengrün, Gold-Pulspunkt, weißer Text ≥5:1 in beiden Themes): „MORE-Restock
+> · So 11:00 · in X" — tickt sekündlich, unter 24 h als HH:MM:SS; sonntags 11–13 Uhr wechselt er
+> auf Gold „Zeitfenster läuft". Zielzeit DST-sicher in Europe/Berlin (Intl-basiert, stimmt auch
+> bei fremder Gerätezeitzone; Browser ohne IANA-Zonen zeigen den Chip gar nicht statt falsch).
+> Tooltip erklärt Quelle + Merkzettel-Tipp; Radar-Note ergänzt den Sonntags-Hinweis ehrlich.
+> Layout: <992 px eigene volle Header-Zeile (Spacer raus, margin-auto statt Flex-Spacer),
+> <420 px Theme-Button icon-only (Label bleibt via Clip-Pattern für Screenreader), Daten-Update-
+> Chip erst ab 1180 px + kürzeres „⟳ Update in …" (Worst-Case-Countdowntexte eingerechnet).
+> Nebenbei gefixt: `.top-in{padding:11px 0}` hatte das seitliche `.wrap`-Padding überschrieben —
+> der Header klebte an der Viewport-Kante und war breiter als alle Content-Sektionen.
 > **Header-Timer + Creator-Merkzettel-Sharing (18.07.):** (a) Der Header zeigt jetzt dauerhaft
 > den ehrlichen Countdown „⟳ Daten-Update in X Tagen Y Std." (nächster Montags-Abgleich,
 > gleiche Quelle wie der Radar-Countdown; unter 960 px ausgeblendet). Bewusst KEIN

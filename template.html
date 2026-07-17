@@ -60,7 +60,9 @@ h1,h2,h3{line-height:1.2;margin:0}
 
 /* Header */
 header.top{background:var(--surface-1);border-bottom:1px solid var(--grid);position:sticky;top:0;z-index:50}
-.top-in{display:flex;align-items:center;gap:14px;padding:11px 0}
+/* padding-Shorthand überschreibt das .wrap-Seitenpadding (gleiche Spezifität, später im Sheet) —
+   18px seitlich deshalb hier explizit, sonst klebt der Header an der Viewport-Kante */
+.top-in{display:flex;align-items:center;gap:14px;padding:11px 18px}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}
 .brand .logo{width:30px;height:30px;border-radius:8px;flex-shrink:0}
 .brand .bt{display:flex;flex-direction:column}
@@ -68,10 +70,28 @@ header.top{background:var(--surface-1);border-bottom:1px solid var(--grid);posit
 .brand .bt span{font-size:11.5px;color:var(--muted)}
 .indep{font-size:11px;font-weight:600;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 10px;white-space:nowrap}
 .nextsync{font-size:11px;font-weight:600;color:var(--text-2);border:1px solid var(--line);border-radius:999px;padding:4px 10px;white-space:nowrap}
-@media(max-width:960px){.nextsync{display:none}}
+/* erst ab 1180px: darunter teilen sich Restock-Chip + Badges den Platz nicht mehr sicher
+   (Worst-Case-Countdowntexte "6 Tagen 23 Std." eingerechnet) */
+@media(max-width:1179px){.nextsync{display:none}}
 .top-sp{flex:1}
+/* Restock-Countdown-Chip: dunkles Markengrün (weißer Text ≥5:1 in beiden Themes, Farben deshalb
+   bewusst theme-unabhängig), Gold-Pulspunkt; .rlive = Sonntags-Zeitfenster läuft (dunkles Gold) */
+.restock{display:inline-flex;align-items:center;gap:9px;font-size:12.5px;color:#fff;background:linear-gradient(135deg,#0f7a55,#0b5c40);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:7px 14px;white-space:nowrap;box-shadow:0 2px 12px rgba(15,122,85,.35);cursor:help}
+.restock b{font-weight:800;letter-spacing:.2px}
+.restock .rtime{font-weight:600;opacity:.94}
+.restock .rdot{width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;animation:rpulse 2s ease-out infinite}
+.restock.rlive{background:linear-gradient(135deg,#8a5a00,#6e4700);box-shadow:0 2px 12px rgba(237,161,0,.35)}
+@keyframes rpulse{0%{box-shadow:0 0 0 0 rgba(237,161,0,.55)}70%{box-shadow:0 0 0 6px rgba(237,161,0,0)}100%{box-shadow:0 0 0 0 rgba(237,161,0,0)}}
+@media(prefers-reduced-motion:reduce){.restock .rdot{animation:none}}
+/* <960px: Chip auf eigene volle Zeile; die .top-sp-Spacer raus (ihre Flex-Gaps würden die erste
+   Zeile sonst über die Breite drücken), rechtsbündig übernimmt margin-left:auto */
+@media(max-width:991px){.top-in{flex-wrap:wrap;row-gap:8px}.top-sp{display:none}.indep{margin-left:auto}.restock{order:9;flex:1 1 100%;justify-content:center}}
+@media(max-width:699px){.tbtn{margin-left:auto}}
 .tbtn{border:1px solid var(--line);background:transparent;color:var(--text-2);border-radius:10px;padding:7px 11px;font-size:13px;cursor:pointer;display:inline-flex;gap:6px;align-items:center;white-space:nowrap}
 .tbtn:hover{border-color:var(--muted);color:var(--text-1)}
+/* <420px: Theme-Button icon-only, sonst bricht die Header-Zeile um (Brand + Button > Platz);
+   Label bleibt per Clip-Pattern im Accessibility-Tree */
+@media(max-width:419px){#themeLbl{position:absolute;clip:rect(0 0 0 0);clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}}
 
 /* Tab bar */
 .tabbar{background:var(--surface-1);border-bottom:1px solid var(--grid);position:sticky;top:var(--headh,64px);z-index:45}
@@ -505,6 +525,8 @@ body.has-cart .cmpchip{bottom:74px}
       <svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#1baf7a"/><circle cx="32" cy="32" r="18" fill="none" stroke="#fff" stroke-width="4"/><g transform="rotate(45 32 32)"><path d="M32 17L38 32H26Z" fill="#fff"/><path d="M32 47L38 32H26Z" fill="#eda100"/></g></svg>
       <span class="bt"><b>Suppwert</b><span>Unabhängiger MORE-Nutrition-Vergleich</span></span>
     </a>
+    <div class="top-sp"></div>
+    <span class="restock tnum" id="restock" hidden title="Üblicher Start des wöchentlichen MORE-Restocks und der Sonntags-Aktionen: sonntags um 11:00 Uhr (deutsche Zeit). Von der Community dokumentiert – MORE nennt offiziell keine festen Termine, Angabe ohne Gewähr. Tipp: Merkzettel vorher füllen, dann um 11 Uhr nur noch zur Kasse."><span class="rdot"></span><b>MORE-Restock</b><span class="rtime" id="restockT"></span></span>
     <div class="top-sp"></div>
     <span class="nextsync tnum" id="nextSync" hidden title="Die Live-Verfügbarkeit wird jeden Montag um 06:00 UTC automatisch mit dem MORE-Shop abgeglichen – echter Zähler, kein Countdown-Trick."></span>
     <span class="indep">Unabhängig · kein offizieller Shop</span>
@@ -1230,6 +1252,54 @@ function fmtCountdown(ms){
   if(h>=1)return `${h} Std. ${Math.floor(ms%36e5/6e4)} Min.`;
   return `${Math.max(1,Math.floor(ms/6e4))} Min.`;
 }
+
+/* Restock-Countdown (Header-Chip): der große MORE-Wochen-Restock + die Sonntags-Aktionen starten
+   üblicherweise sonntags 11:00 deutscher Zeit — Community-dokumentiert (Vorpacklink-Seiten,
+   MORE-App-Push "Sonntag 11 Uhr"), aber von MORE OFFIZIELL nicht zugesagt. Tooltip + Radar-Note
+   sagen das ehrlich dazu ("ohne Gewähr"). Zielzeit DST-sicher in Europe/Berlin gerechnet, damit
+   der Countdown auch für Besucher mit anderer Gerätezeitzone stimmt. */
+function berlinOff(d){
+  const f=berlinOff._f||(berlinOff._f=new Intl.DateTimeFormat("en-US",{timeZone:"Europe/Berlin",hour12:false,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"}));
+  const p={};f.formatToParts(d).forEach(x=>{if(x.type!=="literal")p[x.type]=+x.value;});
+  return Date.UTC(p.year,p.month-1,p.day,p.hour%24,p.minute,p.second)-(d.getTime()-d.getMilliseconds());
+}
+function nextRestockDate(now){
+  /* nächster Sonntag 11:00 Berlin als UTC-Zeitpunkt; Offset nach dem ersten Bau nachjustieren
+     (DST-Wechselwochen), Schleife bis 8, damit "Sonntag nach 13 Uhr" den Folgesonntag findet */
+  for(let i=0;i<8;i++){
+    const probe=new Date(now.getTime()+i*864e5);
+    const wall=new Date(probe.getTime()+berlinOff(probe));
+    if(wall.getUTCDay()!==0)continue;
+    const u=Date.UTC(wall.getUTCFullYear(),wall.getUTCMonth(),wall.getUTCDate(),11);
+    let t=new Date(u-berlinOff(probe));
+    t=new Date(u-berlinOff(t));
+    if(t>now)return t;
+  }
+  return null;
+}
+function fmtRestockCd(ms){
+  const s=Math.max(0,Math.floor(ms/1000)),d=Math.floor(s/86400),p=n=>String(n).padStart(2,"0");
+  if(d>=1)return `${d} ${d===1?"Tag":"Tagen"} ${Math.floor(s%86400/3600)} Std.`;
+  return `${p(Math.floor(s/3600))}:${p(Math.floor(s%3600/60))}:${p(s%60)}`;
+}
+function startRestock(){
+  const el=document.getElementById("restock"),tt=document.getElementById("restockT");
+  if(!el||!tt||typeof Intl==="undefined"||!Intl.DateTimeFormat)return;
+  try{berlinOff(new Date());}catch(e){return;} /* Browser ohne IANA-Zonen: Chip bleibt weg statt falsch zu ticken */
+  const tick=()=>{
+    const now=new Date(),wall=new Date(now.getTime()+berlinOff(now));
+    const live=wall.getUTCDay()===0&&wall.getUTCHours()>=11&&wall.getUTCHours()<13;
+    el.classList.toggle("rlive",live);
+    if(live){tt.textContent="Zeitfenster läuft · üblicherweise So 11 Uhr";}
+    else{
+      const nx=nextRestockDate(now);
+      if(!nx)return;
+      tt.textContent=`So 11:00 · in ${fmtRestockCd(nx-now)}`;
+    }
+    if(el.hidden){el.hidden=false;setHeadH();} /* Chip kann den Header umbrechen (<960px) → Sticky-Offset nachziehen */
+  };
+  tick();setInterval(tick,1000);
+}
 function radarChip(id,out){
   const p=PRODUCTS.find(x=>x.id===id);
   if(!p)return "";
@@ -1244,13 +1314,15 @@ function renderRadar(){
   if(gone)rows.push(`<div class="rrow"><span class="rlab crit">Jetzt ausverkauft</span>${gone}</div>`);
   el.innerHTML=`<div class="rhead"><b>Restock-Radar</b>${RESTOCKS.since?`<span> · Änderungen seit ${RESTOCKS.since}</span>`:""}<span class="rnext" id="rnext"></span></div>`+
     (rows.length?rows.join(""):`<div class="rrow"><span class="rlab">Keine Verfügbarkeits-Wechsel seit dem letzten Abgleich.</span></div>`)+
-    `<div class="rnote">MORE nennt keine festen Restock-Termine – der Radar zeigt beobachtete Änderungen zwischen den automatischen Abgleichen.</div>`;
+    `<div class="rnote">Der große Wochen-Restock startet üblicherweise sonntags um 11:00 Uhr (Community-Beobachtung, ohne Gewähr – MORE nennt offiziell keine festen Termine). Der Radar zeigt beobachtete Änderungen zwischen den automatischen Abgleichen.</div>`;
   el.hidden=false;
   /* tickt zusaetzlich den Header-Timer (Biyan-Wunsch: Countdown oben sichtbar) */
   const tick=()=>{
     const cd=fmtCountdown(nextRefreshDate()-new Date());
     const n=document.getElementById("rnext");if(n)n.textContent=`Nächster Abgleich in ${cd}`;
-    const h=document.getElementById("nextSync");if(h){h.textContent=`⟳ Daten-Update in ${cd}`;h.hidden=false;}
+    /* kurzes "Update" statt "Daten-Update": neben dem Restock-Chip muss die Zeile auch mit
+       Worst-Case-Countdowns ("6 Tagen 23 Std.") in die 1144px Wrap-Breite passen */
+    const h=document.getElementById("nextSync");if(h){h.textContent=`⟳ Update in ${cd}`;h.hidden=false;}
   };
   tick();setInterval(tick,6e4);
 }
@@ -1787,7 +1859,7 @@ themeBtn.onclick=()=>{theme=theme==="dark"?"light":"dark";setTheme(theme);};
 
 var _ad=document.getElementById("availDate"); if(_ad)_ad.textContent=AVAIL_DATE;
 var _fd=document.getElementById("footDate"); if(_fd)_fd.textContent=AVAIL_DATE;
-renderTabs();renderKPIs();renderJump();renderRecs();renderBest();renderNew();renderRetailers();renderAff();renderRadar();renderGuide();renderSets();renderFaqs();render();
+renderTabs();renderKPIs();renderJump();renderRecs();renderBest();renderNew();renderRetailers();renderAff();renderRadar();startRestock();renderGuide();renderSets();renderFaqs();render();
 if(!applyHash())showTab("uebersicht");
 hashReady=true;updateHash();
 renderCart();renderCmpChip();
