@@ -286,6 +286,13 @@ body.has-cart .cmpchip{bottom:74px}
 .faq summary{font-size:13px;font-weight:600;cursor:pointer;list-style-position:outside}
 .faq summary:hover{color:var(--m-value)}
 .faq p{font-size:12.5px;color:var(--text-2);margin:7px 0 2px;line-height:1.55}
+.smart-ctl{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px solid var(--grid);font-size:12.5px;color:var(--text-2)}
+.smartbox{margin-top:12px;background:var(--plane);border:1px solid var(--ring);border-radius:12px;padding:12px 14px}
+.smarthead{display:flex;justify-content:space-between;align-items:center;font-size:13.5px;margin-bottom:6px}
+.smartitem{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--grid);font-size:12.5px}
+.smartitem .sn small{display:block;color:var(--muted)}
+.smartitem .sp{flex-shrink:0}
+.smartfoot{font-size:11px;color:var(--muted);margin:8px 0 10px;line-height:1.5}
 
 /* Restock-Radar */
 .radar{background:var(--card);border:1px solid var(--ring);border-radius:var(--r);box-shadow:var(--shadow);padding:13px 15px;margin-top:16px}
@@ -438,6 +445,16 @@ body.has-cart .cmpchip{bottom:74px}
       <h3>Was passt zu deinem Ziel?</h3>
       <div class="goalbtns" id="goalbtns"></div>
       <div class="goalout" id="goalout"></div>
+      <div class="smart-ctl">
+        <label for="smartBudget">Automatisch zusammenstellen:</label>
+        <select id="smartBudget" class="sort">
+          <option value="55">bis ~55 € (Gratisversand)</option>
+          <option value="75">bis ~75 €</option>
+          <option value="100">bis ~100 €</option>
+        </select>
+        <button type="button" class="goalbtn" id="smartGo">Besten Warenkorb vorschlagen</button>
+      </div>
+      <div id="smartOut"></div>
     </div>
 
     <div class="buy-grid">
@@ -815,8 +832,55 @@ function renderGuide(){
     return `<a class="rchip${p.avail==="ausverkauft"?" out":""}" href="#${p.cat}?q=${encodeURIComponent(p.name)}" style="--dot:${a.c}">${escT(p.name)}${p._total!=null?`<span class="gsc tnum">${p._total}</span>`:""}</a>`;
   }).join("");
   document.getElementById("goalout").innerHTML=`<p class="note" style="margin:10px 0 8px">${g.note}</p><div class="rrow">${chips}</div>`;
-  document.querySelectorAll(".goalbtn").forEach(b=>b.onclick=()=>{activeGoal=b.dataset.goal;renderGuide();});
+  document.querySelectorAll(".goalbtn[data-goal]").forEach(b=>b.onclick=()=>{activeGoal=b.dataset.goal;document.getElementById("smartOut").innerHTML="";renderGuide();});
 }
+document.getElementById("smartGo").onclick=()=>renderSmart();
+/* Smart-Warenkorb: bester Korb NUR aus lieferbaren Standardgroessen — Score-Rangfolge,
+   Gratisversand-Schwelle erreichen, Ueberschuss minimieren (letzter Posten wird gegen den
+   guenstigsten getauscht, der das Ziel noch schafft). Deterministisch, keine Zufaelle. */
+function bestBuyable(pid){
+  const av=parseVariants(pid).parsed.filter(x=>x.av);
+  if(!av.length)return null;
+  return av.sort((a,b)=>b.pr-a.pr)[0];
+}
+function smartCart(goalKey,budget){
+  const g=GOALS.find(x=>x.key===goalKey);
+  const pool=g.ids.map(id=>{
+    const p=PRODUCTS.find(x=>x.id===id), v=p?bestBuyable(id):null;
+    return p&&v&&v.pr?{p:p,v:v}:null;
+  }).filter(Boolean).sort((a,b)=>(b.p._total||0)-(a.p._total||0)||(b.p.rating||0)-(a.p.rating||0));
+  const sel=[];let sum=0;
+  for(const it of pool){if(sum>=budget)break;sel.push({...it,q:1});sum+=it.v.pr;}
+  if(sum>=budget&&sel.length>1){
+    const last=sel[sel.length-1],base=sum-last.v.pr;
+    const inSel=new Set(sel.slice(0,-1).map(x=>x.p.id));
+    const swap=pool.filter(x=>!inSel.has(x.p.id)&&base+x.v.pr>=budget).sort((a,b)=>a.v.pr-b.v.pr)[0];
+    /* Tausch nur, wenn er die Qualitaet nicht drueckt — 5 EUR sparen rechtfertigt keinen Score-Verlust */
+    if(swap&&base+swap.v.pr<sum&&(swap.p._total||0)>=(last.p._total||0)){sel[sel.length-1]={...swap,q:1};sum=base+swap.v.pr;}
+  }
+  let guard=0;
+  /* Pool zu klein: Top-Produkt mehrfach — aber nur, wenn der Ueberschuss kleiner bleibt als die Luecke */
+  while(sum<budget&&sel.length&&guard++<4){const pr=sel[0].v.pr;if(sum+pr-budget>budget-sum)break;sel[0].q++;sum+=pr;}
+  return {items:sel,sum:sum,reached:sum>=budget};
+}
+function renderSmart(){
+  const budget=Number(document.getElementById("smartBudget").value);
+  const g=GOALS.find(x=>x.key===activeGoal);
+  const r=smartCart(activeGoal,budget);
+  const out=document.getElementById("smartOut");
+  if(!r.items.length){out.innerHTML=`<p class="note" style="margin-top:10px">Für „${g.label}" ist gerade nichts lieferbar – der Radar auf der Übersicht zeigt, wenn etwas zurückkommt.</p>`;return;}
+  out.innerHTML=`<div class="smartbox">
+    <div class="smarthead"><b>Vorschlag für „${g.label}"</b><span class="tnum">${eur(r.sum)}</span></div>
+    ${r.items.map(it=>`<div class="smartitem"><span class="sn">${it.q>1?`<b class="tnum">${it.q}×</b> `:""}${escT(it.p.name)}<small>${escT(it.v.flavor)}${it.v.size?" · "+escT(it.v.size):""}${it.p._total!=null?` · Score ${it.p._total}`:""}</small></span><span class="tnum sp">${eur(it.v.pr*it.q)}</span></div>`).join("")}
+    <div class="smartfoot">${r.reached?`Gratisversand-Schwelle erreicht (ab 55 €)`:`Ziel nicht ganz erreicht – mehr ist für dieses Ziel gerade nicht lieferbar`} · Sorten sind Vorschläge, andere findest du auf den Produktkarten.</div>
+    <button type="button" class="goalbtn" id="smartAdd">In den Merkzettel legen</button>
+  </div>`;
+  document.getElementById("smartAdd").onclick=()=>{
+    r.items.forEach(it=>{for(let i=0;i<it.q;i++)addToCart(it.p.id,it.v.vid);});
+    const b=document.getElementById("smartAdd");b.textContent="✓ Im Merkzettel – unten weiter zum MORE-Warenkorb";b.disabled=true;
+  };
+}
+
 const FAQS=[
   ["Ist das hier der offizielle MORE-Nutrition-Shop?","Nein. Diese Seite ist ein unabhängiger, redaktioneller Vergleich ohne Verbindung zu MORE Nutrition. Gekauft wird immer im offiziellen Shop oder bei Händlern – der Merkzettel füllt lediglich den MORE-Warenkorb vor."],
   ["Wie berechnet sich der Score?","Aus drei Teilen: Nährwerte (35 %), Preis-Leistung (30 %) und Geschmack/Reviews (35 %), normalisiert innerhalb der Kategorie. Das Fragezeichen an jedem Score zeigt die Rechnung fürs einzelne Produkt; Details stehen im Info-Tab."],
