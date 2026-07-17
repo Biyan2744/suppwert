@@ -303,8 +303,8 @@ body.show-alt .altbtn{display:flex}
 .vchip button{border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:14px;line-height:1;padding:2px 5px;border-radius:50%}
 .vchip button:hover{color:var(--crit)}
 /* Kopf-an-Kopf-Duell auf der Vergleichsseite */
-.duelgrid{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:stretch;margin:4px 0 14px}
-.dslot{position:relative;background:var(--card);border:1px solid var(--ring);border-radius:var(--r);box-shadow:var(--shadow);padding:16px 16px 18px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px}
+.duelgrid{display:flex;gap:14px;align-items:stretch;margin:4px 0 14px}
+.dslot{position:relative;flex:1 1 0;min-width:0;background:var(--card);border:1px solid var(--ring);border-radius:var(--r);box-shadow:var(--shadow);padding:16px 16px 18px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px}
 .dslot.empty{border-style:dashed;border-color:var(--line);box-shadow:none;background:transparent;justify-content:center;min-height:250px}
 .dhint{color:var(--muted);font-weight:700;line-height:1.6}
 .dhint span{font-weight:500;font-size:12.5px}
@@ -331,9 +331,33 @@ body.show-alt .altbtn{display:flex}
 .dbar i{position:absolute;top:0;bottom:0;left:50%;background:var(--ok);border-radius:3px}
 .dpct{font-size:11.5px;font-weight:800;color:var(--ok)}
 .dpct.eq{color:var(--muted);font-weight:600}
+.dadd{align-self:center;flex:0 0 auto;width:48px;height:48px;border-radius:50%;border:2px dashed var(--line);background:transparent;color:var(--muted);font-size:24px;font-weight:700;line-height:1;cursor:pointer;transition:border-color .15s ease,color .15s ease}
+.dadd:hover{border-color:var(--m-value);color:var(--m-value)}
+button.dslot{font:inherit;color:inherit;cursor:pointer}
+.dslot[role="button"]{cursor:pointer}
+.dslot[role="button"]:hover,button.dslot.empty:hover{border-color:var(--m-value)}
+/* Produkt-Galerie (Slot-Picker) */
+.pickbox{max-width:780px}
+.picksearch{width:100%;margin:2px 0 14px}
+.picksec{margin-bottom:16px}
+.pch{font-size:12.5px;font-weight:800;letter-spacing:.3px;display:flex;align-items:center;gap:8px;margin:0 0 9px}
+.pch .hbar{width:4px;height:13px;border-radius:2px;background:var(--acc);flex-shrink:0}
+.pch .csn{color:var(--muted);font-weight:700;font-size:11px}
+.pickgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px}
+.ptile{border:1px solid var(--line);background:var(--card);color:var(--text-1);border-radius:12px;padding:9px 8px;cursor:pointer;display:flex;flex-direction:column;gap:6px;align-items:center;text-align:center;font:inherit;transition:border-color .15s ease,transform .15s ease}
+.ptile:hover:not(:disabled){border-color:var(--m-value);transform:translateY(-1px)}
+.ptile.sel{opacity:.5;cursor:default}
+.ptile .ti{width:100%;height:62px;display:flex;align-items:center;justify-content:center}
+.ptile .ti img{max-width:100%;max-height:100%;object-fit:contain}
+.ptile .ti .ph{width:100%;height:100%;border-radius:8px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--acc),color-mix(in srgb,var(--acc) 70%,#000))}
+.ptile .ti .ph svg{width:26px;height:26px}
+.ptile .tn{font-size:11px;font-weight:600;line-height:1.3}
+.ptile .tp{font-size:10.5px;color:var(--muted)}
+.ptile .tsel{font-size:10px;font-weight:800;color:var(--ok)}
 @media(max-width:640px){
-  .duelgrid{grid-template-columns:1fr;gap:10px}
-  .dvs{justify-self:center;padding:2px 0}
+  .duelgrid{flex-direction:column;gap:10px}
+  .dvs{align-self:center;padding:2px 0}
+  .dadd{align-self:center}
   .dslot.empty{min-height:120px}
   .drow{grid-template-columns:1fr minmax(96px,1fr) 1fr;gap:8px;font-size:12px}
 }
@@ -504,7 +528,7 @@ body.has-cart .cmpchip{bottom:74px}
 
   <!-- VERGLEICH -->
   <section class="panel" id="panel-vergleich" role="tabpanel">
-    <div class="phead"><h2><span class="hbar" style="--acc:var(--m-value)"></span>Produkte vergleichen</h2><p>Suche Produkte und stelle sie direkt gegenüber – bis zu 4 gleichzeitig. Die Auswahl ist dieselbe wie die „Vergleichen"-Häkchen auf den Karten.</p></div>
+    <div class="phead"><h2><span class="hbar" style="--acc:var(--m-value)"></span>Produkte vergleichen</h2><p>Klicke auf ein Feld und wähle aus allen Produkten – oder nutze die Suche. Mit dem Plus rechts vergleichst du bis zu 4 gleichzeitig. Die Auswahl ist dieselbe wie die „Vergleichen"-Häkchen auf den Karten.</p></div>
     <div class="vcmp-ctl">
       <input id="vsearch" class="search" placeholder="Produkt suchen und hinzufügen…" aria-label="Produkt für den Vergleich suchen" autocomplete="off">
       <div class="vresults" id="vresults"></div>
@@ -684,6 +708,7 @@ body.has-cart .cmpchip{bottom:74px}
 <button class="cmpchip" id="cmpchip" hidden></button>
 <div class="cmpwrap" id="cmpwrap" hidden role="dialog" aria-modal="true" aria-label="Produktvergleich"></div>
 <div class="cmpwrap" id="shopov" hidden role="dialog" aria-modal="true" aria-label="Andere Shops"></div>
+<div class="cmpwrap" id="pickov" hidden role="dialog" aria-modal="true" aria-label="Produkt wählen"></div>
 
 <script>
 const IMG = {
@@ -1516,14 +1541,21 @@ function renderDuel(){
   const box=document.getElementById("duel"); if(!box)return;
   const a=cmp[0]?PRODUCTS.find(x=>x.id===cmp[0]):null, b=cmp[1]?PRODUCTS.find(x=>x.id===cmp[1]):null;
   const slot=(p,ix)=>p
-    ?`<div class="dslot"><button type="button" class="dx" data-drm="${p.id}" aria-label="${esc(p.name)} aus dem Vergleich entfernen">✕</button>
+    ?`<div class="dslot" data-slot="${ix}" role="button" tabindex="0" title="Klicken, um dieses Produkt zu wechseln"><button type="button" class="dx" data-drm="${p.id}" aria-label="${esc(p.name)} aus dem Vergleich entfernen">✕</button>
        <div class="dimg">${p.img?`<img src="${imgURL(p.img)}" alt="" onerror="this.remove()">`:phHTML(p.cat,esc(p.name))}</div>
        <div class="dname">${escT(p.name)}</div>
        <div class="dmeta">${CATS[p.cat].label} · ${eur(p.price)}</div>
        <div class="dscore" style="color:${scoreColor(p._total)}">${p._total!=null?p._total:"–"}<small>Gesamtscore</small></div></div>`
-    :`<div class="dslot empty"><div class="dhint">Produkt ${ix+1}<br><span>über die Suche oben wählen</span></div></div>`;
+    :`<button type="button" class="dslot empty" data-slot="${ix}"><span class="dhint">Produkt ${ix+1}<br><span>klicken und aus allen Produkten wählen</span></span></button>`;
+  /* Slots dynamisch: mindestens 2, jedes gewaehlte Produkt eines, Plus rechts bis CMP_MAX */
+  const nSlots=Math.max(2,cmp.length), parts=[];
+  for(let i=0;i<nSlots;i++){
+    if(i>0)parts.push(`<div class="dvs">VS</div>`);
+    parts.push(slot(cmp[i]?PRODUCTS.find(x=>x.id===cmp[i]):null,i));
+  }
+  if(nSlots<CMP_MAX)parts.push(`<button type="button" class="dadd" id="dadd" aria-label="Weiteres Vergleichsfeld hinzufügen" title="Noch ein Produkt vergleichen (bis zu ${CMP_MAX})">+</button>`);
   let rows="";
-  if(a&&b){
+  if(a&&b&&cmp.length===2){
     rows=DUEL_METRICS.map(m=>{
       const [label,get,dir,fmt]=m, va=get(a), vb=get(b);
       if(va==null||vb==null)return "";
@@ -1542,9 +1574,50 @@ function renderDuel(){
         <span class="dv${wb?" win":""} tnum">${fmt(vb,b)}</span></div>`;
     }).join("");
   }
-  box.innerHTML=`<div class="duelgrid">${slot(a,0)}<div class="dvs">VS</div>${slot(b,1)}</div>${rows?`<div class="drows">${rows}</div>`:""}`;
-  box.querySelectorAll("[data-drm]").forEach(btn=>btn.onclick=()=>{cmp=cmp.filter(x=>x!==btn.dataset.drm);syncCmp();});
+  box.innerHTML=`<div class="duelgrid">${parts.join("")}</div>${rows?`<div class="drows">${rows}</div>`:""}`;
+  box.querySelectorAll("[data-drm]").forEach(btn=>btn.onclick=e=>{e.stopPropagation();cmp=cmp.filter(x=>x!==btn.dataset.drm);syncCmp();});
+  box.querySelectorAll("[data-slot]").forEach(sl=>{
+    const open=()=>openPicker(Number(sl.dataset.slot));
+    sl.onclick=open;
+    if(sl.tagName!=="BUTTON")sl.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open();}};
+  });
+  const add=document.getElementById("dadd");
+  if(add)add.onclick=()=>openPicker(cmp.length);
 }
+/* Produkt-Galerie zum Fuellen eines Duell-Slots: ALLE Produkte mit Bild, nach Kategorien
+   gruppiert, live durchsuchbar. Bereits gewaehlte sind markiert und gesperrt. */
+let pickSlot=0;
+function openPicker(ix){
+  pickSlot=ix;
+  const w=document.getElementById("pickov");
+  const secs=CATORDER.map(cat=>{
+    const items=PRODUCTS.filter(p=>p.cat===cat);
+    return `<div class="picksec"><h4 class="pch"><span class="hbar" style="--acc:${CATS[cat].color}"></span>${CATS[cat].label}<span class="csn tnum">${items.length}</span></h4><div class="pickgrid">${items.map(p=>{
+      const sel=cmp.includes(p.id);
+      return `<button type="button" class="ptile${sel?" sel":""}" data-pick="${p.id}"${sel?" disabled":""} data-name="${esc(p.name.toLowerCase())}"><span class="ti">${p.img?`<img src="${imgURL(p.img)}" alt="" loading="lazy" onerror="this.remove()">`:`<span class="ph" style="--acc:${CATS[p.cat].color}">${PH_ICONS[p.cat]||""}</span>`}</span><span class="tn">${escT(p.name)}</span><span class="tp tnum">${eur(p.price)}</span>${sel?`<span class="tsel">✓ im Vergleich</span>`:""}</button>`;
+    }).join("")}</div></div>`;
+  }).join("");
+  w.innerHTML=`<div class="cmpbox pickbox"><h3>Produkt wählen <button type="button" class="x" aria-label="Schließen">✕</button></h3>
+    <input class="search picksearch" id="picksearch" placeholder="Alle ${PRODUCTS.length} Produkte durchsuchen…" aria-label="Produkte durchsuchen" autocomplete="off">
+    <div id="pickcats">${secs}</div></div>`;
+  w.hidden=false;
+  w.querySelector(".x").onclick=closePicker;
+  w.onclick=e=>{if(e.target===w)closePicker();};
+  w.querySelectorAll("[data-pick]").forEach(t=>t.onclick=()=>{
+    const id=t.dataset.pick;
+    if(cmp.includes(id))return;
+    if(pickSlot<cmp.length)cmp[pickSlot]=id; else{if(cmp.length>=CMP_MAX)return;cmp.push(id);}
+    closePicker();syncCmp();
+  });
+  const ps=w.querySelector("#picksearch");
+  ps.oninput=()=>{
+    const q=ps.value.trim().toLowerCase();
+    w.querySelectorAll(".ptile").forEach(t=>{t.style.display=!q||t.dataset.name.includes(q)?"":"none";});
+    w.querySelectorAll(".picksec").forEach(s=>{const any=[...s.querySelectorAll(".ptile")].some(t=>t.style.display!=="none");s.style.display=any?"":"none";});
+  };
+  ps.focus();
+}
+function closePicker(){document.getElementById("pickov").hidden=true;}
 function renderVchips(){
   const box=document.getElementById("vchips"); if(!box)return;
   box.innerHTML=cmp.length?cmp.map(id=>{const p=PRODUCTS.find(x=>x.id===id);return `<span class="vchip">${escT(p.name)}<button type="button" data-vrm="${id}" aria-label="${esc(p.name)} entfernen">✕</button></span>`;}).join(""):"";
@@ -1584,7 +1657,7 @@ function openShops(pid){
   w.querySelector(".x").focus();
 }
 function closeShops(){document.getElementById("shopov").hidden=true;}
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeCmp();closeShops();}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeCmp();closeShops();closePicker();}});
 
 /* Deep-Links: #tab?q=&f=avs&sort=&view=table — teilbare Zustände, replaceState (kein History-Spam) */
 let hashReady=false;

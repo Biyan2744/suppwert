@@ -98,6 +98,11 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Duell-Slots klickbar + Produkt-Galerie + Plus (17.07.):** Jedes Vergleichsfeld ist
+> anklickbar und öffnet eine Galerie aller Produkte (Bilder bzw. Icon-Platzhalter, nach
+> Kategorien gruppiert, live durchsuchbar; bereits gewählte gesperrt mit „✓ im Vergleich");
+> Klick auf ein gefülltes Feld wechselt das Produkt. Ein „+" rechts erschafft weitere
+> Vergleichsfelder (bis 4; Duell-Prozentzeilen nur bei exakt 2, ab 3 übernimmt die Tabelle).
 > **Kopf-an-Kopf-Duell im Vergleich (17.07., Vorbild UserBenchmark):** Die Vergleichsseite
 > zeigt die ersten beiden gewählten Produkte als großes Duell — zwei Karten mit Bild/Platzhalter,
 > Name, Preis und großem Score, „VS" in der Mitte, leere Slots als gestrichelte Einladung.
