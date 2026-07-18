@@ -106,6 +106,30 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Bug-Jagd Runde 2 (19.07. früh, Biyan: „such nochmal nach Bugs" — zwei Finder mit
+> NEUEM Fokus: Interaktions-Flows/Zeitlogik + Daten-Korrektheit gegen den Live-Shop):**
+> 16 Fixe. DATEN (gegen die passende Standardgrößen-Variante geprüft, nie Proben-Preise):
+> chunky 15,99→13,99 (Live-Standard, nur die neue Sorte kostet 15,99; ~0,32-€-Texte →
+> ~0,28), saucenback 34,99→35,99, gourmet 7,49→6,99 (+ „13 Sorten"→9), **icedcoffee
+> price:null→34,99** (das meistbewertete Produkt fehlte komplett in Preis-Leistungs-Score,
+> Bedarfsrechner und €/Portion-Sortierung!), zerupbarista 5,99→6,99 (Modalpreis),
+> Sorten-Zahlen (milkshake ~10, icedcoffee ~14, satisbites 6), Proben-Texte „ab 2,99 €".
+> LOGIK: sizeMatches-Rückrichtung (Einzel-Riegel „50g" galt als „10 × 50 g"-Standard —
+> einzelner Riegel zeigte „reicht ca. 10 Tage" im Merkzettel); Sorten-Pille auf der Karte
+> legte die teuerste statt der Standard-Variante ein (10er-Zerup statt Einzelflasche);
+> Element-Validierung für mn-comsets/ccodes/wishes/fprops ([null] in comsets war ein
+> Boot-Killer); Hash-Vertrag: sort wird jetzt wie q/f/view auf Default zurückgesetzt;
+> Import-Links schließen offene Overlays (sonst übermalte ein offenes Detail den
+> Import-Dialog); Theme-Wahl persistiert (mn-theme, folgt ohne Override weiter dem
+> System); JSON-LD-Products tragen offers (Preis+Live-Status — Produkte ohne Rating waren
+> Search-Console-Fehler-Kandidaten). NEGATIV GEPRÜFT: DST-/Countdown-Mathe beide
+> Wechselwochen handverifiziert, duelExtra-Slot-Mathe, Grundpreis-Parser alle 62 Größen,
+> live.json intern konsistent, AMZ-Map vollständig/valide, Laufzeit-avail-Ableitung deckt
+> alle Produkte. OFFEN FÜR BIYAN (Kuratierungs-Frage, kein Code-Fix): kcal-Basis
+> uneinheitlich — milkshake 177 kcal/30g wäre trocken unmöglich (offenbar „mit Milch
+> zubereitet"), clear 104 kcal gilt „mit Wasser"; der Nährwerte-Score rechnet beide Basen
+> gegeneinander. Entscheidung: Basis vereinheitlichen oder je Produkt in der note
+> kennzeichnen (nur pudding deklariert es bisher).
 > **Kuratierte Sets teilbar (18.07. tief nachts, Biyan: „seine Sets teilen können"):**
 > „Link teilen" jetzt auch an den 7 kuratierten Sets (vorher nur Builder-/Community-Sets):
 > geteilt werden die gerade lieferbaren Posten in Standard-Sorte als normaler `#set=`-Link,
