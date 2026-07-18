@@ -17,6 +17,12 @@ self.addEventListener("fetch", e => {
       try {
         const r = await fetch(e.request);
         if (r && r.ok) (await caches.open(CACHE)).put(e.request, r.clone());
+        /* 5xx vom Host (echte Response, kein Throw): lieber der letzte gute Cache-Stand
+           als die rohe Fehlerseite (Bug-Jagd 18.07.) */
+        if (r && !r.ok && r.status >= 500) {
+          const hit = await caches.match(e.request);
+          if (hit) return hit;
+        }
         return r;
       } catch (err) {
         const hit = await caches.match(e.request);

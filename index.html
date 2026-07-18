@@ -85,6 +85,7 @@ header.top{background:var(--surface-1);border-bottom:1px solid var(--grid);posit
 /* Restock-Countdown-Chip: dunkles Markengrün (weißer Text ≥5:1 in beiden Themes, Farben deshalb
    bewusst theme-unabhängig), Gold-Pulspunkt; .rlive = Sonntags-Zeitfenster läuft (dunkles Gold) */
 .restock{display:inline-flex;align-items:center;gap:9px;font-size:12px;color:#fff;background:#6d2342;border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:6px 13px;white-space:nowrap;cursor:help}
+.restock[hidden]{display:none} /* Autor-display schlaegt sonst das UA-[hidden] — Chip stand bei JS-Fruehfehlern leer & dauerhaft da */
 .restock b{font-weight:700;letter-spacing:.2px}
 .restock .rtime{font-weight:600;opacity:.94}
 .restock .rdot{width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;animation:rpulse 2s ease-out infinite}
@@ -714,13 +715,22 @@ header.top.scrolled{box-shadow:var(--shadow)}
 ::selection{background:var(--m-value);color:#fff}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
 @media print{
-  header.top,.tabbar,.toolbar,.cartbar,.cartpanel,.cmpchip,.cmpwrap,.skip,.viewtog,.vadd,.srcsw,.altbtn,.watchbtn{display:none!important}
+  header.top,.tabbar,.toolbar,.cartbar,.cartpanel,.cmpchip,.cmpwrap,.skip,.viewtog,.vadd,.srcsw,.altbtn,.watchbtn,.cmpchk{display:none!important}
   .foot{padding-bottom:20px}
   .pc{box-shadow:none;border-color:var(--line)}
   body{background:#fff}
+  /* Dark-Theme-Druck waere weisse Schrift auf weissem Papier (Browser drucken keine
+     Hintergruende) — im Print gelten IMMER die Hell-Werte (Bug-Jagd 18.07.) */
+  :root,:root[data-theme=dark]{--surface-1:#fcfcfb;--plane:#f4f4f1;--card:#ffffff;--imgbg:#fbfbfa;--text-1:#0b0b0b;--text-2:#52514e;--muted:#6f6b64;--grid:#e6e5df;--line:#ccc9c0;--ring:rgba(11,11,11,.10)}
 }
 @media(max-width:700px){.foot-in{grid-template-columns:1fr}.indep{display:none}}
-@media(max-width:520px){ .cartbar .ship{display:none} }
+@media(max-width:520px){ .cartbar .ship{display:none}
+  /* 2-spaltiges Grid = schmale Karten: lange Tipp-Badges ("★ Vielseitigster Zuckersparer")
+     kollidierten in Zeile 1 mit dem Kategorie-Badge — Tipp rueckt eine Zeile tiefer,
+     ein gleichzeitiges %-Angebot-Badge (links, Zeile 2) eine weitere (Bug-Jagd 18.07.) */
+  .pc-img .tp{top:34px}
+  .pc-img .tp~.saleb{top:59px}
+}
 
 @media(max-width:900px){
   .kpis{grid-template-columns:repeat(2,1fr)}
@@ -883,13 +893,21 @@ header.top.scrolled{box-shadow:var(--shadow)}
     <div class="phead"><h2><span class="hbar" style="--acc:var(--acc-supplements)"></span>Sets</h2><p>Fertige Produkt-Kombis mit 1-Klick-Merkzettel: von uns kuratiert und generiert – oder von Creatorn und der Community per Link geteilt.</p></div>
     <!-- Prominenter Umschalter (Biyan: Sets und Community-Sets nicht getrennt, sondern EIN
          Reiter mit Umschalter) — Legacy-Hash #community routet auf die Community-Ansicht -->
-    <div class="setmode" role="tablist" aria-label="Set-Bereich wählen">
+    <!-- role=group statt tablist: die Kinder sind aria-pressed-Schalter, keine role=tab —
+         eine tablist ohne Tab-Kinder meldet AT eine leere Tab-Leiste (Bug-Jagd 18.07.;
+         gleiches Muster wie der srcsw-Umschalter) -->
+    <div class="setmode" role="group" aria-label="Set-Bereich wählen">
       <button type="button" class="segbtn on" id="modeOurs" aria-pressed="true">Unsere Sets</button>
       <button type="button" class="segbtn" id="modeCom" aria-pressed="false">Community &amp; Creator</button>
     </div>
+    <!-- Suche VOR den Ansichts-Containern: sie filtert kuratierte UND Community-Sets und
+         muss in beiden Ansichten sichtbar sein (Bug-Jagd 18.07. — sass vorher unsichtbar
+         in #setsOurs) -->
+    <div class="setctl">
+      <input class="search setsearch" id="setSearch" placeholder="Sets durchsuchen (Name, Produkt, Creator)…" aria-label="Sets durchsuchen" autocomplete="off">
+    </div>
     <div id="setsOurs">
     <div class="setctl">
-      <input class="search setsearch" id="setSearch" placeholder="Sets durchsuchen (Name, Produkt)…" aria-label="Sets durchsuchen" autocomplete="off">
       <button type="button" class="catchip" id="setAvail" aria-pressed="false">Nur komplett lieferbare Sets</button>
       <button type="button" class="catchip on" id="setSrcMore" aria-pressed="true">Nur MORE-Shop</button>
       <button type="button" class="catchip" id="setSrcAlt" aria-pressed="false">+ andere Anbieter</button>
@@ -960,7 +978,7 @@ header.top.scrolled{box-shadow:var(--shadow)}
         <textarea id="wText" maxlength="500" rows="4" placeholder="Dein Wunsch oder Vorschlag…" aria-label="Wunsch-Text"></textarea>
         <button type="button" class="setadd" id="wSend">Wunsch speichern</button>
       </div>
-      <p class="note" id="wNote"></p>
+      <p class="note" id="wNote" role="status"></p>
     </div>
     <div class="pnl" style="margin-bottom:14px">
       <h3>Sortenvorschläge zum Mitzeichnen</h3>
@@ -975,7 +993,7 @@ header.top.scrolled{box-shadow:var(--shadow)}
         <textarea id="fpWhy" maxlength="200" rows="2" placeholder="Warum wäre die Sorte gut? (optional)" aria-label="Begründung (optional)"></textarea>
         <button type="button" class="setadd" id="fpSave">Vorschlag erstellen &amp; Link teilen</button>
       </div>
-      <p class="note" id="fpNote"></p>
+      <p class="note" id="fpNote" role="status"></p>
       <div id="fpList"></div>
     </div>
     <div class="pnl">
@@ -1321,16 +1339,24 @@ function reichTxt(p){ return reichFmt(p.servings); }
    bekannt ist (Sets/Merkzettel/Vorschlaege), gibt es die Reichweite nur bei passender Groesse
    (sonst "reicht die 25g-Probe ca. 6 Wochen"-Unsinn). Groessen-Vergleich normalisiert
    ("600 g" == "600g"); unbekannte/abweichende Groesse -> ehrlich KEINE Angabe. */
-function servingsFor(p,size){
-  if(!p||!p.servings)return null;
-  if(!size||!p.size)return p.servings;
+/* Groessen-Match Variante vs. kuratierte Standardgroesse (normalisiert x/×/Leerzeichen).
+   MULTIPACK-FALLE (Bug-Jagd 18.07.): "10 x 65ml" ENTHAELT "65ml" als Substring — ein
+   fuehrender Multiplikator, den die Standardgroesse selbst nicht hat, ist KEIN Match
+   (sonst gaelte der 10er-Pack als Standard). "30 Sticks" vs "30 x 5g": fuehrender
+   Packungs-Zaehler == Portionszahl -> gleiche Standardpackung, nur anders notiert. */
+function sizeMatches(p,size){
+  if(!p)return false;
+  if(!size||!p.size)return true;
   const n=s=>String(s).toLowerCase().replace(/×/g,"x").replace(/\s+/g,"");
   const a=n(p.size),b=n(size);
-  if(a.indexOf(b)>=0||b.indexOf(a)>=0)return p.servings;
-  /* "30 Sticks" vs "30 x 5g" / "12 × 50 g" vs "12 x 2x25g": fuehrender Packungs-Zaehler
-     der Variante == kuratierte Portionszahl -> gleiche Standardpackung, nur anders notiert */
+  if(a===b||a.indexOf(b)>=0)return true;
+  if(b.indexOf(a)>=0&&!(/^\d+x/.test(b)&&!/^\d+x/.test(a)))return true;
   const lead=parseInt(b,10);
-  return lead&&lead===p.servings?p.servings:null;
+  return !!lead&&!!p.servings&&lead===p.servings;
+}
+function servingsFor(p,size){
+  if(!p||!p.servings)return null;
+  return sizeMatches(p,size)?p.servings:null;
 }
 /* "Im Angebot" = mind. eine KAUFBARE Variante hat einen echten Streichpreis (compare_at aus
    dem Shopify-Abgleich, 5. Feld in VARIANTS — echte Shop-Daten, kein geratener Rabatt) */
@@ -1378,16 +1404,19 @@ function catWinner(cat){ const m=Math.max(...PRODUCTS.filter(p=>p.cat===cat&&p._
 function topOf(cat){ return PRODUCTS.filter(p=>p.cat===cat&&p._total!=null).sort((a,b)=>b._total-a._total)[0]; }
 
 const RECS=[
-  (()=>{const p=topOf("proteine");return{tag:"Bestes Proteinpulver",name:p.name,why:"Höchster Gesamtscore der Pulver – starke Nährwerte, Preis-Leistung & Top-Bewertung.",cat:"proteine",score:p._total,extra:p.rating.toLocaleString("de-DE")+"★"};})(),
-  (()=>{const p=topOf("riegel");return{tag:"Bester Proteinriegel",name:p.name,why:"Führt die Riegel im Gesamtscore an – Nährwerte, Preis-Leistung & Beliebtheit kombiniert.",cat:"riegel",score:p._total,extra:p.rating.toLocaleString("de-DE")+"★"};})(),
-  (()=>{const p=topOf("snacks");return{tag:"Bester Snack",name:p.name,why:"Bester Snack-Score – hohe Proteindichte pro Kalorie und starke Reviews.",cat:"snacks",score:p._total,extra:p.rating.toLocaleString("de-DE")+"★"};})(),
+  /* Guards (Bug-Jagd 18.07.): topOf kann undefined liefern (leere Score-Liste) und ein
+     Kategorie-Sieger OHNE rating ist moeglich (_total existiert auch ohne Reviews, die
+     Gewichte werden umverteilt) — ungeguardet stuerbe hier das GANZE Script beim Laden. */
+  (()=>{const p=topOf("proteine");return p?{tag:"Bestes Proteinpulver",name:p.name,why:"Höchster Gesamtscore der Pulver – starke Nährwerte, Preis-Leistung & Top-Bewertung.",cat:"proteine",score:p._total,extra:p.rating!=null?p.rating.toLocaleString("de-DE")+"★":""}:null;})(),
+  (()=>{const p=topOf("riegel");return p?{tag:"Bester Proteinriegel",name:p.name,why:"Führt die Riegel im Gesamtscore an – Nährwerte, Preis-Leistung & Beliebtheit kombiniert.",cat:"riegel",score:p._total,extra:p.rating!=null?p.rating.toLocaleString("de-DE")+"★":""}:null;})(),
+  (()=>{const p=topOf("snacks");return p?{tag:"Bester Snack",name:p.name,why:"Bester Snack-Score – hohe Proteindichte pro Kalorie und starke Reviews.",cat:"snacks",score:p._total,extra:p.rating!=null?p.rating.toLocaleString("de-DE")+"★":""}:null;})(),
   {tag:"Meistbewertet",name:"Protein Iced Coffee",why:"Mit ~28.000 Bewertungen das populärste Produkt der Marke.",cat:"proteine",score:null,extra:"~28.000 Reviews"},
   {tag:"Kalorienärmstes Protein",name:"More Clear Protein",why:"25 g Protein, 0 g Zucker, nur 104 kcal – klar & erfrischend.",cat:"proteine",score:null,extra:"104 kcal"},
   {tag:"Preistipp Kreatin",name:"Creatine + Carnitine Sticks",why:"3 g Kreatin pro Portion für ca. 0,67 € – günstigste Kreatin-Option.",cat:"supplements",score:null,extra:"~0,67 €/Port."},
   {tag:"Zucker sparen",name:"Chunky Flavour",why:"Süßt wie ~50 g Zucker mit nur 6–12 kcal – 17 Sorten.",cat:"chunky",score:null,extra:"~0,32 €/Port."},
-  (()=>{const p=PRODUCTS.find(x=>x.id==="collagen");return{tag:"Beauty-Tipp",name:p.name,why:"12 g Kollagen + Hyaluron & Vitamin C – der Beauty-Drink der Marke.",cat:"supplements",score:null,extra:p.avail};})(),
+  (()=>{const p=PRODUCTS.find(x=>x.id==="collagen");return p?{tag:"Beauty-Tipp",name:p.name,why:"12 g Kollagen + Hyaluron & Vitamin C – der Beauty-Drink der Marke.",cat:"supplements",score:null,extra:p.avail}:null;})(),
   {tag:"Küchen-Essential",name:"2 KCALS Ölspray",why:"Nur 2 kcal pro Sprühstoß statt eines Schusses Öl.",cat:"kochen",score:null,extra:"5,99 €"}
-];
+].filter(Boolean);
 
 const eur=x=> x==null?"k.A.":x.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+" €";
 const AVAIL={"auf Lager":{c:"var(--ok)",t:"auf Lager"},"limitiert":{c:"var(--warn)",t:"limitiert"},"ausverkauft":{c:"var(--crit)",t:"ausverkauft"},"coming soon":{c:"var(--coming)",t:"coming soon"}};
@@ -1494,14 +1523,20 @@ let cmp=[]; const CMP_MAX=4;
    soll einen weiteren Slot anlegen, nicht Produkt 1/2 fuellen). Jedes Hinzufuegen eines
    Produkts verbraucht eines davon; leere Extra-Slots haben ein eigenes ✕. */
 let duelExtra=0;
-let cart=[];
-try{cart=JSON.parse(localStorage.getItem("mn-cart")||"[]")||[];}catch(e){cart=[];}
+/* Alle Listen-Loader laufen ueber loadArr: ein manipulierter/kaputter localStorage-Wert
+   (z. B. "{}" statt Array) haette sonst beim ersten .includes/.map das GANZE Script
+   gekillt — jetzt faellt jeder Nicht-Array-Wert still auf [] zurueck (Bug-Jagd 18.07.). */
+function loadArr(k){try{const v=JSON.parse(localStorage.getItem(k)||"[]");return Array.isArray(v)?v:[];}catch(e){return [];}}
+/* Merkzettel-Eintraege beim Laden validieren: q/pr als Zahlen erzwingen (1-99 wie ueberall),
+   name/vt als Strings — ein manipulierter Eintrag haette sonst rohes HTML in ${i.q} gerendert
+   bzw. die Summen zu NaN gemacht (Bug-Jagd 18.07.). */
+let cart=loadArr("mn-cart").filter(i=>i&&typeof i==="object"&&i.vid)
+  .map(i=>({...i,q:Math.min(Math.max(Math.floor(Number(i.q))||1,1),99),pr:Number(i.pr)||0,name:String(i.name||""),vt:String(i.vt||"")}));
 function saveCart(){try{localStorage.setItem("mn-cart",JSON.stringify(cart));}catch(e){}}
 /* Beobachten-Liste (Watchlist, localStorage mn-watch): Auge auf jeder Produktkarte merkt
    sich Produkt-IDs; beobachtete Produkte werden in "Gerade aktuell" priorisiert (eigene
    Pille "X deiner beobachteten wieder da"). Reine Beobachtung — kein Alert-Backend. */
-let watch=[];
-try{watch=JSON.parse(localStorage.getItem("mn-watch")||"[]")||[];}catch(e){watch=[];}
+let watch=loadArr("mn-watch");
 function saveWatch(){try{localStorage.setItem("mn-watch",JSON.stringify(watch));}catch(e){}}
 function isWatched(pid){return watch.includes(pid);}
 function toggleWatch(pid){
@@ -1577,6 +1612,9 @@ function renderNow(){
   if(neu.length)pills.push(`<button type="button" class="nowpill" data-now="neu" aria-expanded="false" aria-controls="nowchips"><span class="dot" style="background:var(--brand)"></span><b class="tnum">${neu.length}</b>&nbsp;neu im Sortiment</button>`);
   if(back.length)pills.push(`<button type="button" class="nowpill" data-now="back" aria-expanded="false" aria-controls="nowchips"><span class="dot" style="background:var(--ok)"></span><b class="tnum">${back.length}</b>&nbsp;wieder da</button>`);
   if(!pills.length){row.hidden=true;box.hidden=true;return;}
+  /* Re-Render (z. B. via toggleWatch) schliesst eine offene Chips-Box: sonst staende dort
+     der ALTE Inhalt bei aria-expanded=false auf allen Pillen (Bug-Jagd 18.07.) */
+  box.hidden=true;box.innerHTML="";
   row.innerHTML=`<span class="nowlab">Gerade aktuell</span>${pills.join("")}`;
   row.hidden=false;
   const chipsFor=k=>k==="wback"
@@ -1652,9 +1690,15 @@ document.getElementById("smartGo").onclick=()=>renderSmart();
    Gratisversand-Schwelle erreichen, Ueberschuss minimieren (letzter Posten wird gegen den
    guenstigsten getauscht, der das Ziel noch schafft). Deterministisch, keine Zufaelle. */
 function bestBuyable(pid){
+  const p=PRODUCTS.find(x=>x.id===pid);
   const av=parseVariants(pid).parsed.filter(x=>x.av);
   if(!av.length)return null;
-  return av.sort((a,b)=>b.pr-a.pr)[0];
+  /* Bug-Jagd 18.07.: reine Preis-desc-Heuristik griff zur teuersten XL-/Multipack-Variante
+     (2000g-Sauce fuer 114,99 statt 600g-Standard fuer 34,99; 10er-Zerup statt Einzelflasche).
+     Jetzt: Varianten der kuratierten STANDARDGROESSE zuerst (sizeMatches), Preis desc nur
+     noch als Tiebreaker unter den passenden; ohne Match Fallback aufs alte Verhalten. */
+  const std=p?av.filter(x=>sizeMatches(p,x.size)):av;
+  return (std.length?std:av).sort((a,b)=>b.pr-a.pr)[0];
 }
 function smartCart(goalKey,budget){
   const g=GOALS.find(x=>x.key===goalKey);
@@ -1880,7 +1924,7 @@ document.getElementById("modeCom").onclick=()=>{setsView="com";applySetsView();u
 const KNOWN_CODES=[
   {code:"AKTION",desc:"Wochen-Aktionscode – zuletzt bis 20 % (10 % auf Proteine)",stand:"Juli 2026"}
 ];
-let creatorCodes=[];try{creatorCodes=JSON.parse(localStorage.getItem("mn-ccodes")||"[]")||[];}catch(e){creatorCodes=[];}
+let creatorCodes=loadArr("mn-ccodes");
 function saveCreatorCodes(){try{localStorage.setItem("mn-ccodes",JSON.stringify(creatorCodes));}catch(e){}}
 function activeUserCode(){try{return localStorage.getItem("mn-usecode")||"";}catch(e){return "";}}
 function setActiveUserCode(c){try{if(c)localStorage.setItem("mn-usecode",c);else localStorage.removeItem("mn-usecode");}catch(e){}}
@@ -1919,7 +1963,7 @@ document.getElementById("ccAdd").onclick=()=>{
    Launch-Impressum (Launch-Checkliste) — sobald gesetzt, bekommt jeder Wunsch einen
    mailto-Absende-Knopf. Alt-Wuensche mit Freitext-prod (ohne prodId) bleiben lesbar. */
 const FEEDBACK_MAIL="";
-let wishes=[];try{wishes=JSON.parse(localStorage.getItem("mn-wishes")||"[]")||[];}catch(e){wishes=[];}
+let wishes=loadArr("mn-wishes");
 function saveWishes(){try{localStorage.setItem("mn-wishes",JSON.stringify(wishes));}catch(e){}}
 function wishMailto(w2){return `mailto:${FEEDBACK_MAIL}?subject=${encodeURIComponent("Protein-Samurai-Wunsch: "+w2.type+(w2.prod?" – "+w2.prod:""))}&body=${encodeURIComponent((w2.prod?"Betrifft: "+w2.prod+"\n\n":"")+w2.text)}`;}
 /* Produktbezug je Wunsch-Art: pflicht = ohne Produkt kein Speichern, optional = darf */
@@ -1985,7 +2029,7 @@ document.getElementById("wSend").onclick=()=>{
    Der Zaehler ist damit so ehrlich wie die Teilen-Kette (steht sichtbar im UI-Text);
    echte zentrale Votes = Backend-Sprint (ROADMAP). Kein Bild-Upload (Rechts-/
    Moderations-Risiko vor Launch — ROADMAP Stufe 3). */
-let fprops=[];try{fprops=JSON.parse(localStorage.getItem("mn-fprops")||"[]")||[];}catch(e){fprops=[];}
+let fprops=loadArr("mn-fprops");
 function saveFprops(){try{localStorage.setItem("mn-fprops",JSON.stringify(fprops));}catch(e){}}
 let fpProd=null;
 function renderFpForm(){
@@ -2004,7 +2048,7 @@ function renderFpForm(){
   }
   fl.textContent=hint;fl.style.display=hint?"":"none";
 }
-function fpShareURL(fp){return location.href.split("#")[0]+"#sorte="+fp.pid+"~"+encodeURIComponent(fp.name)+"~"+encodeURIComponent(fp.why||"")+"~"+fp.n;}
+function fpShareURL(fp){return location.href.split("#")[0]+"#sorte="+fp.pid+"~"+encodeURIComponent(fp.name)+"~"+encodeURIComponent(fp.why||"")+"~"+(Math.floor(Number(fp.n))||1);}
 async function shareFlavorLink(fp,btn,idle){
   const p=PRODUCTS.find(x=>x.id===fp.pid), url=fpShareURL(fp);
   if(navigator.share){
@@ -2018,8 +2062,8 @@ async function shareFlavorLink(fp,btn,idle){
 function renderFprops(){
   const l=document.getElementById("fpList"); if(!l)return;
   l.innerHTML=fprops.length
-    ?fprops.map((fp,ix)=>{const p=PRODUCTS.find(x=>x.id===fp.pid);if(!p)return "";
-      return `<div class="coderow">${thumbHTML(p,false)}<span class="cdesc"><b>${escT(fp.name)}</b> · ${escT(p.name)}${fp.why?`<br>${escT(fp.why)}`:""}<br><span style="color:var(--muted)"><b class="tnum">${fp.n}</b> Mitzeichner${fp.n===1?"":""} (per Link gezählt)</span></span><small style="color:var(--muted)">${new Date(fp.ts).toLocaleDateString("de-DE")}</small><button type="button" class="goalbtn" data-fpsh="${ix}">Link teilen</button><button type="button" class="goalbtn" data-fprm="${ix}" aria-label="Vorschlag entfernen">✕</button></div>`;}).join("")
+    ?fprops.map((fp,ix)=>{const p=fp&&fp.name?PRODUCTS.find(x=>x.id===fp.pid):null;if(!p)return "";
+      return `<div class="coderow">${thumbHTML(p,false)}<span class="cdesc"><b>${escT(fp.name)}</b> · ${escT(p.name)}${fp.why?`<br>${escT(fp.why)}`:""}<br><span style="color:var(--muted)"><b class="tnum">${Math.floor(Number(fp.n))||1}</b> Mitzeichner (per Link gezählt)</span></span><small style="color:var(--muted)">${fp.ts?new Date(fp.ts).toLocaleDateString("de-DE"):""}</small><button type="button" class="goalbtn" data-fpsh="${ix}">Link teilen</button><button type="button" class="goalbtn" data-fprm="${ix}" aria-label="Vorschlag entfernen">✕</button></div>`;}).join("")
     :`<p class="note">Noch keine Sortenvorschläge – deiner kann der erste sein.</p>`;
   l.querySelectorAll("[data-fpsh]").forEach(b=>b.onclick=()=>shareFlavorLink(fprops[Number(b.dataset.fpsh)],b,"Link teilen"));
   l.querySelectorAll("[data-fprm]").forEach(b=>b.onclick=()=>{fprops.splice(Number(b.dataset.fprm),1);saveFprops();renderFprops();});
@@ -2048,7 +2092,7 @@ renderFpForm();
 function openFlavorImport(raw){
   const parts=String(raw).split("~");
   const dec=s=>{try{return decodeURIComponent(s||"");}catch(e){return "";}};
-  const clean=(s,len)=>dec(s).replace(/[<>\x00-\x1f]/g,"").trim().slice(0,len);
+  const clean=(s,len)=>dec(s).replace(/[<>~\x00-\x1f]/g,"").trim().slice(0,len); /* ~ mit strippen: ein via %7E eingeschleustes ~ wuerde beim Weiterreichen die Link-Felder zerlegen */
   const pid=parts[0], name=clean(parts[1],40), why=clean(parts[2],200);
   const n=Math.min(Math.max(Math.floor(Number(parts[3]))||1,1),9999);
   const p=PRODUCTS.find(x=>x.id===pid);
@@ -2119,7 +2163,7 @@ renderSetGen();
    Live-Preisen und Verfuegbarkeit und kann das Set lokal speichern (localStorage mn-comsets,
    max. 20) oder direkt in den Merkzettel legen. KEINE erfundenen Creator/Sets — die Sektion
    startet leer und erklaert ehrlich, wie sie sich fuellt; gespeichert wird nur im Browser. */
-let comSets=[]; try{comSets=JSON.parse(localStorage.getItem("mn-comsets")||"[]")||[];}catch(e){comSets=[];}
+let comSets=loadArr("mn-comsets");
 function saveComSets(){try{localStorage.setItem("mn-comsets",JSON.stringify(comSets));}catch(e){}}
 function comSetRow(vid,q){
   for(const pid in VARIANTS){
@@ -2167,9 +2211,13 @@ function renderComSets(){
     return;
   }
   note.textContent="Per Link geteilte Sets, die du gespeichert hast – sie liegen nur in deinem Browser. Preise und Verfügbarkeit kommen live vom Shop-Abgleich.";
+  let comMiss=0;
   grid.innerHTML=comSets.map((cs,ix)=>{
     if(comCreatorFilter!=="alle"&&(cs.c||"")!==comCreatorFilter)return "";
     const rows=cs.i.map(it=>comSetRow(it[0],it[1])).filter(Boolean);
+    /* Die Sets-Suche gilt auch hier (Name, Creator, enthaltene Produkte) — der Kommentar
+       am Suchfeld versprach es schon immer, gefiltert wurde aber nur "Unsere Sets" */
+    if(!setMatches(setsQuery,[cs.n,cs.c||""].concat(rows.map(r=>r.p.name)))){comMiss++;return "";}
     const buyable=rows.filter(r=>r.px.av&&r.px.pr);
     const sum=buyable.reduce((a,r)=>a+r.px.pr*r.q,0);
     const items=rows.map(r=>r.px.av&&r.px.pr
@@ -2186,7 +2234,8 @@ function renderComSets(){
       <button type="button" class="setadd" data-comadd="${ix}"${buyable.length?"":" disabled"}>${buyable.length?`Lieferbare in den Merkzettel (${buyable.length})`:"Gerade nicht lieferbar"}</button>
       <div class="setacts">${buyable.length?`<button type="button" class="goalbtn" data-comcust="${ix}">Anpassen</button>`:""}<button type="button" class="goalbtn" data-comshare="${ix}">Link teilen</button><button type="button" class="goalbtn" data-comrm="${ix}">✕ Entfernen</button></div>
     </div>`;
-  }).join("");
+  }).join("")
+    +(setsQuery&&comMiss&&comMiss===comSets.filter(cs=>comCreatorFilter==="alle"||(cs.c||"")===comCreatorFilter).length?`<div class="note">Kein gespeichertes Set passt zu „${escT(setsQuery)}" – die Suche prüft Set-Namen, Creator und enthaltene Produkte.</div>`:"");
   grid.querySelectorAll("[data-comadd]").forEach(b=>b.onclick=()=>{
     const cs=comSets[Number(b.dataset.comadd)]; if(!cs)return;
     let n=0;
@@ -2249,12 +2298,39 @@ function openSetCustomize(title,items){
     const b=document.getElementById("custAdd");b.textContent="✓ Im Merkzettel – unten weiter zum Warenkorb";b.disabled=true;
   };
 }
-function closeSetOv(){const w=document.getElementById("setov");if(w)w.hidden=true;}
+function closeSetOv(){ovHide(document.getElementById("setov"));}
+/* Overlay-Fokus (Bug-Jagd 18.07., WCAG 2.4.3): beim Oeffnen den Ausloeser merken und den
+   Fokus in den Dialog ziehen, beim Schliessen zurueckgeben; der globale Tab-Trap unten
+   haelt den Fokus im offenen Dialog — aria-modal versprach das den Screenreadern laengst,
+   tatsaechlich wanderte Tab hinter den Scrim. */
+let ovReturn=null;
+function ovShown(w){
+  const ae=document.activeElement;
+  if(ae&&ae!==document.body&&!w.contains(ae))ovReturn=ae;
+  const x=w.querySelector(".x");if(x)x.focus();
+}
+function ovHide(w){
+  if(w)w.hidden=true;
+  if(ovReturn&&ovReturn.isConnected){try{ovReturn.focus();}catch(e){}}
+  ovReturn=null;
+}
+document.addEventListener("keydown",e=>{
+  if(e.key!=="Tab")return;
+  const ov=document.querySelector(".cmpwrap:not([hidden])");
+  if(!ov)return;
+  const f=[...ov.querySelectorAll('a[href],button:not([disabled]),input,select,textarea,[tabindex="0"]')].filter(x=>x.offsetParent!==null);
+  if(!f.length)return;
+  const first=f[0],last=f[f.length-1];
+  if(!ov.contains(document.activeElement)){e.preventDefault();first.focus();}
+  else if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+  else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+});
 function setOvShow(html){
   const w=document.getElementById("setov");
   w.innerHTML=html;w.hidden=false;
   w.querySelector(".x").onclick=closeSetOv;
   w.onclick=e=>{if(e.target===w)closeSetOv();};
+  ovShown(w);
   return w;
 }
 /* Builder: Grundlage ist der aktuelle Merkzettel (dort werden Sorten/Groessen gewaehlt) —
@@ -2341,9 +2417,9 @@ function openSetBuilder(){
   document.getElementById("setBgo").onclick=()=>{
     if(!sel.length)return;
     const nEl=document.getElementById("setBn");
-    const n=nEl.value.replace(/[<>]/g,"").trim().slice(0,40);
+    const n=nEl.value.replace(/[<>~]/g,"").trim().slice(0,40); /* ~ ist der Link-Separator (encodeURIComponent laesst Tilden durch) */
     if(!n){nEl.style.borderColor="var(--crit)";nEl.focus();return;}
-    const c=document.getElementById("setBc").value.replace(/[<>]/g,"").trim().slice(0,30);
+    const c=document.getElementById("setBc").value.replace(/[<>~]/g,"").trim().slice(0,30);
     const cs={n:n,c:c,i:sel.map(s=>[s.vid,s.q]),ts:Date.now()};
     const key=JSON.stringify([cs.n,cs.i]);
     if(!comSets.some(x=>JSON.stringify([x.n,x.i])===key)){comSets.unshift(cs);comSets=comSets.slice(0,20);saveComSets();renderComSets();}
@@ -2358,7 +2434,7 @@ function openSetBuilder(){
 function openSetImport(str){
   const parts=String(str).split("~");
   const dec=s=>{try{return decodeURIComponent(s||"");}catch(e){return "";}};
-  const clean=(s,len)=>dec(s).replace(/[<>\x00-\x1f]/g,"").trim().slice(0,len);
+  const clean=(s,len)=>dec(s).replace(/[<>~\x00-\x1f]/g,"").trim().slice(0,len); /* ~ mit strippen: ein via %7E eingeschleustes ~ wuerde beim Weiterreichen die Link-Felder zerlegen */
   const n=clean(parts[1],40)||"Geteiltes Set", c=clean(parts[2],30);
   const items=[];
   String(parts[0]||"").split(",").slice(0,40).forEach(pair=>{
@@ -2392,7 +2468,7 @@ function openSetImport(str){
     let k=0;buyable.forEach(r=>{for(let j=0;j<r.q;j++)addToCart(r.p.id,r.vid);k+=r.q;});
     const b=document.getElementById("impSetCart");b.textContent=`✓ ${k} im Merkzettel`;b.disabled=true;
   };
-  w.querySelector(".x").focus();
+  ovShown(w);
 }
 
 const FAQS=[
@@ -2532,7 +2608,7 @@ function cardHTML(p){
   }
   const badges=(p.tags||[]).slice(0,4).map(t=>`<span class="b">${t}</span>`).join("");
   return `<div class="pc">
-    <div class="pc-img"><span class="catbadge" style="--acc:${c.color}">${c.label}</span>${prodOnSale(p.id)?`<span class="saleb" title="Mindestens eine kaufbare Sorte hat gerade einen echten Streichpreis – Details in der Produktansicht">% Angebot</span>`:""}${win}${img}${cmpchk}${watchBtnHTML(p)}</div>
+    <div class="pc-img"><span class="catbadge" style="--acc:${c.color}">${c.label}</span>${win}${prodOnSale(p.id)?`<span class="saleb" title="Mindestens eine kaufbare Sorte hat gerade einen echten Streichpreis – Details in der Produktansicht">% Angebot</span>`:""}${img}${cmpchk}${watchBtnHTML(p)}</div>
     <div class="pc-b">
       <div class="nm"><button type="button" class="nmbtn" data-detail="${p.id}" title="Details ansehen">${p.name}</button></div>
       <div class="pc-price"><span class="pr tnum">${eur(p.price)}</span>${fmtBase(p)?`<span class="bp tnum">${fmtBase(p)}</span>`:""}<span class="avail"><span class="adot" style="background:${a.c}"></span>${a.t}</span></div>
@@ -2556,6 +2632,10 @@ function cardHTML(p){
    traefe 'bar' halb das Sortiment. Kategorie-Label wandert mit in den Suchtext ('Riegel'
    findet die Riegel). Phrasen-Treffer wie bisher zuerst, sonst UND ueber die Wort-Tokens. */
 function normTxt(s){return s.toLowerCase().replace(/ß/g,"ss").replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue");}
+/* Objekt-Lookups mit NUTZER-Schluesseln (Suchbegriff, Hash-Parameter) muessen Own-Property
+   pruefen — Suchbegriff "constructor" traefe sonst die Prototype-Kette und liesse render()
+   bei jedem Tastendruck sterben (Bug-Jagd 18.07.). */
+function hasOwn(o,k){return Object.prototype.hasOwnProperty.call(o,k);}
 const SEARCH_SYN={eiweiss:["protein"],kreatin:["creatine"],kaffee:["coffee"],schlaf:["sleep","melatonin"],schlafen:["sleep","melatonin"],einschlafen:["sleep","melatonin"],kollagen:["collagen"],haferbrei:["porridge"],pfannkuchen:["pancake"],sosse:["sauce","saucen"],gewuerz:["spices"],gewuerze:["spices"],marmelade:["moremelade"],ballaststoffe:["fiber"],eisen:["iron"],omega:["o3"],flasche:["bottle"],nussbutter:["butter"]};
 function lev(a,b,max){ /* OSA: Einfuege/Loesch/Ersetz + Nachbar-Dreher, frueher Abbruch > max */
   if(Math.abs(a.length-b.length)>max)return max+1;
@@ -2582,7 +2662,7 @@ function productHay(p){
 function tokHit(p,tok){
   const hay=productHay(p);
   if(hay.includes(tok))return true;
-  const syn=SEARCH_SYN[tok];
+  const syn=hasOwn(SEARCH_SYN,tok)?SEARCH_SYN[tok]:null;
   if(syn&&syn.some(s=>hay.includes(s)))return true;
   const max=tok.length>=8?2:tok.length>=5?1:0;
   return max?p._hayW.some(w=>lev(w,tok,max)<=max):false;
@@ -2640,11 +2720,17 @@ function renderCatChips(){
 function renderTable(list){
   const alle=activeCats.length!==1; /* Kategorie-Spalte immer, wenn mehr als eine Kategorie sichtbar ist */
   const cols=[...(alle?[["cat","Kategorie",0]]:[]),["name","Produkt",0],["price","Preis",1],["base","Grundpreis",1],["perserv","€/Port.",1],["servings","Reichweite",1],["protein","Protein",1],["sugar","Zucker",1],["kcal","kcal",1],["rating","Bew.",1],["_total","Score",1],["avail","Verfügbar",0]];
-  let h="<thead><tr>"+cols.map(c=>`<th class="${c[2]?'num':''}" data-k="${c[0]}" aria-sort="${tsort.key===c[0]?(tsort.dir>0?"ascending":"descending"):"none"}">${c[1]}${tsort.key===c[0]?`<span class="sortind">${tsort.dir>0?" ▲":" ▼"}</span>`:""}</th>`).join("")+"</tr></thead>";
+  let h="<thead><tr>"+cols.map(c=>`<th class="${c[2]?'num':''}" data-k="${c[0]}" tabindex="0" aria-sort="${tsort.key===c[0]?(tsort.dir>0?"ascending":"descending"):"none"}">${c[1]}${tsort.key===c[0]?`<span class="sortind">${tsort.dir>0?" ▲":" ▼"}</span>`:""}</th>`).join("")+"</tr></thead>";
   const rows=list.map(p=>{const ps=perServing(p),a=AVAIL[p.avail]||AVAIL["limitiert"];const im=p.img?`<img src="${imgURL(p.img)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:"";
     return `<tr>${alle?`<td>${CATS[p.cat].label}</td>`:""}<td><span class="tprod">${im}${p.name}</span></td><td class="num tnum">${eur(p.price)}</td><td class="num tnum">${fmtBase(p)||"–"}</td><td class="num tnum">${ps==null?"–":eur(ps)}</td><td class="num" title="bei 1 Portion pro Tag">${reichTxt(p)||"–"}</td><td class="num tnum">${p.protein==null?"–":p.protein.toLocaleString("de-DE")+" g"}</td><td class="num tnum">${p.sugar==null?"–":p.sugar.toLocaleString("de-DE")+" g"}</td><td class="num tnum">${p.kcal==null?"–":p.kcal}</td><td class="num tnum">${p.rating==null?"–":p.rating.toLocaleString("de-DE")+"★"}</td><td class="num">${p._total==null?"–":`<span class="scorepill" style="background:${scoreColor(p._total)}">${p._total}</span>`}</td><td><span style="color:${a.c}">●</span> ${a.t}</td></tr>`;}).join("");
   const tbl=document.getElementById("tbl"); tbl.innerHTML=h+"<tbody>"+rows+"</tbody>";
-  tbl.querySelectorAll("th").forEach(th=>th.onclick=()=>{const k=th.dataset.k;tsort.dir=tsort.key===k?-tsort.dir:(["name","avail","cat"].includes(k)?1:-1);tsort.key=k;render();});
+  const thSort=k=>{tsort.dir=tsort.key===k?-tsort.dir:(["name","avail","cat"].includes(k)?1:-1);tsort.key=k;render();
+    /* Fokus nach dem Re-Render zurueck auf die sortierte Spalte (Tastatur-Bedienung) */
+    const nth=document.querySelector(`#tbl th[data-k="${k}"]`);if(nth)nth.focus();};
+  tbl.querySelectorAll("th").forEach(th=>{
+    th.onclick=()=>thSort(th.dataset.k);
+    th.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();thSort(th.dataset.k);}};
+  });
 }
 const AVAIL_RANK={"auf Lager":0,"limitiert":1,"ausverkauft":2,"coming soon":3};
 function sortForTable(list){const k=tsort.key,d=tsort.dir,val=p=>k==="perserv"?perServing(p):(k==="base"?(baseInfo(p)?baseInfo(p).v:null):(k==="avail"?AVAIL_RANK[p.avail]:(k==="cat"?CATORDER.indexOf(p.cat):p[k])));return [...list].sort((a,b)=>{let x=val(a),y=val(b);const xn=x==null,yn=y==null;if(xn||yn)return xn&&yn?0:(xn?1:-1);if(typeof x==="string"||typeof y==="string"){return x.toString().localeCompare(y.toString())*d;}return (x-y)*d;});}
@@ -2682,7 +2768,8 @@ function render(){
    Reiter nicht') — alte Deep-Links #ratgeber/#buy bleiben gueltig (showTab mappt sie). */
 const TABS=[["uebersicht","Übersicht",null],["produkte","Produkte",null],["vergleich","Vergleich",null],["empfehlungen","Empfehlungen",null],["sets","Sets",null],["rabatte","Rabatte",null],["wuensche","Community",null],["info","Info",null]];
 function renderTabs(){
-  document.getElementById("tabs").innerHTML=TABS.map(t=>`<button class="tab" data-tab="${t[0]}" role="tab" aria-selected="false" aria-controls="${t[0]==="produkte"?"panel-products":"panel-"+t[0]}">${t[1]}${t[0]==="produkte"?`<span class="tcount">${PRODUCTS.length}</span>`:""}</button>`).join("");
+  /* Info steuert seit der Tab-Konsolidierung DREI Panels — aria-controls nimmt eine IDREF-Liste */
+  document.getElementById("tabs").innerHTML=TABS.map(t=>`<button class="tab" data-tab="${t[0]}" role="tab" aria-selected="false" aria-controls="${t[0]==="produkte"?"panel-products":t[0]==="info"?"panel-ratgeber panel-buy panel-info":"panel-"+t[0]}">${t[1]}${t[0]==="produkte"?`<span class="tcount">${PRODUCTS.length}</span>`:""}</button>`).join("");
   document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 }
 function showTab(tab){
@@ -2690,7 +2777,7 @@ function showTab(tab){
      prominenter Umschalter) — alte geteilte Links bleiben damit gueltig */
   if(tab==="community"){tab="sets";setsView="com";}
   if(tab==="ratgeber"||tab==="buy")tab="info"; /* Alt-Links: eigene Reiter bis 18.07. */
-  const isCat=!!CATS[tab], btnTab=isCat?"produkte":tab;
+  const isCat=hasOwn(CATS,tab), btnTab=isCat?"produkte":tab;
   document.querySelectorAll(".tab").forEach(b=>{const on=b.dataset.tab===btnTab;b.classList.toggle("on",on);b.setAttribute("aria-selected",on?"true":"false");b.tabIndex=on?0:-1;});
   document.getElementById("panel-uebersicht").classList.toggle("on",tab==="uebersicht");
   document.getElementById("panel-products").classList.toggle("on",isCat||tab==="produkte");
@@ -2760,9 +2847,13 @@ document.getElementById("grid").addEventListener("click",e=>{
   const nb=e.target.closest(".nmbtn");
   if(nb){openDetail(nb.dataset.detail);return;}
   /* Klick auf die Karten-Flaeche (nicht auf ein interaktives Element) oeffnet ebenfalls die
-     Details — der Name-Button bleibt der Weg fuer die Tastatur */
+     Details — der Name-Button bleibt der Weg fuer die Tastatur. AUSGENOMMEN: der offene
+     Score-Popover und die aufgeklappte Sorten-Liste (dort liest/waehlt man gerade — ein
+     Klick in Text oder Luecken darf das Overlay nicht aufreissen; Bug-Jagd 18.07.) sowie
+     Klicks am Ende einer Text-Selektion. */
   const pc=e.target.closest(".pc");
-  if(pc&&!e.target.closest("a,button,input,label")){
+  if(pc&&!e.target.closest("a,button,input,label,.spop,.vlist")
+    &&!(window.getSelection&&String(window.getSelection()))){
     const t=pc.querySelector(".nmbtn");
     if(t){openDetail(t.dataset.detail);}
   }
@@ -2784,7 +2875,7 @@ function addToCart(pid,vid){
   if(!p||!v)return;
   const hit=cart.find(i=>i.vid===vid);
   const px=parseVariants(pid).parsed.find(x=>x.vid===vid);
-  if(hit)hit.q++;else cart.push({vid:vid,pid:pid,name:p.name,vt:px?px.flavor+(px.size?" · "+px.size:""):varName(v[1]),pr:v[3]||0,q:1});
+  if(hit)hit.q=Math.min(hit.q+1,99);else cart.push({vid:vid,pid:pid,name:p.name,vt:px?px.flavor+(px.size?" · "+px.size:""):varName(v[1]),pr:v[3]||0,q:1}); /* 99er-Kappung wie in Import/Builder */
   saveCart();renderCart();
 }
 /* Shopify-Cart-Permalinks akzeptieren ?discount=CODE — der Code liegt dann beim Checkout
@@ -2802,6 +2893,11 @@ function cartURLFor(items){
 function cartURL(){return cartURLFor(cart);}
 /* Posten noch bei MORE kaufbar? (VARIANTS-Zeile: [vid, Sorte, kaufbar, Preis]) */
 function cartItemAv(i){const v=(VARIANTS[i.pid]||[]).find(x=>x[0]===i.vid);return !!(v&&v[2]);}
+/* LIVE-Preis eines Merkzettel-Postens: der gespeicherte pr ist ein Snapshot vom Zeitpunkt
+   des Hineinlegens — nach dem Wochen-Refresh rechneten Summe + Gratisversand-Schwelle sonst
+   mit veralteten Preisen (Bug-Jagd 18.07.). Faellt auf den Snapshot zurueck, wenn die
+   Variante nicht mehr im Abgleich steckt. */
+function cartPr(i){const v=(VARIANTS[i.pid]||[]).find(x=>x[0]===i.vid);return v?(v[3]||0):(i.pr||0);}
 /* Aufteil-Dialog (Biyan): fuehrt der Merkzettel Posten, die MORE gerade NICHT liefern kann,
    faengt der Warenkorb-Klick ab und zeigt 'das hier bei MORE holen, das hier woanders' —
    lieferbare per 1-Klick-Permalink, der Rest mit den besten BEKANNTEN Alternativen
@@ -2810,7 +2906,7 @@ function cartItemAv(i){const v=(VARIANTS[i.pid]||[]).find(x=>x[0]===i.vid);retur
 function openCartSplit(){
   const avIt=cart.filter(cartItemAv),unIt=cart.filter(i=>!cartItemAv(i));
   const row=i=>{const p=PRODUCTS.find(x=>x.id===i.pid);
-    return `<div class="setit"><span class="sn${p?" withimg":""}">${p?thumbHTML(p,false):""}<span class="snt"><b>${i.q>1?`${i.q}× `:""}${escT(i.name)}</b><small>${escT(i.vt)}</small></span></span><span class="sp tnum">${eur(i.pr*i.q)}</span></div>`;};
+    return `<div class="setit"><span class="sn${p?" withimg":""}">${p?thumbHTML(p,false):""}<span class="snt"><b>${i.q>1?`${i.q}× `:""}${escT(i.name)}</b><small>${escT(i.vt)}</small></span></span><span class="sp tnum">${eur(cartPr(i)*i.q)}</span></div>`;};
   const unRow=i=>{const p=PRODUCTS.find(x=>x.id===i.pid);
     return `<div class="setit gone"><span class="sn${p?" withimg":""}">${p?thumbHTML(p,true):""}<span class="snt"><b>${i.q>1?`${i.q}× `:""}${escT(i.name)}</b><small>zzt. nicht bei MORE${p?setAltLinksHTML(p):""}</small></span></span><span class="sp">–</span></div>`;};
   setOvShow(`<div class="cmpbox shopbox"><h3>Nicht alles ist gerade bei MORE lieferbar <button type="button" class="x" aria-label="Schließen">✕</button></h3>
@@ -2825,7 +2921,7 @@ function renderCart(){
   const bar=document.getElementById("cartbar"),panel=document.getElementById("cartpanel");
   document.body.classList.toggle("has-cart",cart.length>0);
   if(!cart.length){bar.hidden=true;panel.hidden=true;return;}
-  const n=cart.reduce((a,i)=>a+i.q,0), sum=cart.reduce((a,i)=>a+i.pr*i.q,0);
+  const n=cart.reduce((a,i)=>a+i.q,0), sum=cart.reduce((a,i)=>a+cartPr(i)*i.q,0);
   const ship=sum>=55?"Gratisversand ✓":"noch "+eur(55-sum)+" bis Gratisversand (DE)";
   bar.innerHTML=`<span><b class="tnum">${n}</b> Artikel · <b class="tnum">${eur(sum)}</b><span class="ship"> · ${ship}</span></span>`+
     `<button class="go sec" id="cartToggle" aria-expanded="${String(!panel.hidden)}">Merkzettel</button>`+
@@ -2845,7 +2941,7 @@ function renderCart(){
     setTimeout(()=>{if(cx.isConnected){cx.classList.remove("arm");cx.textContent="✕";}},2500);
   };
   if(!panel.hidden){
-    panel.innerHTML=cart.map((i,ix)=>`<div class="citem"><span class="cn">${escT(i.name)}<small>${escT(i.vt)}${i.pr?" · "+eur(i.pr):""}${(()=>{const p=PRODUCTS.find(x=>x.id===i.pid);if(!p)return "";const px=parseVariants(i.pid).parsed.find(x=>x.vid===i.vid);const sv=servingsFor(p,px?px.size:null);return sv*i.q>1?` · reicht ${reichFmt(sv*i.q)}`:"";})()}</small></span><span class="q"><button type="button" data-cq="${ix}" data-d="-1" aria-label="Menge verringern">−</button><span class="tnum">${i.q}</span><button type="button" data-cq="${ix}" data-d="1" aria-label="Menge erhöhen">+</button></span><button type="button" class="rm" data-crm="${ix}" aria-label="${escT(i.name)} entfernen">✕</button></div>`).join("")+
+    panel.innerHTML=cart.map((i,ix)=>`<div class="citem"><span class="cn">${escT(i.name)}<small>${escT(i.vt)}${cartPr(i)?" · "+eur(cartPr(i)):""}${(()=>{const p=PRODUCTS.find(x=>x.id===i.pid);if(!p)return "";const px=parseVariants(i.pid).parsed.find(x=>x.vid===i.vid);const sv=servingsFor(p,px?px.size:null);return sv*i.q>1?` · reicht ${reichFmt(sv*i.q)}`:"";})()}</small></span><span class="q"><button type="button" data-cq="${ix}" data-d="-1" aria-label="Menge verringern">−</button><span class="tnum">${i.q}</span><button type="button" data-cq="${ix}" data-d="1" aria-label="Menge erhöhen">+</button></span><button type="button" class="rm" data-crm="${ix}" aria-label="${escT(i.name)} entfernen">✕</button></div>`).join("")+
       `<div class="cartnote">Der Link öffnet den MORE-Shop mit diesen Positionen vorbefüllt – bestellt wird dort, nicht hier. Preise laut Shop-Varianten, ohne Gewähr. „Reicht" rechnet mit 1 Portion pro Tag. „Merkzettel teilen" erzeugt einen Link, über den andere genau diese Zusammenstellung übernehmen können – ideal, um deinen Warenkorb weiterzugeben.</div>`+
       `<button class="cmpclear" id="cartShare">Merkzettel teilen</button>`+
       `<button class="cmpclear" id="cartClear">Merkzettel leeren</button>`;
@@ -2864,7 +2960,7 @@ function renderCart(){
       catch(e){window.prompt("Link zum Teilen kopieren:",url);}
       setTimeout(()=>{if(btn.isConnected)btn.textContent="Merkzettel teilen";},1600);
     };
-    panel.querySelectorAll("[data-cq]").forEach(b=>b.onclick=()=>{const ix=Number(b.dataset.cq);cart[ix].q+=Number(b.dataset.d);if(cart[ix].q<1)cart.splice(ix,1);saveCart();renderCart();});
+    panel.querySelectorAll("[data-cq]").forEach(b=>b.onclick=()=>{const ix=Number(b.dataset.cq);cart[ix].q=Math.min(cart[ix].q+Number(b.dataset.d),99);if(cart[ix].q<1)cart.splice(ix,1);saveCart();renderCart();});
     panel.querySelectorAll("[data-crm]").forEach(b=>b.onclick=()=>{cart.splice(Number(b.dataset.crm),1);saveCart();renderCart();});
   }
 }
@@ -2909,9 +3005,9 @@ function openCmp(){
   w.querySelector(".x").onclick=closeCmp;
   document.getElementById("cmpClear").onclick=()=>{cmp=[];syncCmp();closeCmp();render();};
   w.onclick=e=>{if(e.target===w)closeCmp();};
-  w.querySelector(".x").focus();
+  ovShown(w);
 }
-function closeCmp(){document.getElementById("cmpwrap").hidden=true;}
+function closeCmp(){ovHide(document.getElementById("cmpwrap"));}
 /* Vergleich-Reiter: Produkte per Suche hinzufuegen und inline gegenueberstellen (gleiche
    cmp-Auswahl wie die Karten-Haekchen — beide Wege bleiben synchron). */
 function syncCmp(){renderCmpChip();renderVchips();renderDuel();renderVtable();}
@@ -3003,6 +3099,7 @@ function openGallery(o){
   w.hidden=false;
   w.querySelector(".x").onclick=closePicker;
   w.onclick=e=>{if(e.target===w)closePicker();};
+  ovShown(w);
   w.querySelectorAll("[data-pick]").forEach(t=>t.onclick=()=>{
     const id=t.dataset.pick;
     if(o.isSel(id))return;
@@ -3025,7 +3122,7 @@ function openPicker(ix){
     closePicker();syncCmp();
   }});
 }
-function closePicker(){document.getElementById("pickov").hidden=true;}
+function closePicker(){ovHide(document.getElementById("pickov"));}
 function renderVchips(){
   const box=document.getElementById("vchips"); if(!box)return;
   box.innerHTML=cmp.length?cmp.map(id=>{const p=PRODUCTS.find(x=>x.id===id);return `<span class="vchip">${escT(p.name)}<button type="button" data-vrm="${id}" aria-label="${esc(p.name)} entfernen">✕</button></span>`;}).join(""):"";
@@ -3062,9 +3159,9 @@ function openShops(pid){
   w.hidden=false;
   w.querySelector(".x").onclick=closeShops;
   w.onclick=e=>{if(e.target===w)closeShops();};
-  w.querySelector(".x").focus();
+  ovShown(w);
 }
-function closeShops(){document.getElementById("shopov").hidden=true;}
+function closeShops(){ovHide(document.getElementById("shopov"));}
 
 /* Produkt-Detailansicht: Klick auf eine Karte oeffnet das grosse Overlay (cmpbox-Muster wie
    Shop-Fenster/Vergleich) mit ALLEN Sorten+Groessen+Live-Status, Naehrwerten, Score-Zerlegung
@@ -3139,9 +3236,9 @@ function openDetail(pid){
     dw.querySelector("span").textContent=on?"Wird beobachtet":"Beobachten";
     document.querySelectorAll(`.watchbtn[data-watch="${p.id}"]`).forEach(b=>{b.classList.toggle("on",on);b.setAttribute("aria-pressed",String(on));});
   };
-  w.querySelector(".x").focus();
+  ovShown(w);
 }
-function closeDetail(){document.getElementById("prodov").hidden=true;}
+function closeDetail(){ovHide(document.getElementById("prodov"));}
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeCmp();closeShops();closePicker();closeShare();closeSetOv();closeDetail();}});
 
 /* Deep-Links: #tab?q=&f=avs&sort=&view=table — teilbare Zustände, replaceState (kein History-Spam) */
@@ -3202,20 +3299,20 @@ function openCartImport(str){
     items.forEach(i=>{for(let k=0;k<i.q;k++)addToCart(i.pid,i.vid);});
     closeShare();
   };
-  w.querySelector(".x").focus();
+  ovShown(w);
 }
-function closeShare(){document.getElementById("shareov").hidden=true;}
+function closeShare(){ovHide(document.getElementById("shareov"));}
 function applyHash(){
   const m=location.hash.slice(1);if(!m)return false;
   if(m.startsWith("warenkorb=")){openCartImport(m.slice(10));return true;}
   if(m.startsWith("set=")){openSetImport(m.slice(4));return true;}
   if(m.startsWith("sorte=")){openFlavorImport(m.slice(6));return true;}
   const qi=m.indexOf("?"),tab=qi<0?m:m.slice(0,qi),qs=qi<0?"":m.slice(qi+1);
-  if(!(CATS[tab]||["uebersicht","produkte","vergleich","empfehlungen","sets","community","rabatte","wuensche","ratgeber","buy","info"].includes(tab)))return false;
+  if(!(hasOwn(CATS,tab)||["uebersicht","produkte","vergleich","empfehlungen","sets","community","rabatte","wuensche","ratgeber","buy","info"].includes(tab)))return false;
   showTab(tab);
   if(CATS[tab]||tab==="produkte"){ /* Parameter anwenden — leeres qs setzt bewusst auf Defaults zurück (der Hash ist die Wahrheit) */
     const ps=new URLSearchParams(qs);
-    if(tab==="produkte")activeCats=(ps.get("cats")||"").split(",").filter(x=>CATS[x]); /* Kombi-Links; unbekannte Keys fallen raus */
+    if(tab==="produkte")activeCats=(ps.get("cats")||"").split(",").filter(x=>hasOwn(CATS,x)); /* Kombi-Links; unbekannte Keys fallen raus */
     document.getElementById("search").value=ps.get("q")||"";
     const f=ps.get("f")||"";
     document.getElementById("fAvail").checked=f.indexOf("a")>=0;
@@ -3223,7 +3320,7 @@ function applyHash(){
     document.getElementById("fSugar").checked=f.indexOf("s")>=0;
     document.getElementById("fSale").checked=f.indexOf("o")>=0;
     const so=ps.get("sort");
-    if(so&&SORT2TSORT[so]){document.getElementById("sort").value=so;tsort.key=SORT2TSORT[so][0];tsort.dir=SORT2TSORT[so][1];}
+    if(so&&hasOwn(SORT2TSORT,so)){document.getElementById("sort").value=so;tsort.key=SORT2TSORT[so][0];tsort.dir=SORT2TSORT[so][1];}
     const tb=ps.get("view")==="table";
     view=tb?"table":"cards";
     document.getElementById("vTable").classList.toggle("on",tb);

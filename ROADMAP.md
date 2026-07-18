@@ -106,7 +106,27 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
-> **Katalog-Vollständigkeits-Audit (18.07. nachts, Biyans Auftrag „prüf, ob jedes Produkt
+> **Bug-Jagd (18.07. tief nachts, Biyans Auftrag „alles überprüfen" — Eigen-Review + zwei
+> Finder-Agenten, jeder Fund einzeln am Build verifiziert):** 17 echte Fixe, u. a.:
+> `bestBuyable` griff zur TEUERSTEN Variante statt der Standardgröße (2000g-Sauce für
+> 114,99 € statt 600g für 34,99 — traf Sets/Builder/Smart-Korb; jetzt Größen-Match mit
+> Multipack-Erkennung); Merkzettel rechnete mit eingefrorenen Snapshot-Preisen statt der
+> Live-Varianten-Preise (Gratisversand-Schwelle nach Refresh falsch); manipulierbarer
+> localStorage/`"constructor"`-Suchbegriff/`~`-Zeichen in Namen konnten die Seite bzw.
+> Teilen-Links zerlegen (loadArr-Härtung, hasOwn-Guards, Tilde-Strips beidseitig);
+> `</script>` in Shopify-Titeln hätte den Script-Block der Seite beendet (generate.py
+> escapt jetzt, Single-Pass-Ersetzung, LF-Newlines gegen CRLF-Diffs); Karten-Klick
+> öffnete das Detail-Overlay auch aus Score-Popover/Sorten-Liste heraus; Sets-Suche
+> filterte Community-Sets nie (und war dort unsichtbar); RECS-Init konnte bei
+> Rating-losem Kategorie-Sieger die ganze Seite killen; Dark-Theme-Druck war weiß auf
+> weiß; sw.js liefert bei 5xx jetzt den letzten guten Cache-Stand. A11y-PAKET:
+> Fokus-Restore + Tab-Trap für ALLE Overlays (aria-modal hielt sein Versprechen vorher
+> nicht), Tabellensortierung per Tastatur, aria-controls-Liste für den 3-Panel-Info-Tab,
+> role=group statt kaputter tablist am Sets-Umschalter, role=status auf den
+> Bestätigungszeilen, Mengen-Kappung 99 überall. **BEWUSST VERTAGT (A11y-Restposten für
+> eine eigene Runde):** verschachtelte echte Buttons in role=button-Kacheln
+> (Duell-Slots/Set-Builder — braucht DOM-Umbau), Fokus-Verlust des Builders nach jedem
+> +/− (innerHTML-Repaint), „Offline-Stand vom …"-Banner beim SW-Cache-Fallback.
 > von der MORE-Seite auch bei uns ist"): BESTANDEN, 0 Lücken.** Live-Abgleich gegen
 > products.json: 104 Katalog-Produkte = 62 bei uns kuratiert + 42 bewusste Ausschlüsse
 > (15 Kochbücher, 11 Bundles/Multipacks, 13 Taster-/Boxen-Artikel, Pfand/Gutschein/
