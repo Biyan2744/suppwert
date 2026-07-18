@@ -98,6 +98,14 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Beeren-Akzent + Set-Themen-Icons (18.07.):** Suppwert-Identitätsfarbe `--brand`
+> (Himbeer #c13a6b hell / #d95f8f dunkel) ersetzt das Grün an den IDENTITÄTS-Stellen (Hero-
+> Tint, sub-h-Ticks, Trust-Dots, „Alle Produkte"-hbar, Anpassen-Checkboxen, Restock-Chip jetzt
+> dunkles Beere statt Dunkelgrün, weiß darauf ≈9,4:1) — bewusst EIGENSTÄNDIGER Ton, kein
+> MORE-Magenta (Look-alike = Herkunftstäuschung); Score-Metrik-Grün, Kategorie- und
+> Status-Farben unangetastet (Datenfarben). Dazu 7 Line-Art-Themen-Icons auf den Set-Karten
+> (Uhr/Hantel/Stern/Funkeln/Bowl/Pfanne/Mond auf Set-Akzent, PH_ICONS-Formsprache) — die
+> leichte Alternative zur verworfenen KI-Bild-Idee.
 > **Motion-Paket (18.07., recherchebasiert):** Nach Best-Practice-Recherche (nur
 > transform/opacity, ease-out, ≤300 ms, kleine Wege, IntersectionObserver, reduced-motion
 > Pflicht): Scroll-Reveal für Karten/Sektionen (einmalig beim ersten Sichtbarwerden, leichter

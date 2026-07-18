@@ -33,6 +33,10 @@
   --acc-proteine:#2a78d6; --acc-riegel:#1baf7a; --acc-snacks:#eda100;
   --acc-supplements:#4a3aa7; --acc-chunky:#d55181; --acc-kochen:#eb6834;
   --gold:#eda100;
+  /* Suppwert-Identitätsfarbe (Biyan wollte Pink-Akzente; bewusst EIGENSTÄNDIGER Beeren-Ton
+     statt MORE-Magenta — Look-alike wäre Herkunftstäuschung). Nur Identitäts-Akzente;
+     Score-Metriken (--m-*), Kategorie- und Status-Farben bleiben unangetastet. */
+  --brand:#c13a6b;
   --shadow:0 1px 2px rgba(11,11,11,.04),0 6px 22px rgba(11,11,11,.06);
   --shadow-lg:0 4px 12px rgba(11,11,11,.05),0 18px 40px rgba(11,11,11,.11);
   --r:16px;
@@ -46,6 +50,7 @@
   --acc-proteine:#3987e5; --acc-riegel:#199e70; --acc-snacks:#c98500;
   --acc-supplements:#9085e9; --acc-chunky:#d55181; --acc-kochen:#d95926;
   --gold:#e0b64a;
+  --brand:#d95f8f;
   --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35);
   --shadow-lg:0 6px 18px rgba(0,0,0,.45),0 24px 50px rgba(0,0,0,.5);
 }
@@ -76,7 +81,7 @@ header.top{background:var(--surface-1);border-bottom:1px solid var(--grid);posit
 .top-sp{flex:1}
 /* Restock-Countdown-Chip: dunkles Markengrün (weißer Text ≥5:1 in beiden Themes, Farben deshalb
    bewusst theme-unabhängig), Gold-Pulspunkt; .rlive = Sonntags-Zeitfenster läuft (dunkles Gold) */
-.restock{display:inline-flex;align-items:center;gap:9px;font-size:12.5px;color:#fff;background:linear-gradient(135deg,#0f7a55,#0b5c40);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:7px 14px;white-space:nowrap;box-shadow:0 2px 12px rgba(15,122,85,.35);cursor:help}
+.restock{display:inline-flex;align-items:center;gap:9px;font-size:12.5px;color:#fff;background:linear-gradient(135deg,#7d2447,#61203a);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:7px 14px;white-space:nowrap;box-shadow:0 2px 12px rgba(125,36,71,.35);cursor:help}
 .restock b{font-weight:800;letter-spacing:.2px}
 .restock .rtime{font-weight:600;opacity:.94}
 .restock .rdot{width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;animation:rpulse 2s ease-out infinite}
@@ -134,7 +139,7 @@ header.top{background:var(--surface-1);border-bottom:1px solid var(--grid);posit
 .phead p{margin:7px 0 0;color:var(--text-2);font-size:14px}
 
 /* Overview */
-.hero{position:relative;overflow:hidden;margin-top:20px;padding:34px 32px;border:1px solid var(--ring);border-radius:22px;box-shadow:var(--shadow);background:linear-gradient(135deg,color-mix(in srgb,var(--m-nutri) 13%,var(--card)),var(--card) 60%)}
+.hero{position:relative;overflow:hidden;margin-top:20px;padding:34px 32px;border:1px solid var(--ring);border-radius:22px;box-shadow:var(--shadow);background:linear-gradient(135deg,color-mix(in srgb,var(--brand) 12%,var(--card)),var(--card) 60%)}
 .hero::after{content:"";position:absolute;top:-70px;right:-50px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--gold) 30%,transparent),transparent 68%);pointer-events:none}
 .hero>*{position:relative;z-index:1}
 .hero h1{font-size:clamp(27px,4.6vw,42px);letter-spacing:-.8px;line-height:1.1;margin-bottom:12px;font-weight:800}
@@ -152,7 +157,7 @@ header.top{background:var(--surface-1);border-bottom:1px solid var(--grid);posit
 .jchip:hover{border-color:var(--c,var(--muted));box-shadow:var(--shadow);transform:translateY(-1px)}
 .jchip .dot{width:8px;height:8px;border-radius:50%;background:var(--c)}
 .sub-h{font-size:16.5px;font-weight:800;letter-spacing:-.2px;margin:28px 0 13px;display:flex;align-items:center;gap:9px}
-.sub-h::before{content:"";width:4px;height:15px;border-radius:2px;background:var(--m-nutri);flex-shrink:0}
+.sub-h::before{content:"";width:4px;height:15px;border-radius:2px;background:var(--brand);flex-shrink:0}
 .recs{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
 .rec{background:var(--card);border:1px solid var(--ring);border-left:4px solid var(--acc);border-radius:var(--r);padding:14px 15px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:5px}
 .rec .tag{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--acc)}
@@ -450,7 +455,7 @@ body.has-cart .cmpchip{bottom:74px}
 .setthumbs .pthumb.morecnt{background:var(--plane);color:var(--muted);font-size:12px;font-weight:800}
 @media(prefers-reduced-motion:reduce){.setthumbs .pthumb{transition:none}}
 .sn.withimg{display:flex;align-items:center;gap:9px;min-width:0}
-.sn.withimg input[type=checkbox]{flex-shrink:0;width:15px;height:15px;accent-color:var(--m-nutri);cursor:pointer}
+.sn.withimg input[type=checkbox]{flex-shrink:0;width:15px;height:15px;accent-color:var(--brand);cursor:pointer}
 .setit select.sort{margin-top:4px;max-width:100%;font-size:12px;padding:5px 8px;display:block}
 .sn.withimg .snt{min-width:0}
 .sn.withimg .snt small{display:block}
@@ -486,8 +491,11 @@ body.has-cart .cmpchip{bottom:74px}
 .setwhyd summary{font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;user-select:none}
 .setwhyd summary:hover{color:var(--m-value)}
 .setwhyd .setwhy{margin:6px 0 0}
-.sethead{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
-.sethead h3{font-size:15.5px;letter-spacing:-.2px}
+.sethead{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.sethead h3{font-size:15.5px;letter-spacing:-.2px;flex:1;min-width:0}
+/* Themen-Icon je Set (Line-Art auf Set-Akzentfarbe — die leichte Alternative zu KI-Bildern) */
+.seticon{width:34px;height:34px;border-radius:10px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--acc),color-mix(in srgb,var(--acc) 70%,#000))}
+.seticon svg{width:20px;height:20px}
 .setsum{font-weight:750;font-size:15px;white-space:nowrap}
 .setwhy{color:var(--text-2);font-size:12.5px;margin:6px 0 10px;line-height:1.5}
 .setitems{display:flex;flex-direction:column;margin-bottom:9px}
@@ -521,7 +529,7 @@ body.has-cart .cmpchip{bottom:74px}
 /* Trust-Zeile im Hero */
 .trust{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
 .trust span{font-size:11.5px;font-weight:600;color:var(--text-2);border:1px solid var(--line);border-radius:999px;padding:4px 11px;display:inline-flex;align-items:center;gap:6px}
-.trust span::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--m-nutri)}
+.trust span::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--brand)}
 
 /* Footer */
 .foot{background:var(--surface-1);border-top:1px solid var(--grid);margin-top:34px;padding:28px 0 96px}
@@ -1326,6 +1334,16 @@ function setThumbsHTML(rows,goneFn){
   const max=5,vis=rows.slice(0,max);
   return `<div class="setthumbs">${vis.map(r=>thumbHTML(r.p,goneFn(r))).join("")}${rows.length>max?`<span class="pthumb morecnt">+${rows.length-max}</span>`:""}</div>`;
 }
+/* Themen-Icons je Set (Line-Art, weiss auf Set-Akzent — gleiche Formsprache wie PH_ICONS) */
+const SET_ICONS={
+  fasten:'<svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"><circle cx="32" cy="34" r="17"/><path d="M32 24v10l7 5"/><path d="M26 13h12"/></g></svg>',
+  muskeln:'<svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"><path d="M20 32h24"/><rect x="10" y="22" width="7" height="20" rx="2.5"/><rect x="47" y="22" width="7" height="20" rx="2.5"/></g></svg>',
+  bestseller:'<svg viewBox="0 0 64 64" aria-hidden="true"><path fill="none" stroke="#fff" stroke-width="3.5" stroke-linejoin="round" d="m32 12 6 13 14 2-10 10 2.4 14L32 44l-12.4 7L22 37 12 27l14-2Z"/></svg>',
+  beauty:'<svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M32 14c1.8 8.6 4.4 11.2 13 13-8.6 1.8-11.2 4.4-13 13-1.8-8.6-4.4-11.2-13-13 8.6-1.8 11.2-4.4 13-13Z"/><path d="M46 40c.9 4.3 2.2 5.6 6.5 6.5-4.3.9-5.6 2.2-6.5 6.5-.9-4.3-2.2-5.6-6.5-6.5 4.3-.9 5.6-2.2 6.5-6.5Z"/></g></svg>',
+  fruehstueck:'<svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"><path d="M14 34h36a18 18 0 0 1-36 0Z"/><path d="M26 16c0 3-3 4-3 8M35 16c0 3-3 4-3 8M44 16c0 3-3 4-3 8"/></g></svg>',
+  kochen:'<svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"><circle cx="27" cy="36" r="13"/><path d="M38 28 52 16"/></g></svg>',
+  schlaf:'<svg viewBox="0 0 64 64" aria-hidden="true"><path fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" d="M40 14a19 19 0 1 0 10 26 16 16 0 0 1-10-26Z"/></svg>'
+};
 function renderSets(){
   let hidden=0,miss=0;
   const q=setsQuery;
@@ -1344,7 +1362,7 @@ function renderSets(){
       ? `${buyable.length} von ${rows.length} lieferbar · ${ship} · Sorten sind Vorschläge.`
       : `Gerade ist nichts aus diesem Set lieferbar – der Restock-Radar auf der Übersicht zeigt, wenn etwas zurückkommt.`;
     return `<div class="setcard" style="--acc:var(${s.acc})">
-      <div class="sethead"><h3>${escT(s.title)}</h3>${buyable.length?`<span class="setsum tnum">${eur(sum)}</span>`:""}</div>
+      <div class="sethead">${SET_ICONS[s.key]?`<span class="seticon" aria-hidden="true">${SET_ICONS[s.key]}</span>`:""}<h3>${escT(s.title)}</h3>${buyable.length?`<span class="setsum tnum">${eur(sum)}</span>`:""}</div>
       ${s.hint?`<div class="setby">${escT(s.hint)}</div>`:""}
       ${setThumbsHTML(rows,r=>!(r.v&&r.v.pr))}
       <div class="setitems">${items}</div>
@@ -1855,10 +1873,10 @@ function render(){
   const c=single?CATS[activeCats[0]]:null;
   const selLabels=CATORDER.filter(x=>activeCats.includes(x)).map(x=>CATS[x].label);
   document.getElementById("catHead").innerHTML=alle
-    ?`<h2><span class="hbar" style="--acc:var(--m-nutri)"></span>Alle Produkte</h2><p>Das komplette Sortiment im Überblick – Suche, Filter und Sortierung wirken über alle Kategorien. Tipp: Kategorie-Chips lassen sich kombinieren.</p>`
+    ?`<h2><span class="hbar" style="--acc:var(--brand)"></span>Alle Produkte</h2><p>Das komplette Sortiment im Überblick – Suche, Filter und Sortierung wirken über alle Kategorien. Tipp: Kategorie-Chips lassen sich kombinieren.</p>`
     :single
     ?`<h2><span class="hbar" style="--acc:${c.color}"></span>${c.label}</h2><p>${c.desc}</p>`
-    :`<h2><span class="hbar" style="--acc:var(--m-nutri)"></span>${n} Kategorien kombiniert</h2><p>${selLabels.join(" · ")} – ein weiterer Tipp auf einen aktiven Chip entfernt die Kategorie wieder.</p>`;
+    :`<h2><span class="hbar" style="--acc:var(--brand)"></span>${n} Kategorien kombiniert</h2><p>${selLabels.join(" · ")} – ein weiterer Tipp auf einen aktiven Chip entfernt die Kategorie wieder.</p>`;
   renderCatChips();
   document.getElementById("search").placeholder=alle?"In allen Produkten suchen…":single?"In dieser Kategorie suchen…":"In den gewählten Kategorien suchen…";
   document.getElementById("count").textContent=`${list.length} Produkt${list.length!==1?"e":""}${alle?"":single?` in „${c.label}"`:` in ${n} Kategorien`}`;
