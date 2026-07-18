@@ -739,7 +739,8 @@ header.top.scrolled{box-shadow:var(--shadow)}
       <svg class="h1swash" viewBox="0 0 420 16" preserveAspectRatio="none" aria-hidden="true"><path d="M4 11 C 70 3, 210 1, 330 6 C 380 8, 405 9, 416 7 C 400 12, 300 15, 180 14 C 100 13, 30 13, 4 11 Z" fill="var(--gold)"/></svg>
     </div>
     <div class="kpis" id="kpis"></div>
-    <div class="radar" id="radar" hidden></div>
+    <!-- Restock-Radar-Block auf Biyans Wunsch entfernt (18.07.) — Daten (RESTOCKS/CATALOG_NEW)
+         bleiben im Build, UI ist geparkt (Kandidat: Japan-Haus-Design oder Empfehlungen-Tab) -->
     <div class="sub-h">Schnell zu einer Kategorie</div>
     <div class="jump" id="jump"></div>
   </section>
@@ -1497,7 +1498,7 @@ function renderSmart(){
   const g=GOALS.find(x=>x.key===activeGoal);
   const r=smartCart(activeGoal,budget);
   const out=document.getElementById("smartOut");
-  if(!r.items.length){out.innerHTML=`<p class="note" style="margin-top:10px">Für „${g.label}" ist gerade nichts lieferbar – der Radar auf der Übersicht zeigt, wenn etwas zurückkommt.</p>`;return;}
+  if(!r.items.length){out.innerHTML=`<p class="note" style="margin-top:10px">Für „${g.label}" ist gerade nichts lieferbar – der große Restock startet üblicherweise sonntags um 11 Uhr (Countdown oben im Seitenkopf, ohne Gewähr).</p>`;return;}
   out.innerHTML=`<div class="smartbox">
     <div class="smarthead"><b>Vorschlag für „${g.label}"</b><span class="tnum">${eur(r.sum)}</span></div>
     ${r.items.map(it=>`<div class="smartitem"><span class="sn withimg">${thumbHTML(it.p,false)}<span class="snt">${it.q>1?`<b class="tnum">${it.q}×</b> `:""}${escT(it.p.name)}<small>${escT(it.v.flavor)}${it.v.size?" · "+escT(it.v.size):""}${it.p._total!=null?` · Score ${it.p._total}`:""}</small></span></span><span class="tnum sp">${eur(it.v.pr*it.q)}</span></div>`).join("")}
@@ -1604,7 +1605,7 @@ function renderSets(){
     const days=servBuy.length?Math.min(...servBuy.map(r=>r.p.servings)):null;
     const foot=buyable.length
       ? `${buyable.length} von ${rows.length} lieferbar · ${ship}${days?` · bei 1 Portion pro Tag reicht das Set ca. ${days} Tag${days!==1?"e":""} (dann ist das erste Produkt leer)`:""} · Sorten sind Vorschläge.`
-      : `Gerade ist nichts aus diesem Set lieferbar – der Restock-Radar auf der Übersicht zeigt, wenn etwas zurückkommt.`;
+      : `Gerade ist nichts aus diesem Set lieferbar – der große Restock startet üblicherweise sonntags um 11 Uhr (Countdown oben im Seitenkopf, ohne Gewähr).`;
     return `<div class="setcard" style="--acc:var(${s.acc})">
       <div class="sethead">${SET_ICONS[s.key]?`<span class="seticon" aria-hidden="true">${SET_ICONS[s.key]}</span>`:""}<h3>${escT(s.title)}</h3>${buyable.length?`<span class="setsum tnum">${eur(sum)}</span>`:""}</div>
       ${s.hint?`<div class="setby">${escT(s.hint)}</div>`:""}
@@ -1775,7 +1776,7 @@ document.getElementById("sgGo").onclick=()=>{
   const g=GOALS.find(x=>x.key===sgGoal);
   const r=smartCart(sgGoal,Number(document.getElementById("sgBudget").value));
   const out=document.getElementById("sgOut");
-  if(!r.items.length){out.innerHTML=`<p class="note" style="margin-top:10px">Für „${g.label}" ist gerade nichts lieferbar – der Restock-Radar auf der Übersicht zeigt, wenn etwas zurückkommt.</p>`;return;}
+  if(!r.items.length){out.innerHTML=`<p class="note" style="margin-top:10px">Für „${g.label}" ist gerade nichts lieferbar – der große Restock startet üblicherweise sonntags um 11 Uhr (Countdown oben im Seitenkopf, ohne Gewähr).</p>`;return;}
   out.innerHTML=`<div class="smartbox">
     <div class="smarthead"><b>${g.label} – aus dem Bestand</b><span class="tnum">${eur(r.sum)}</span></div>
     ${r.items.map(it=>`<div class="smartitem"><span class="sn withimg">${thumbHTML(it.p,false)}<span class="snt">${it.q>1?`<b class="tnum">${it.q}×</b> `:""}${escT(it.p.name)}<small>${escT(it.v.flavor)}${it.v.size?" · "+escT(it.v.size):""}${it.p._total!=null?` · Score ${it.p._total}`:""}</small></span></span><span class="tnum sp">${eur(it.v.pr*it.q)}</span></div>`).join("")}
@@ -2082,7 +2083,7 @@ const FAQS=[
   ["Wie berechnet sich der Score?","Aus drei Teilen: Nährwerte (35 %), Preis-Leistung (30 %) und Geschmack/Reviews (35 %), normalisiert innerhalb der Kategorie. Das Fragezeichen an jedem Score zeigt die Rechnung fürs einzelne Produkt; Details stehen im Info-Tab."],
   ["Was kostet der Versand?","Deutschland 4,90 €, gratis ab 55 € Bestellwert. Österreich 6,90 €, Schweiz 9,90 € (gratis ab 150 CHF). Im Sommer kann Kühlversand (+3,99 €) dazukommen. Stand Juli 2026, verbindlich ist der Shop."],
   ["Gibt es gerade einen Rabattcode?","Codes wechseln wöchentlich – aktuell AKTION (bis 20 % / 10 % auf Proteine). Kursierende 50-%-Codes sind meist unbestätigt."],
-  ["Warum ist so vieles ausverkauft?","Beliebte Sorten rotieren schnell, 2025/26 kam eine weltweite Whey-Knappheit dazu. MORE nennt keine festen Restock-Termine – das Restock-Radar auf der Übersicht zeigt, was seit dem letzten Abgleich zurückkam."],
+  ["Warum ist so vieles ausverkauft?","Beliebte Sorten rotieren schnell, 2025/26 kam eine weltweite Whey-Knappheit dazu. MORE nennt keine festen Restock-Termine – üblicherweise startet der große Restock sonntags um 11 Uhr (Countdown im Seitenkopf, ohne Gewähr), und wir gleichen die Verfügbarkeit jeden Montag automatisch ab."],
   ["Wie teste ich Sorten am günstigsten?","Viele Pulver gibt es als 25-g-Probe für 2,99 € – auf den Produktkarten in der Sorten-/Größenliste zu sehen. Zusätzlich verkauft der Shop Tasterboxen mit mehreren Sorten."],
   ["Welche Produkte sind vegan?","Unter anderem More Vegan Protein, der Vegan Protein Bar, das Protein Dessert, die Wraps und das Ölspray. In jeder Kategorie lässt sich der vegan-Filter setzen."],
   ["Woher kommen die Daten auf dieser Seite?","Preise, Nährwerte und Scores sind redaktionell kuratiert (Standardgrößen). Die Verfügbarkeit je Sorte kommt direkt aus dem Shopify-Shop von morenutrition.de und wird wöchentlich automatisch abgeglichen – der Stand steht im Footer."]
@@ -2159,34 +2160,14 @@ function radarChip(id,out){
   if(!p)return "";
   return `<a class="rchip${out?" out":""}" href="#${p.cat}?q=${encodeURIComponent(p.name)}">${escT(p.name)}</a>`;
 }
+/* Restock-Radar-BLOCK auf Biyans Wunsch entfernt (18.07., Uebersicht-Entschlackung fuers
+   Japan-Haus-Redesign). Die Daten (RESTOCKS back/gone, CATALOG_NEW 'Neu im Sortiment')
+   stecken weiter im Build, haben aktuell aber KEINE UI — geparkt als Kandidat fuers
+   Haus-Design oder den Empfehlungen-Tab (radarChip + CSS .radar/.rchip bleiben dafuer).
+   Hier laeuft nur noch der SEKUENDLICHE Ticker fuer den Header-Chip '⟳ Update in ...'. */
 function renderRadar(){
-  const el=document.getElementById("radar");
-  const back=(RESTOCKS.back||[]).map(id=>radarChip(id,false)).filter(Boolean).join("");
-  const gone=(RESTOCKS.gone||[]).map(id=>radarChip(id,true)).filter(Boolean).join("");
-  const rows=[];
-  /* Neu im Sortiment (zuoberst): Katalog-Eintraege, die der Abgleich zum ersten Mal sah.
-     Kuratierte Vergleichs-Produkte verlinken intern, alles andere in den Shop. */
-  const nu=(CATALOG_NEW||[]).map(n=>{
-    const d=new Date(n.seen), dat=isNaN(d)?escT(String(n.seen)):d.toLocaleDateString("de-DE");
-    const p=n.known?PRODUCTS.find(x=>x.url&&x.url.endsWith("/"+n.handle)):null;
-    const href=p?`#${p.cat}?q=${encodeURIComponent(p.name)}`:affLink("https://morenutrition.de/products/"+n.handle);
-    return `<a class="rchip newp" href="${esc(href)}"${p?"":' target="_blank" rel="noopener"'} title="zum ersten Mal am ${dat} im Katalog gesehen${n.type?" · "+esc(n.type):""}${n.avail?"":" · aktuell nicht kaufbar"}">${escT(n.title)}</a>`;
-  }).join("");
-  if(nu)rows.push(`<div class="rrow"><span class="rlab new">Neu im Sortiment</span>${nu}</div>`);
-  if(back)rows.push(`<div class="rrow"><span class="rlab ok">Wieder verfügbar</span>${back}</div>`);
-  if(gone)rows.push(`<div class="rrow"><span class="rlab crit">Jetzt ausverkauft</span>${gone}</div>`);
-  el.innerHTML=`<div class="rhead"><b>Restock-Radar</b>${RESTOCKS.since?`<span> · Änderungen seit ${RESTOCKS.since}</span>`:""}<span class="rnext"><small>Nächster Abgleich</small><b id="rnext"></b></span></div>`+
-    (rows.length?rows.join(""):`<div class="rrow"><span class="rempty">Keine Verfügbarkeits-Wechsel seit dem letzten Abgleich.</span></div>`)+
-    `<div class="rnote">Der große Wochen-Restock startet üblicherweise sonntags um 11:00 Uhr (Community-Beobachtung, ohne Gewähr – MORE nennt offiziell keine festen Termine). Ob ein Drop Neues ins Sortiment bringt oder nur Restocks, kündigt MORE vorab nicht an – „Neu im Sortiment" erscheint, sobald unser Abgleich einen Katalog-Eintrag zum ersten Mal sieht. Der Radar zeigt beobachtete Änderungen zwischen den automatischen Abgleichen.</div>`;
-  el.hidden=false;
-  /* tickt zusaetzlich den Header-Timer (Biyan-Wunsch: Countdown oben sichtbar) —
-     SEKUENDLICH, damit die Sekunden live runterzaehlen (beide Elemente sind tnum,
-     die tickenden Ziffern zappeln also nicht in der Breite) */
   const tick=()=>{
     const cd=fmtRestockCd(nextRefreshDate()-new Date());
-    const n=document.getElementById("rnext");if(n)n.textContent=`in ${cd}`;
-    /* kurzes "Update" statt "Daten-Update": neben dem Restock-Chip muss die Zeile auch mit
-       Worst-Case-Countdowns ("6 Tagen 23:59:59") in die 1144px Wrap-Breite passen */
     const h=document.getElementById("nextSync");if(h){h.textContent=`⟳ Update in ${cd}`;h.hidden=false;}
   };
   tick();setInterval(tick,1000);

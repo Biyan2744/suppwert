@@ -106,6 +106,20 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Übersicht entschlackt für Japan-Haus-Redesign (18.07.):** Auf Biyans Wunsch aus dem Hero
+> entfernt: Lead-Absatz, drei Trust-Chips, Datenstand-Zeile (Transparenz bleibt in Footer +
+> Info-Tab, Unabhängigkeit im Header-Badge); H1 jetzt in BEERE, bis 56 px, mit goldenem
+> Kalligrafie-Schwung (.h1swash — Pinselstrich-Anmutung OHNE japanische Schrift, Biyans
+> Vorgabe; Kontrast als Large Text 5,1/4,6:1). Danach auch der komplette **Restock-Radar-
+> Block entfernt** — WICHTIG: die Daten (RESTOCKS back/gone + CATALOG_NEW „Neu im
+> Sortiment") stecken weiter im Build, haben aber aktuell KEINE UI; geparkt als Kandidat
+> fürs Japan-Haus-Design oder den Empfehlungen-Tab (radarChip-Helfer + CSS bleiben dafür
+> drin). Der Header-Ticker „⟳ Update in …" lebte im Radar-Renderer und wurde herausgelöst
+> (läuft weiter sekündlich); alle drei Seiten-Texte, die auf „der Restock-Radar auf der
+> Übersicht" verwiesen (Set-Leerzustand, Smart-Warenkorb, FAQ), sind auf den Sonntags-
+> Countdown im Seitenkopf umformuliert. Das Japan-Haus-Redesign selbst (Hero+KPIs+Chips
+> als stilisiertes japanisches Gebäude, Objekte per Ketten verbunden) ist an eine externe
+> Design-KI ausgelagert — Prompt bei Biyan, Umsetzung nach Design-Lieferung hier.
 > **Samurai-Seitendeko (18.07., Rebranding Stufe 2 — Biyans Skizze):** In den freien
 > Seitenrändern breiter Screens (ab 1500px, wie einst die verworfene Helix — diesmal mit
 > thematischem Anker): LINKS vertikale Kanji-Spalte 正直 („Ehrlichkeit", Beere) + 比較
