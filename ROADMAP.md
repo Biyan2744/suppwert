@@ -98,6 +98,19 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Zubehör-Kategorie + Set-Reichweite + Galerie-Builder (18.07.):** (a) Neue 7. Kategorie
+> **„Zubehör"** (Teal) mit den 6 echten Einzel-Accessoires aus dem Katalog: Premium Shaker
+> (3 Farben, live 2/3), Aqua Bottle, Breakfast Cup, Backform, Muffinform, Cosmetic Bag —
+> „Wo sind die Shaker?"-Lücke geschlossen; ohne Nährwerte/Score/Grundpreis (size bewusst
+> nicht g/ml-parsebar), Bilder nach img/, refresh.py nimmt die Handles automatisch mit
+> (62 Produkte im Abgleich). Bücher/Tasterboxen/Bundles bleiben ausgeschlossen. (b) Set-Karten
+> + Generator nennen die **Reichweite**: „bei 1 Portion pro Tag reicht das Set ca. X Tage
+> (dann ist das erste Produkt leer)" — min(servings) der lieferbaren Posten, nur wo servings
+> kuratiert sind, Singular/Plural sauber. (c) **„Eigenes Set erstellen" ist jetzt ein
+> Galerie-Builder**: Live-Suche + alle Kategorien als Bild-Kachel-Sektionen (pickov-Muster),
+> Kachel-Klick legt Produkt in Standardgröße ins Set, nochmal klicken erhöht die Menge
+> (Badge „✓ n× im Set"), je Posten größen-fester Sorten-Select + ✕ + Live-Summe;
+> „Merkzettel übernehmen" als optionaler Startpunkt; Teilen/Speichern wie gehabt.
 > **Beeren-Akzent + Set-Themen-Icons (18.07.):** Suppwert-Identitätsfarbe `--brand`
 > (Himbeer #c13a6b hell / #d95f8f dunkel) ersetzt das Grün an den IDENTITÄTS-Stellen (Hero-
 > Tint, sub-h-Ticks, Trust-Dots, „Alle Produkte"-hbar, Anpassen-Checkboxen, Restock-Chip jetzt

@@ -31,7 +31,7 @@
   --m-nutri:#1baf7a; --m-value:#2a78d6; --m-taste:#e87ba4;
   --ok:#0ca30c; --warn:#e69500; --crit:#d03b3b; --coming:#898781;
   --acc-proteine:#2a78d6; --acc-riegel:#1baf7a; --acc-snacks:#eda100;
-  --acc-supplements:#4a3aa7; --acc-chunky:#d55181; --acc-kochen:#eb6834;
+  --acc-supplements:#4a3aa7; --acc-chunky:#d55181; --acc-kochen:#eb6834; --acc-zubehoer:#0d8f8f;
   --gold:#eda100;
   /* Suppwert-Identitätsfarbe (Biyan wollte Pink-Akzente; bewusst EIGENSTÄNDIGER Beeren-Ton
      statt MORE-Magenta — Look-alike wäre Herkunftstäuschung). Nur Identitäts-Akzente;
@@ -48,7 +48,7 @@
   --m-nutri:#199e70; --m-value:#3987e5; --m-taste:#d55181;
   --ok:#0ca30c; --warn:#fab219; --crit:#e05656; --coming:#898781;
   --acc-proteine:#3987e5; --acc-riegel:#199e70; --acc-snacks:#c98500;
-  --acc-supplements:#9085e9; --acc-chunky:#d55181; --acc-kochen:#d95926;
+  --acc-supplements:#9085e9; --acc-chunky:#d55181; --acc-kochen:#d95926; --acc-zubehoer:#2aacac;
   --gold:#e0b64a;
   --brand:#d95f8f;
   --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35);
@@ -884,6 +884,12 @@ nomoresugar:"img/nomoresugar.png",
 spices:"img/spices.png",
 zerupbarista:"img/zerupbarista.png",
 wrap:"img/wrap.png",
+shaker:"img/shaker.png",
+aquabottle:"img/aquabottle.png",
+breakfastcup:"img/breakfastcup.png",
+backform:"img/backform.png",
+muffinform:"img/muffinform.png",
+cosmeticbag:"img/cosmeticbag.png",
 salsa:"img/salsa.png",
 moremelade:"img/moremelade.png",
 tortilla:"img/tortilla.png",
@@ -956,7 +962,17 @@ const PRODUCTS = [
 {id:"wrap",cat:"kochen",name:"More Protein Wrap",note:"Proteinreiche Tortilla-Wraps, 11 g Protein/Wrap.",price:4.99,size:"6 Wraps",servings:6,rating:null,reviews:null,avail:"ausverkauft",tags:["Protein","vegan"],url:"https://morenutrition.de/products/protein-wrap"},
 {id:"salsa",cat:"kochen",name:"Light Salsa Dip",note:"Salsa mit 85 % weniger Zucker, 35 kcal/100 g.",price:6.99,size:"300 g",servings:null,rating:4.40,reviews:400,avail:"limitiert",tags:["Kalorien sparen","vegan"],url:"https://morenutrition.de/products/light-salsa-dip"},
 {id:"moremelade",cat:"kochen",name:"Moremelade",note:"Fruchtaufstrich mit reduziertem Zucker, 3 Sorten.",price:4.99,size:"250 g",servings:null,rating:null,reviews:null,flavors:"3 Sorten",avail:"auf Lager",tags:["Zucker reduziert"],url:"https://morenutrition.de/products/moremelade"},
-{id:"nutbutter",cat:"kochen",name:"Nut Butter",note:"Proteinreiches Nussmus in drei Sorten – frisch zurück im Shop.",price:11.99,size:"250 g",servings:null,rating:null,reviews:null,flavors:"3 Sorten",avail:"ausverkauft",tags:["Neu"],url:"https://morenutrition.de/products/nut-butter"}
+{id:"nutbutter",cat:"kochen",name:"Nut Butter",note:"Proteinreiches Nussmus in drei Sorten – frisch zurück im Shop.",price:11.99,size:"250 g",servings:null,rating:null,reviews:null,flavors:"3 Sorten",avail:"ausverkauft",tags:["Neu"],url:"https://morenutrition.de/products/nut-butter"},
+/* Zubehoer (18.07., Biyan: 'wo sind die Shaker?'): die 6 echten Einzel-Accessoires aus dem
+   Katalog — vorher bewusst ausgeschlossen, jetzt eigene Kategorie OHNE Naehrwerte/Score
+   (size-Felder absichtlich nicht g/ml-parsebar, damit baseInfo keinen Unsinns-Grundpreis
+   rechnet). Buecher/Tasterboxen/Bundles bleiben weiter draussen. */
+{id:"shaker",cat:"zubehoer",name:"More Premium Shaker",note:"Shaker mit Sieb, 700 ml – in mehreren Farben.",price:11.99,size:"700 ml Becher",servings:null,rating:null,reviews:null,flavors:"3 Farben",avail:"auf Lager",tags:[],url:"https://morenutrition.de/products/more-premium-shaker"},
+{id:"aquabottle",cat:"zubehoer",name:"More Premium Aqua Bottle",note:"Trinkflasche aus der MORE-Kollektion – passend zu Zerup & FIZI.",price:22.99,size:"Trinkflasche",servings:null,rating:null,reviews:null,avail:"auf Lager",tags:[],url:"https://morenutrition.de/products/more-premium-aqua-bottle"},
+{id:"breakfastcup",cat:"zubehoer",name:"More Breakfast Cup",note:"Lunchpot für Porridge & Frühstück zum Mitnehmen.",price:19.99,size:"Lunchpot",servings:null,rating:null,reviews:null,avail:"auf Lager",tags:[],url:"https://morenutrition.de/products/more-breakfast-cup"},
+{id:"backform",cat:"zubehoer",name:"More Backform (Romi x Emma)",note:"Backform aus der Romi-x-Emma-Kollaboration – für Protein-Backrezepte.",price:29.99,size:"Backform",servings:null,rating:null,reviews:null,avail:"auf Lager",tags:[],url:"https://morenutrition.de/products/more-backform-romi-x-emma"},
+{id:"muffinform",cat:"zubehoer",name:"Muffinform",note:"Muffinform für 12 Muffins – z. B. für Protein-Muffins.",price:6.59,size:"12er-Form",servings:null,rating:null,reviews:null,avail:"auf Lager",tags:[],url:"https://morenutrition.de/products/muffinform"},
+{id:"cosmeticbag",cat:"zubehoer",name:"Cosmetic Bag",note:"Kosmetiktasche aus der MORE-Kollektion.",price:29.99,size:"Tasche",servings:null,rating:null,reviews:null,avail:"auf Lager",tags:[],url:"https://morenutrition.de/products/kosmetiktasche"}
 ];
 /* LAUNCH-SCHALTER Produktbilder: Die Fotos in img/ stammen von morenutrition.de und sind
    ohne Lizenz abmahnbar (ROADMAP "Rechtliche Leitplanken"). Solange keine Freigabe von MORE
@@ -988,9 +1004,10 @@ const CATS = {
   snacks:{label:"Snacks",color:"var(--acc-snacks)",hex:"#eda100",desc:"Pudding, Porridge, Pancakes & Co. – proteinreich."},
   supplements:{label:"Supplements",color:"var(--acc-supplements)",hex:"#4a3aa7",desc:"Kreatin, Vitamine, Kollagen, Schlaf & mehr."},
   chunky:{label:"Chunky Flavour",color:"var(--acc-chunky)",hex:"#d55181",desc:"Geschmackspulver zum Zucker sparen beim Süßen."},
-  kochen:{label:"Kochen & Backen",color:"var(--acc-kochen)",hex:"#eb6834",desc:"Saucen, Sirupe, Öl-Spray & Zuckerersatz für die Küche."}
+  kochen:{label:"Kochen & Backen",color:"var(--acc-kochen)",hex:"#eb6834",desc:"Saucen, Sirupe, Öl-Spray & Zuckerersatz für die Küche."},
+  zubehoer:{label:"Zubehör",color:"var(--acc-zubehoer)",hex:"#0d8f8f",desc:"Shaker, Flaschen & Küchen-Helfer – ohne Nährwerte und Score, hier zählt nur der Preis."}
 };
-const CATORDER=["proteine","riegel","snacks","supplements","chunky","kochen"];
+const CATORDER=["proteine","riegel","snacks","supplements","chunky","kochen","zubehoer"];
 const PROTEIN_CATS = ["proteine","riegel","snacks"];
 const RETAILERS = [["Offizieller Shop","ja","Komplettes Sortiment"],["Amazon.de","ja","Breit inkl. Chunky, Proteine, Riegel"],["dm","ja","Proteine, Drinks, Chunky, Riegel"],["Rossmann","ja","Proteine, Chunky, Riegel"],["Müller","ja","Breites Sortiment"],["Edeka / Rewe","teils","Ausgewählte Filialen"],["Fitmart & Fitness-Shops","ja","Breit inkl. Gummies"],["Kaufland","teils","Nur Online-Marktplatz"]];
 
@@ -1175,7 +1192,8 @@ const PH_ICONS={
   snacks:'<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="15" fill="none" stroke="#fff" stroke-width="3.5"/><g fill="#fff"><circle cx="27" cy="27" r="2.4"/><circle cx="37" cy="30" r="2.4"/><circle cx="30" cy="37" r="2.4"/></g></svg>',
   supplements:'<svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="3.5" transform="rotate(-45 32 32)"><rect x="18" y="25.5" width="28" height="13" rx="6.5"/><path d="M32 25.5v13"/></g></svg>',
   chunky:'<svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"><ellipse cx="24" cy="39" rx="8.5" ry="6"/><path d="M31.5 34 47 18"/></g><g fill="#fff"><circle cx="21" cy="29" r="1.9"/><circle cx="27.5" cy="26.5" r="1.9"/><circle cx="17" cy="24.5" r="1.9"/></g></svg>',
-  kochen:'<svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"><circle cx="26" cy="36" r="12"/><path d="M37 31 52 23"/></g></svg>'
+  kochen:'<svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"><circle cx="26" cy="36" r="12"/><path d="M37 31 52 23"/></g></svg>',
+  zubehoer:'<svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 27h18l-1.5 21a3 3 0 0 1-3 2.8h-9a3 3 0 0 1-3-2.8Z"/><path d="M22 27h20l-2-7H24Z"/><path d="M29 20v-5h6v5"/><path d="M27 36h10"/></g></svg>'
 };
 function phHTML(cat,name){ return `<div class="ph" style="--acc:${CATS[cat].color}">${PH_ICONS[cat]||""}<span>${name}</span></div>`; }
 window.imgFail=function(el){ const w=document.createElement("div"); w.innerHTML=phHTML(el.dataset.cat,esc(el.dataset.name)); const d=w.firstChild; el.parentNode.insertBefore(d,el); el.remove(); };
@@ -1358,8 +1376,12 @@ function renderSets(){
       : `<div class="setit gone"><span class="sn withimg">${thumbHTML(r.p,true)}<span class="snt"><b>${escT(r.p.name)}</b><small>zzt. ausverkauft${setsAltSrc?setAltLinksHTML(r.p):""}</small></span></span><span class="sp">–</span></div>`
     ).join("");
     const ship=sum>=55?"Gratisversand erreicht (ab 55 €)":"noch "+eur(55-sum)+" bis Gratisversand";
+    /* Reichweite (Biyan): kleinstes servings der lieferbaren Posten = wann das erste Produkt
+       leer ist. Nur wo servings kuratiert sind; ehrlich als "ca." mit Erklaerung. */
+    const servBuy=buyable.filter(r=>r.p.servings);
+    const days=servBuy.length?Math.min(...servBuy.map(r=>r.p.servings)):null;
     const foot=buyable.length
-      ? `${buyable.length} von ${rows.length} lieferbar · ${ship} · Sorten sind Vorschläge.`
+      ? `${buyable.length} von ${rows.length} lieferbar · ${ship}${days?` · bei 1 Portion pro Tag reicht das Set ca. ${days} Tag${days!==1?"e":""} (dann ist das erste Produkt leer)`:""} · Sorten sind Vorschläge.`
       : `Gerade ist nichts aus diesem Set lieferbar – der Restock-Radar auf der Übersicht zeigt, wenn etwas zurückkommt.`;
     return `<div class="setcard" style="--acc:var(${s.acc})">
       <div class="sethead">${SET_ICONS[s.key]?`<span class="seticon" aria-hidden="true">${SET_ICONS[s.key]}</span>`:""}<h3>${escT(s.title)}</h3>${buyable.length?`<span class="setsum tnum">${eur(sum)}</span>`:""}</div>
@@ -1426,7 +1448,7 @@ document.getElementById("sgGo").onclick=()=>{
   out.innerHTML=`<div class="smartbox">
     <div class="smarthead"><b>${g.label} – aus dem Bestand</b><span class="tnum">${eur(r.sum)}</span></div>
     ${r.items.map(it=>`<div class="smartitem"><span class="sn withimg">${thumbHTML(it.p,false)}<span class="snt">${it.q>1?`<b class="tnum">${it.q}×</b> `:""}${escT(it.p.name)}<small>${escT(it.v.flavor)}${it.v.size?" · "+escT(it.v.size):""}${it.p._total!=null?` · Score ${it.p._total}`:""}</small></span></span><span class="tnum sp">${eur(it.v.pr*it.q)}</span></div>`).join("")}
-    <div class="smartfoot">${r.reached?"Gratisversand-Schwelle erreicht (ab 55 €)":"Ziel nicht ganz erreicht – mehr ist für dieses Thema gerade nicht lieferbar"} · nur gerade lieferbare Produkte · Sorten sind Vorschläge.</div>
+    <div class="smartfoot">${r.reached?"Gratisversand-Schwelle erreicht (ab 55 €)":"Ziel nicht ganz erreicht – mehr ist für dieses Thema gerade nicht lieferbar"} · nur gerade lieferbare Produkte${(()=>{const sd=r.items.filter(it=>it.p.servings);const gd=sd.length?Math.min(...sd.map(it=>it.p.servings*it.q)):null;return gd?` · reicht bei 1 Portion pro Tag ca. ${gd} Tag${gd!==1?"e":""}`:"";})()} · Sorten sind Vorschläge.</div>
     <div class="setacts"><button type="button" class="goalbtn" id="sgAdd">In den Merkzettel legen</button><button type="button" class="goalbtn" id="sgSave">Als Set speichern &amp; teilen</button></div>
   </div>`;
   document.getElementById("sgAdd").onclick=()=>{
@@ -1589,33 +1611,85 @@ function setOvShow(html){
 /* Builder: Grundlage ist der aktuelle Merkzettel (dort werden Sorten/Groessen gewaehlt) —
    Name rein, optional Creator-Name, fertig ist der Teilen-Link. Eigenes Set wird zusaetzlich
    lokal gespeichert, damit es unter Creator- & Community-Sets auftaucht. */
+/* Eigenes Set erstellen — GALERIE-Builder (Biyan: 'ein Suchfeld mit den Kategorien, auch die
+   Bilder sehen, und dann gut und einfach sein Set zusammenstellen'): Kachel-Galerie im
+   pickov-Muster (Kategorien-Sektionen, Live-Suche, Bilder/Icon-Fallback). Kachel-Klick legt
+   das Produkt in der Standardgroesse ins Set, nochmal klicken erhoeht die Menge; je Posten
+   Sorten-Select (groessen-fest wie beim Anpassen) + ✕. Merkzettel optional als Startpunkt. */
 function openSetBuilder(){
-  if(!cart.length){
-    setOvShow(`<div class="cmpbox shopbox"><h3>Eigenes Set erstellen <button type="button" class="x" aria-label="Schließen">✕</button></h3>
-      <div class="shopnote">Dein Merkzettel ist noch leer. Leg zuerst Produkte mit deiner Wunsch-Sorte in den Merkzettel (Warenkorb-Symbol an den Sorten-Pills) – daraus wird dann dein Set mit Name und Teilen-Link.</div></div>`);
-    return;
-  }
-  const w=setOvShow(`<div class="cmpbox shopbox"><h3>Eigenes Set erstellen <button type="button" class="x" aria-label="Schließen">✕</button></h3>
-    <div class="setitems">${cart.map(i=>{const p=PRODUCTS.find(x=>x.id===i.pid);return `<div class="setit"><span class="sn${p?" withimg":""}">${p?thumbHTML(p,false):""}<span class="snt"><b>${i.q>1?`${i.q}× `:""}${escT(i.name)}</b><small>${escT(i.vt)}</small></span></span><span class="sp tnum">${eur(i.pr*i.q)}</span></div>`;}).join("")}</div>
+  let sel=[]; /* {pid,vid,q} */
+  const w=setOvShow(`<div class="cmpbox pickbox"><h3>Eigenes Set erstellen <button type="button" class="x" aria-label="Schließen">✕</button></h3>
+    <div class="shopnote" style="margin-top:6px">Tippe unten Produkte an, um sie ins Set zu legen – nochmal antippen erhöht die Menge. Sorte pro Posten wählbar (Größe bleibt die Standardgröße). Das Set wird als Link geteilt und liegt auf keinem Server.</div>
+    <div id="sbSel"></div>
     <div class="setform">
       <input id="setBn" maxlength="40" placeholder="Set-Name, z. B. „Meine Frühstücks-Basics“" aria-label="Set-Name">
       <input id="setBc" maxlength="30" placeholder="Dein Name / Creator-Name (optional)" aria-label="Creator-Name (optional)">
     </div>
-    <div class="shopnote">Grundlage ist dein aktueller Merkzettel (${cart.length} Position${cart.length!==1?"en":""}). Das Set wird als Link geteilt – es liegt auf keinem Server. Wer den Link öffnet, sieht die Posten mit Live-Preisen und kann das Set speichern oder in den Merkzettel legen.</div>
-    <button type="button" class="setadd" id="setBgo">Teilen-Link erstellen</button></div>`);
+    <button type="button" class="setadd" id="setBgo"></button>
+    ${cart.length?`<div class="setacts"><button type="button" class="goalbtn" id="sbFromCart">Merkzettel übernehmen (${cart.reduce((a,i)=>a+i.q,0)})</button></div>`:""}
+    <input class="search picksearch" id="sbSearch" placeholder="Alle ${PRODUCTS.length} Produkte durchsuchen…" aria-label="Produkte durchsuchen" autocomplete="off" style="margin-top:14px">
+    <div id="sbCats"></div></div>`);
+  const tilesHTML=()=>CATORDER.map(cat=>{
+    const items=PRODUCTS.filter(p=>p.cat===cat);
+    return `<div class="picksec"><h4 class="pch"><span class="hbar" style="--acc:${CATS[cat].color}"></span>${CATS[cat].label}<span class="csn tnum">${items.length}</span></h4><div class="pickgrid">${items.map(p=>{
+      const q=(sel.find(s=>s.pid===p.id)||{}).q||0;
+      const buyable=!!bestBuyable(p.id);
+      return `<button type="button" class="ptile${q?" sel":""}" data-sb="${p.id}"${buyable?"":" disabled"} data-name="${esc(p.name.toLowerCase())}"><span class="ti">${p.img?`<img src="${imgURL(p.img)}" alt="" loading="lazy" onerror="this.remove()">`:`<span class="ph" style="--acc:${CATS[p.cat].color}">${PH_ICONS[p.cat]||""}</span>`}</span><span class="tn">${escT(p.name)}</span><span class="tp tnum">${eur(p.price)}</span>${q?`<span class="tsel">✓ ${q}× im Set</span>`:buyable?"":`<span class="tsel" style="color:var(--muted)">zzt. ausverkauft</span>`}</button>`;
+    }).join("")}</div></div>`;
+  }).join("");
+  const selRows=()=>{
+    if(!sel.length)return `<div class="note" style="margin:10px 0 2px">Noch nichts im Set – wähle unten aus der Galerie.</div>`;
+    let sum=0;
+    const rows=sel.map((s,ix)=>{
+      const p=PRODUCTS.find(x=>x.id===s.pid); if(!p)return "";
+      const all=parseVariants(s.pid).parsed,buy=all.filter(x=>x.av&&x.pr);
+      const ref=all.find(o=>o.vid===s.vid)||buy[0];
+      const opts=ref?buy.filter(o=>(o.size||"")===(ref.size||"")):[];
+      const cur=opts.find(o=>o.vid===s.vid)||opts[0]||null;
+      if(cur){s.vid=cur.vid;sum+=cur.pr*s.q;}
+      return `<div class="setit"><span class="sn withimg">${thumbHTML(p,!cur)}<span class="snt"><b>${s.q>1?`${s.q}× `:""}${escT(p.name)}</b>${cur?`<select class="sort" data-sbv="${ix}" aria-label="Sorte für ${esc(p.name)} wählen">${opts.map(o=>`<option value="${o.vid}"${o.vid===cur.vid?" selected":""}>${escT(o.flavor)}${o.size?" · "+escT(o.size):""} – ${eur(o.pr)}</option>`).join("")}</select>`:`<small>zzt. ausverkauft</small>`}</span></span><span class="sp tnum">${cur?eur(cur.pr*s.q):"–"}</span><button type="button" class="dx" data-sbrm="${ix}" style="position:static;flex-shrink:0" aria-label="${esc(p.name)} aus dem Set entfernen">✕</button></div>`;
+    }).join("");
+    return `<div class="setitems">${rows}</div><div class="smarthead" style="margin:8px 0 2px"><b>Dein Set</b><span class="tnum">${eur(sum)}</span></div>`;
+  };
+  const applySearch=()=>{
+    const q=document.getElementById("sbSearch").value.trim().toLowerCase();
+    w.querySelectorAll(".ptile").forEach(t=>{t.style.display=!q||t.dataset.name.includes(q)?"":"none";});
+    w.querySelectorAll(".picksec").forEach(s=>{const any=[...s.querySelectorAll(".ptile")].some(t=>t.style.display!=="none");s.style.display=any?"":"none";});
+  };
+  const paint=()=>{
+    document.getElementById("sbSel").innerHTML=selRows();
+    document.getElementById("sbCats").innerHTML=tilesHTML();
+    const n=sel.reduce((a,s)=>a+s.q,0);
+    const b=document.getElementById("setBgo");
+    b.textContent=n?`Teilen-Link erstellen (${n} Artikel)`:"Erst Produkte wählen";
+    b.disabled=!n;
+    w.querySelectorAll("[data-sb]").forEach(t=>t.onclick=()=>{
+      const pid=t.dataset.sb,hit=sel.find(s=>s.pid===pid);
+      if(hit){if(hit.q<99)hit.q++;}
+      else{const v=bestBuyable(pid);if(!v)return;sel.push({pid:pid,vid:v.vid,q:1});}
+      paint();
+    });
+    w.querySelectorAll("[data-sbrm]").forEach(b2=>b2.onclick=()=>{sel.splice(Number(b2.dataset.sbrm),1);paint();});
+    w.querySelectorAll("[data-sbv]").forEach(s2=>s2.onchange=()=>{sel[Number(s2.dataset.sbv)].vid=Number(s2.value);paint();});
+    applySearch();
+  };
+  document.getElementById("sbSearch").oninput=applySearch;
+  const fc=document.getElementById("sbFromCart");
+  if(fc)fc.onclick=()=>{sel=cart.map(i=>({pid:i.pid,vid:i.vid,q:i.q}));paint();};
   document.getElementById("setBgo").onclick=()=>{
+    if(!sel.length)return;
     const nEl=document.getElementById("setBn");
     const n=nEl.value.replace(/[<>]/g,"").trim().slice(0,40);
     if(!n){nEl.style.borderColor="var(--crit)";nEl.focus();return;}
     const c=document.getElementById("setBc").value.replace(/[<>]/g,"").trim().slice(0,30);
-    const cs={n:n,c:c,i:cart.map(i=>[i.vid,i.q]),ts:Date.now()};
+    const cs={n:n,c:c,i:sel.map(s=>[s.vid,s.q]),ts:Date.now()};
     const key=JSON.stringify([cs.n,cs.i]);
     if(!comSets.some(x=>JSON.stringify([x.n,x.i])===key)){comSets.unshift(cs);comSets=comSets.slice(0,20);saveComSets();renderComSets();}
-    const b=document.getElementById("setBgo");
-    shareSetLink(cs,b,"Teilen-Link erstellen");
-    b.insertAdjacentHTML("afterend",`<div class="shopnote">Dein Set ist zusätzlich im Reiter „Community-Sets" gespeichert (nur in diesem Browser).</div>`);
+    shareSetLink(cs,document.getElementById("setBgo"),`Teilen-Link erstellen (${sel.reduce((a,s)=>a+s.q,0)} Artikel)`);
+    if(!w.querySelector(".sbSaved"))document.getElementById("setBgo").insertAdjacentHTML("afterend",`<div class="shopnote sbSaved">Dein Set ist zusätzlich im Reiter „Community-Sets" gespeichert (nur in diesem Browser).</div>`);
   };
-  document.getElementById("setBn").focus();
+  paint();
+  document.getElementById("sbSearch").focus();
 }
 /* Empfaenger-Seite eines #set=-Links: validieren (bekannte Varianten-IDs, Menge 1-99, max. 40
    Posten), Hash sofort bereinigen, Dialog mit Posten + Live-Preisen — NIE stilles Speichern. */
