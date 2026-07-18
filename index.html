@@ -1972,12 +1972,8 @@ function nextRefreshDate(){
   t.setUTCDate(t.getUTCDate()+add);
   return t;
 }
-function fmtCountdown(ms){
-  const h=Math.floor(ms/36e5), d=Math.floor(h/24);
-  if(d>=1)return `${d} ${d===1?"Tag":"Tagen"} ${h-d*24} Std.`;
-  if(h>=1)return `${h} Std. ${Math.floor(ms%36e5/6e4)} Min.`;
-  return `${Math.max(1,Math.floor(ms/6e4))} Min.`;
-}
+/* Beide Header-/Radar-Countdowns nutzen dasselbe LIVE-Format (Biyan: Tage + Std:Min:Sek
+   sichtbar runtertickend): "3 Tagen 07:41:02" bzw. unter 24 h "07:41:02" — fmtRestockCd. */
 
 /* Restock-Countdown (Header-Chip): der große MORE-Wochen-Restock + die Sonntags-Aktionen starten
    üblicherweise sonntags 11:00 deutscher Zeit — Community-dokumentiert (Vorpacklink-Seiten,
@@ -2005,8 +2001,8 @@ function nextRestockDate(now){
 }
 function fmtRestockCd(ms){
   const s=Math.max(0,Math.floor(ms/1000)),d=Math.floor(s/86400),p=n=>String(n).padStart(2,"0");
-  if(d>=1)return `${d} ${d===1?"Tag":"Tagen"} ${Math.floor(s%86400/3600)} Std.`;
-  return `${p(Math.floor(s/3600))}:${p(Math.floor(s%3600/60))}:${p(s%60)}`;
+  const hms=`${p(Math.floor(s%86400/3600))}:${p(Math.floor(s%3600/60))}:${p(s%60)}`;
+  return d>=1?`${d} ${d===1?"Tag":"Tagen"} ${hms}`:hms;
 }
 function startRestock(){
   const el=document.getElementById("restock"),tt=document.getElementById("restockT");
@@ -2051,15 +2047,17 @@ function renderRadar(){
     (rows.length?rows.join(""):`<div class="rrow"><span class="rlab">Keine Verfügbarkeits-Wechsel seit dem letzten Abgleich.</span></div>`)+
     `<div class="rnote">Der große Wochen-Restock startet üblicherweise sonntags um 11:00 Uhr (Community-Beobachtung, ohne Gewähr – MORE nennt offiziell keine festen Termine). Ob ein Drop Neues ins Sortiment bringt oder nur Restocks, kündigt MORE vorab nicht an – „Neu im Sortiment" erscheint, sobald unser Abgleich einen Katalog-Eintrag zum ersten Mal sieht. Der Radar zeigt beobachtete Änderungen zwischen den automatischen Abgleichen.</div>`;
   el.hidden=false;
-  /* tickt zusaetzlich den Header-Timer (Biyan-Wunsch: Countdown oben sichtbar) */
+  /* tickt zusaetzlich den Header-Timer (Biyan-Wunsch: Countdown oben sichtbar) —
+     SEKUENDLICH, damit die Sekunden live runterzaehlen (beide Elemente sind tnum,
+     die tickenden Ziffern zappeln also nicht in der Breite) */
   const tick=()=>{
-    const cd=fmtCountdown(nextRefreshDate()-new Date());
+    const cd=fmtRestockCd(nextRefreshDate()-new Date());
     const n=document.getElementById("rnext");if(n)n.textContent=`Nächster Abgleich in ${cd}`;
     /* kurzes "Update" statt "Daten-Update": neben dem Restock-Chip muss die Zeile auch mit
-       Worst-Case-Countdowns ("6 Tagen 23 Std.") in die 1144px Wrap-Breite passen */
+       Worst-Case-Countdowns ("6 Tagen 23:59:59") in die 1144px Wrap-Breite passen */
     const h=document.getElementById("nextSync");if(h){h.textContent=`⟳ Update in ${cd}`;h.hidden=false;}
   };
-  tick();setInterval(tick,6e4);
+  tick();setInterval(tick,1000);
 }
 
 function renderNew(){

@@ -106,6 +106,14 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Live-Sekunden-Countdowns (18.07.):** Alle drei Countdowns (Header-Restock-Chip,
+> Header „⟳ Update in …", Radar „Nächster Abgleich in …") zeigen jetzt durchgehend
+> **Tage + HH:MM:SS** und ticken SEKÜNDLICH sichtbar herunter („2 Tagen 02:35:16") —
+> vorher zeigten sie über 24 h nur „X Tagen Y Std." und der Abgleich-Timer tickte
+> minütlich. Ein gemeinsames Format (fmtRestockCd, fmtCountdown entfernt), beide
+> Header-Elemente sind tnum (kein Breiten-Zappeln). Worst-Case „6 Tagen 23:59:59"
+> am Prod-Build nachgemessen: passt bis 360 px (Chip-Rechtskante 358/360), kein
+> H-Scroll @375/@1180/@1280, Header bleibt einzeilig @1180+.
 > **Sortiment-Radar: „Neu im Sortiment" vs. nur Restock (18.07.):** Biyans Frage „sieht man,
 > ob der nächste Drop Neues bringt oder nur restocked wird?" ehrlich beantwortet: VORHERSAGEN
 > geht nicht (MORE kündigt Drop-Inhalte nicht an — wir erfinden keine), aber BEOBACHTEN geht:
