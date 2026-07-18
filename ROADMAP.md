@@ -100,6 +100,12 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Anbieter-Ansicht II (18.07.):** Im „+ andere Anbieter"-Modus zeigen jetzt ALLE Set-Posten
+> (auch lieferbare) ihre Anbieter-Links — man bekommt jedes Produkt theoretisch auch woanders.
+> Recherche-Ergebnis zur Bestands-Frage: KEIN Fremd-Shop ist offen abfragbar (Fitmart live
+> getestet: kein offenes Shopify-JSON; dm/Rossmann/Müller ohne offene APIs; Amazon nur via
+> PartnerNet-Product-Advertising-API nach Freischaltung → als Nach-Launch-Option notiert).
+> Live-Bestand bleibt ehrlich MORE-exklusiv.
 > **Reiter-Umbau IV: Sets vereint + Rabatte + Community-Wünsche + Angebots-Filter (18.07.):**
 > (a) Sets & Community-Sets sind wieder EIN Reiter mit prominentem Umschalter „Unsere Sets /
 > Community & Creator" (Segment-Buttons); Legacy-/Share-Hash `#community` routet auf die

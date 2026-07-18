@@ -1449,8 +1449,10 @@ function renderSets(){
     const buyable=rows.filter(r=>r.v&&r.v.pr);
     if(setsOnlyAvail&&buyable.length<rows.length){hidden++;return "";}
     const sum=buyable.reduce((a,r)=>a+r.v.pr,0);
+    /* Alt-Modus zeigt die Anbieter-Links an JEDEM Posten (Biyan: theoretisch bekommt man
+       jedes Produkt auch woanders, auch wenn teurer) — nicht nur an ausverkauften */
     const items=rows.map(r=>r.v&&r.v.pr
-      ? `<div class="setit"><span class="sn withimg">${thumbHTML(r.p,false)}<span class="snt"><b>${escT(r.p.name)}</b><small>${escT(r.v.flavor)}${r.v.size?" · "+escT(r.v.size):""}${r.p._total!=null?" · Score "+r.p._total:""}</small></span></span><span class="sp tnum">${eur(r.v.pr)}</span></div>`
+      ? `<div class="setit"><span class="sn withimg">${thumbHTML(r.p,false)}<span class="snt"><b>${escT(r.p.name)}</b><small>${escT(r.v.flavor)}${r.v.size?" · "+escT(r.v.size):""}${r.p._total!=null?" · Score "+r.p._total:""}${setsAltSrc?setAltLinksHTML(r.p):""}</small></span></span><span class="sp tnum">${eur(r.v.pr)}</span></div>`
       : `<div class="setit gone"><span class="sn withimg">${thumbHTML(r.p,true)}<span class="snt"><b>${escT(r.p.name)}</b><small>zzt. ausverkauft${setsAltSrc?setAltLinksHTML(r.p):""}</small></span></span><span class="sp">–</span></div>`
     ).join("");
     const ship=sum>=55?"Gratisversand erreicht (ab 55 €)":"noch "+eur(55-sum)+" bis Gratisversand";
@@ -1474,7 +1476,7 @@ function renderSets(){
   }).join("")
     +(q&&miss===SETS.length?`<div class="note">Kein Set passt zu „${escT(q)}" – die Suche prüft Set-Namen, Beschreibungen und enthaltene Produkte.</div>`:"")
     +(hidden?`<div class="note">${hidden} Set${hidden!==1?"s":""} ausgeblendet – dort ist gerade mindestens ein Artikel ausverkauft.</div>`:"")
-    +(setsAltSrc?`<div class="note">Anbieter-Ansicht: Der 1-Klick-Merkzettel kann nur den MORE-Warenkorb befüllen. Ausverkaufte Posten zeigen Links zu anderen Anbietern – dort bestellst du separat; Preise und Verfügbarkeit dort kennen wir nicht (kein Live-Abgleich).</div>`:"");
+    +(setsAltSrc?`<div class="note">Anbieter-Ansicht: Jeder Posten zeigt Links zu anderen Anbietern (Amazon-Direktlink wo vorhanden, sonst Produktsuche) – dort bestellst du separat, und Preise wie Verfügbarkeit dort kennen wir nicht (Live-Bestand gibt es nur vom MORE-Shop). Der 1-Klick-Merkzettel kann nur den MORE-Warenkorb befüllen.</div>`:"");
   renderComSets();
 }
 document.getElementById("setgrid").addEventListener("click",e=>{
@@ -1673,7 +1675,7 @@ function renderComSets(){
     const buyable=rows.filter(r=>r.px.av&&r.px.pr);
     const sum=buyable.reduce((a,r)=>a+r.px.pr*r.q,0);
     const items=rows.map(r=>r.px.av&&r.px.pr
-      ? `<div class="setit"><span class="sn withimg">${thumbHTML(r.p,false)}<span class="snt"><b>${r.q>1?`${r.q}× `:""}${escT(r.p.name)}</b><small>${escT(r.px.flavor)}${r.px.size?" · "+escT(r.px.size):""}</small></span></span><span class="sp tnum">${eur(r.px.pr*r.q)}</span></div>`
+      ? `<div class="setit"><span class="sn withimg">${thumbHTML(r.p,false)}<span class="snt"><b>${r.q>1?`${r.q}× `:""}${escT(r.p.name)}</b><small>${escT(r.px.flavor)}${r.px.size?" · "+escT(r.px.size):""}${setsAltSrc?setAltLinksHTML(r.p):""}</small></span></span><span class="sp tnum">${eur(r.px.pr*r.q)}</span></div>`
       : `<div class="setit gone"><span class="sn withimg">${thumbHTML(r.p,true)}<span class="snt"><b>${r.q>1?`${r.q}× `:""}${escT(r.p.name)}</b><small>zzt. ausverkauft${setAltLinksHTML(r.p)}</small></span></span><span class="sp">–</span></div>`
     ).join("")||`<div class="setit gone"><span class="sn"><b>Kein Posten mehr im Sortiment</b></span><span class="sp">–</span></div>`;
     const when=cs.ts?new Date(cs.ts).toLocaleDateString("de-DE"):"";
