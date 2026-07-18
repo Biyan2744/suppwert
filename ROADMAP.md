@@ -114,17 +114,13 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
 > servings bleiben ohne Zeile (45 von 62 Karten haben eine). Zusätzlich als Zeile
 > „Reichweite (1 Portion/Tag)" in der Vergleichs-Detailtabelle. Helper reichTxt neben
 > perServing.
-> **Seiten-Helix-Ornament (18.07.):** Biyans Idee „das geschwungene MORE-M als Helix an den
-> Seiten" in der rechtssicheren Variante: das MORE-M selbst ist tabu (Logo-Anmutung =
-> Herkunftstäuschung, dokumentierte Look-alike-Leitplanke) — stattdessen eine EIGENE
-> Suppwert-Helix: zwei ineinander verschlungene Beeren-Stränge (--brand, SVG-Pattern,
-> 480px-Rapport) mit Gold-Punkten an den Kreuzungen, als fixe Deko-Spalten (110px) an
-> beiden Seitenrändern. Nur ab 1500px Viewport (darunter existieren die freien Ränder
-> nicht), opacity .34, Fade oben/unten per mask, aria-hidden + pointer-events:none,
-> z-index 0 unter Header/Overlays; rechts gespiegelt. Theme-reaktiv über var(--brand)
-> im SVG (hell #c13a6b / dunkel #d95f8f, live per computed style geprüft). Verifiziert:
-> @1920 sichtbar ohne Content-Overlap (Helix-Kante 126px vs. Content 363px), @1280
-> display:none, kein H-Scroll, Konsole leer.
+> **Seiten-Helix-Ornament (18.07. — GLEICHENTAGS VERWORFEN):** Biyans Idee „das geschwungene
+> MORE-M als Helix an den Seiten" wurde als eigene Beeren-Helix umgesetzt (das MORE-M selbst
+> bleibt tabu: Logo-Anmutung = Herkunftstäuschung — diese Leitplanke gilt weiter für alle
+> künftigen Deko-Ideen) und nach Ansicht wieder ENTFERNT (Biyan: sieht nicht gut aus).
+> Stattdessen Kurswechsel: Design-Verbesserung über eine externe Design-KI mit von uns
+> formulierten Prompts (seriös, gutes Niveau, nicht überdesignt); Umsetzung der Vorschläge
+> dann wieder hier im Code.
 > **Live-Sekunden-Countdowns (18.07.):** Alle drei Countdowns (Header-Restock-Chip,
 > Header „⟳ Update in …", Radar „Nächster Abgleich in …") zeigen jetzt durchgehend
 > **Tage + HH:MM:SS** und ticken SEKÜNDLICH sichtbar herunter („2 Tagen 02:35:16") —
