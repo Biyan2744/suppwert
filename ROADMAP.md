@@ -106,6 +106,16 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Dunkel-Deko II nach Gemini-Review (18.07.):** Zwei Ergänzungen aus Geminis 5 Ideen:
+> (1) **Amber-Aura** — großer, sehr weicher Gold→Beere-Lichtkegel als fixes body-Background
+> von oben (Gold .05, Review-Grenze .08 „sonst braun"), nimmt den langen Leerflächen das
+> digital leere Schwarz; (2) **Glass-Edge** — 1-px-Lichtkante nur an der OBERKANTE von Hero
+> und Radar (Rauchglas, Lichtquelle von oben). Bewusst NICHT übernommen: Analog-Korn auf
+> Karten (globaler Grain-Film existiert schon), Gold-Winkel ums Produkt-Grid (bei 7
+> Kategorie-Sektionen wiederholt = ornamental), pulsierender Restock-Glow (Konflikt: der
+> Chip wurde in Feinschliff I auf GPT/Perplexity-Rat gerade „ent-worben" — ein Puls-Glow
+> würde das rückgängig machen; Reviews schlagen sich hier, Entscheidung pro Ruhe).
+> Hell-Theme weiterhin unverändert (Gegenprobe).
 > **Dunkel-Deko nach Perplexity-Review (18.07.):** Biyans Wunsch „die schwarze Version mehr
 > Leben einhauchen" — Perplexity lieferte 6 Ideen mit eigener Priorisierung, umgesetzt sind
 > genau die empfohlenen risikoarmen: (1) samtiger **Grain-Layer** über der ganzen Seite
