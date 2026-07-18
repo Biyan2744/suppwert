@@ -13,14 +13,16 @@
 #
 # Nutzung: python3 refresh.py [--no-generate]
 import json, re, sys, subprocess, time, urllib.request
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).parent
 MONATE = ["Januar","Februar","Maerz","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"]
 MONATE[2] = "März"
-# Handles, die im Katalog auftauchen, aber keine kuratierbaren Einzelprodukte sind
-JUNK = re.compile(r"bundle|tasterbox|multipack|starterkit|refill|kochbuch|box|pfand|gutschein|shaker|bottle|muffinform|backform|kosmetiktasche|kuhlpack|breakfast-cup", re.I)
+# Handles, die im Katalog auftauchen, aber keine kuratierbaren Einzelprodukte sind.
+# Zubehoer-Begriffe (shaker/bottle/...) stehen seit der Zubehoer-Kategorie (18.07.) NICHT mehr
+# drin — neue Accessoires sollen wieder als Kandidaten vorgeschlagen werden.
+JUNK = re.compile(r"bundle|tasterbox|multipack|starterkit|refill|kochbuch|box|pfand|gutschein|kuhlpack", re.I)
 
 def fetch(url, tries=4):
     for attempt in range(tries):
@@ -81,7 +83,7 @@ def main():
     (ROOT / "live.json").write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
     print(f"live.json: {len(live)} Produkte, Stand {data['availDate']}" + (f", {len(fails)} Fallbacks: {fails}" if fails else ""))
 
-    # Neue Katalog-Produkte nur VORSCHLAGEN (newProducts bleibt kuratiert)
+    # Katalog: neue Produkte VORSCHLAGEN (newProducts bleibt kuratiert) + Sortiment-Radar
     try:
         catalog, page = [], 1
         while True:
@@ -91,9 +93,36 @@ def main():
                 break
             page += 1
             time.sleep(1)
+
+        # Sortiment-Radar ("Neu im Sortiment" vs. nur Restock): wir merken uns je Handle das
+        # Datum der ERSTEN Sichtung (catalogSeen). Der allererste Lauf setzt nur die Baseline —
+        # sonst waere am Tag 1 das komplette Sortiment "neu". Danach gilt: Handle noch nie
+        # gesehen -> neu, 28 Tage sichtbar. Keine Drop-Vorhersage, nur ehrliche Beobachtung.
+        heute_iso = heute.isoformat()
+        seen = data.get("catalogSeen") or {}
+        if not seen:
+            data["catalogBaseline"] = heute_iso
+        baseline = data.get("catalogBaseline", "")
+        for p in catalog:
+            seen.setdefault(p["handle"], heute_iso)
+        data["catalogSeen"] = seen
+        cutoff = (heute - timedelta(days=28)).isoformat()
+        in_cmp = {h for _, h in pairs}
+        neu = [p for p in catalog
+               if seen[p["handle"]] > baseline and seen[p["handle"]] >= cutoff
+               and p.get("product_type") not in ("Deposit", "Geschenkgutscheine", "Systemartikel")]
+        data["catalogNew"] = sorted(
+            [{"title": p["title"], "handle": re.sub(r"[^a-z0-9-]", "", p["handle"]),
+              "type": p.get("product_type") or "", "seen": seen[p["handle"]],
+              "avail": any(v.get("available") for v in p.get("variants", [])),
+              "known": p["handle"] in in_cmp} for p in neu],
+            key=lambda x: x["seen"], reverse=True)
+        (ROOT / "live.json").write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+        print(f"Sortiment-Radar: {len(data['catalogNew'])} neu seit Baseline {baseline} ({len(seen)} Handles beobachtet)")
+
         known = {h for _, h in pairs} | {n["handle"] for n in data.get("newProducts", [])}
         cands = [p for p in catalog if p["handle"] not in known
-                 and p.get("product_type") not in ("Bundle", "Book", "Accessoire", "Systemartikel", "Deposit", "Geschenkgutscheine")
+                 and p.get("product_type") not in ("Bundle", "Book", "Systemartikel", "Deposit", "Geschenkgutscheine")
                  and not JUNK.search(p["handle"])]
         if cands:
             print("Kandidaten fuer newProducts (von Hand kuratieren):")
@@ -102,7 +131,7 @@ def main():
         else:
             print("Keine neuen Katalog-Kandidaten.")
     except Exception as e:
-        print(f"Katalog-Check uebersprungen ({e})")
+        print(f"Katalog-Check uebersprungen ({e}) — catalogNew bleibt auf dem alten Stand")
 
     if "--no-generate" not in sys.argv:
         subprocess.run([sys.executable, str(ROOT / "generate.py"), str(ROOT / "template.html"), str(ROOT / "live.json"), str(ROOT / "index.html")], check=True)

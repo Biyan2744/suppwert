@@ -18,6 +18,7 @@ out = (tpl
        .replace('__LIVE__', json.dumps(live['live'], ensure_ascii=False))
        .replace('__VARIANTS__', json.dumps(live.get('variants', {}), ensure_ascii=False))
        .replace('__RESTOCKS__', json.dumps(live.get('restocks', {}), ensure_ascii=False))
+       .replace('__CATALOGNEW__', json.dumps(live.get('catalogNew', []), ensure_ascii=False))
        .replace('__NEWPRODUCTS__', json.dumps(live['newProducts'], ensure_ascii=False)))
 
 open(dest, 'w', encoding='utf-8').write(out)

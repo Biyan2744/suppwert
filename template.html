@@ -537,6 +537,8 @@ body.has-cart .cmpchip{bottom:74px}
 .rlab{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);width:130px;flex-shrink:0}
 .rlab.ok{color:var(--ok)}
 .rlab.crit{color:var(--crit)}
+.rlab.new{color:var(--brand)}
+.rchip.newp::before{background:var(--brand)}
 .rchip{font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:999px;border:1px solid var(--line);color:var(--text-1);text-decoration:none;display:inline-flex;align-items:center;gap:6px}
 .rchip::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--dot,var(--ok))}
 .rchip.out{color:var(--muted);text-decoration:line-through}
@@ -1053,6 +1055,10 @@ const LIVE = __LIVE__;
 const VARIANTS = __VARIANTS__; /* je Produkt: [[variantId, Sortenname, 1|0 kaufbar, Preis], ...] */
 const RESTOCKS = __RESTOCKS__; /* beobachtete Wechsel seit dem letzten Abgleich: {since, back[], gone[]} */
 const NEWPRODUCTS = __NEWPRODUCTS__;
+/* Sortiment-Radar: Katalog-Eintraege, die unser woechentlicher Abgleich zum ERSTEN Mal gesehen
+   hat (refresh.py catalogSeen, Baseline-Tag zaehlt nicht, Fenster 28 Tage). Ehrliche
+   Beobachtung statt Drop-Vorhersage — MORE kuendigt Drop-Inhalte nicht an. */
+const CATALOG_NEW = __CATALOGNEW__;
 PRODUCTS.forEach(p=>{ const l=LIVE[p.id]; if(l){ p.varAvail=l[0]; p.varTotal=l[1]; p.avail = l[0]===0?"ausverkauft":(l[0]>=l[1]?"auf Lager":"limitiert"); } });
 
 /* Affiliate-Konfiguration – auf enabled:true schalten, sobald Codes/Links vorliegen.
@@ -2030,11 +2036,20 @@ function renderRadar(){
   const back=(RESTOCKS.back||[]).map(id=>radarChip(id,false)).filter(Boolean).join("");
   const gone=(RESTOCKS.gone||[]).map(id=>radarChip(id,true)).filter(Boolean).join("");
   const rows=[];
+  /* Neu im Sortiment (zuoberst): Katalog-Eintraege, die der Abgleich zum ersten Mal sah.
+     Kuratierte Vergleichs-Produkte verlinken intern, alles andere in den Shop. */
+  const nu=(CATALOG_NEW||[]).map(n=>{
+    const d=new Date(n.seen), dat=isNaN(d)?escT(String(n.seen)):d.toLocaleDateString("de-DE");
+    const p=n.known?PRODUCTS.find(x=>x.url&&x.url.endsWith("/"+n.handle)):null;
+    const href=p?`#${p.cat}?q=${encodeURIComponent(p.name)}`:affLink("https://morenutrition.de/products/"+n.handle);
+    return `<a class="rchip newp" href="${esc(href)}"${p?"":' target="_blank" rel="noopener"'} title="zum ersten Mal am ${dat} im Katalog gesehen${n.type?" · "+esc(n.type):""}${n.avail?"":" · aktuell nicht kaufbar"}">${escT(n.title)}</a>`;
+  }).join("");
+  if(nu)rows.push(`<div class="rrow"><span class="rlab new">Neu im Sortiment</span>${nu}</div>`);
   if(back)rows.push(`<div class="rrow"><span class="rlab ok">Wieder verfügbar</span>${back}</div>`);
   if(gone)rows.push(`<div class="rrow"><span class="rlab crit">Jetzt ausverkauft</span>${gone}</div>`);
   el.innerHTML=`<div class="rhead"><b>Restock-Radar</b>${RESTOCKS.since?`<span> · Änderungen seit ${RESTOCKS.since}</span>`:""}<span class="rnext" id="rnext"></span></div>`+
     (rows.length?rows.join(""):`<div class="rrow"><span class="rlab">Keine Verfügbarkeits-Wechsel seit dem letzten Abgleich.</span></div>`)+
-    `<div class="rnote">Der große Wochen-Restock startet üblicherweise sonntags um 11:00 Uhr (Community-Beobachtung, ohne Gewähr – MORE nennt offiziell keine festen Termine). Der Radar zeigt beobachtete Änderungen zwischen den automatischen Abgleichen.</div>`;
+    `<div class="rnote">Der große Wochen-Restock startet üblicherweise sonntags um 11:00 Uhr (Community-Beobachtung, ohne Gewähr – MORE nennt offiziell keine festen Termine). Ob ein Drop Neues ins Sortiment bringt oder nur Restocks, kündigt MORE vorab nicht an – „Neu im Sortiment" erscheint, sobald unser Abgleich einen Katalog-Eintrag zum ersten Mal sieht. Der Radar zeigt beobachtete Änderungen zwischen den automatischen Abgleichen.</div>`;
   el.hidden=false;
   /* tickt zusaetzlich den Header-Timer (Biyan-Wunsch: Countdown oben sichtbar) */
   const tick=()=>{

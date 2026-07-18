@@ -106,6 +106,25 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Sortiment-Radar: „Neu im Sortiment" vs. nur Restock (18.07.):** Biyans Frage „sieht man,
+> ob der nächste Drop Neues bringt oder nur restocked wird?" ehrlich beantwortet: VORHERSAGEN
+> geht nicht (MORE kündigt Drop-Inhalte nicht an — wir erfinden keine), aber BEOBACHTEN geht:
+> refresh.py merkt sich jetzt je Katalog-Handle das Datum der ersten Sichtung (`catalogSeen`
+> in live.json, 104 Handles; allererster Lauf setzt nur die Baseline 2026-07-18, sonst wäre am
+> Tag 1 alles „neu"). Handles, die nach der Baseline erstmals auftauchen, stehen 28 Tage als
+> `catalogNew` bereit (ohne Pfand/Gutschein/Systemartikel) und erscheinen im Restock-Radar als
+> neue oberste Zeile **„Neu im Sortiment"** (Beeren-Akzent): kuratierte Vergleichs-Produkte
+> verlinken intern (Deep-Link mit Suchbegriff), alles andere (auch Bücher/Boxen, ehrlich mit
+> Typ im Tooltip) in den MORE-Shop via affLink. Radar-Note erklärt die Beobachtungs-Logik.
+> Nebenbei: die JUNK-Kandidaten-Filterung in refresh.py schloss noch `shaker|bottle|…` aus
+> (Stand vor der Zubehör-Kategorie) — entfernt, damit künftige Accessoires wieder als
+> newProducts-Kandidaten vorgeschlagen werden (Typ „Accessoire" ebenfalls wieder zugelassen).
+> **Katalog-Abgleich 18.07. (zur „fehlende Produkte"-Frage):** Alle 104 Katalog-Einträge
+> geprüft — es fehlt KEIN Einzelprodukt; der einzige Shaker im Katalog (More Premium Shaker,
+> 3 Farb-Varianten) ist seit dem Zubehör-Paket drin (Produkte → Zubehör). Bewusst draußen:
+> 15 Bücher, 12 Bundles/Multipacks, ~10 Taster-/Sample-Boxen, Starterkit, Gutschein/Pfand/
+> Kühlpack — und DAILY100-Refill (einziger Grenzfall: echtes Nachfüll-Einzelprodukt, via
+> JUNK-Regel `refill` ausgeschlossen; Aufnahme = Kurations-Entscheidung von Biyan).
 > **Community-Ausbau: produktgebundene Wünsche & Kritik (18.07.):** Das Wunsch-Formular
 > bindet Wünsche jetzt an ein KONKRETES Produkt: Auswahl über die (dafür zu `openGallery`
 > generalisierte) Duell-Produkt-Galerie (62 Kacheln, Live-Suche, Gewähltes markiert/gesperrt)
