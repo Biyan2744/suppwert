@@ -435,6 +435,23 @@ body.has-cart .cmpchip{bottom:74px}
 .setform{display:flex;flex-direction:column;gap:8px;margin:12px 0 4px}
 .setform input{border:1px solid var(--line);background:var(--surface-1);color:var(--text-1);border-radius:10px;padding:9px 12px;font-size:13.5px}
 .setform input::placeholder{color:var(--muted)}
+/* Mini-Produktbilder in Sets (Biyan: sehen, was man bekommt, nicht nur Namen): pthumb =
+   runder Thumb (echtes Bild oder Kategorie-Icon-Fallback — respektiert SHOW_PRODUCT_IMGS),
+   setthumbs = ueberlappender Bild-Staple am Karten-Kopf, faechert beim Karten-Hover auf */
+.pthumb{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--imgbg);border:1px solid var(--ring);overflow:hidden;flex-shrink:0}
+.pthumb img{width:100%;height:100%;object-fit:cover}
+.pthumb .phi{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--acc),color-mix(in srgb,var(--acc) 70%,#000))}
+.pthumb .phi svg{width:62%;height:62%}
+.pthumb.gone{filter:grayscale(1);opacity:.55}
+.setthumbs{display:flex;margin-bottom:11px}
+.setthumbs .pthumb{width:46px;height:46px;border:2px solid var(--card);box-shadow:var(--shadow);margin-right:-13px;transition:margin-right .25s ease}
+.setthumbs .pthumb:last-child{margin-right:0}
+.setcard:hover .setthumbs .pthumb{margin-right:-3px}
+.setthumbs .pthumb.morecnt{background:var(--plane);color:var(--muted);font-size:12px;font-weight:800}
+@media(prefers-reduced-motion:reduce){.setthumbs .pthumb{transition:none}}
+.sn.withimg{display:flex;align-items:center;gap:9px;min-width:0}
+.sn.withimg .snt{min-width:0}
+.sn.withimg .snt small{display:block}
 .setgen{margin-bottom:16px}
 .setgen summary{font-size:15px;font-weight:800;letter-spacing:-.2px;cursor:pointer;user-select:none}
 .setgen summary:hover{color:var(--m-value)}
@@ -1217,7 +1234,7 @@ function renderSmart(){
   if(!r.items.length){out.innerHTML=`<p class="note" style="margin-top:10px">Für „${g.label}" ist gerade nichts lieferbar – der Radar auf der Übersicht zeigt, wenn etwas zurückkommt.</p>`;return;}
   out.innerHTML=`<div class="smartbox">
     <div class="smarthead"><b>Vorschlag für „${g.label}"</b><span class="tnum">${eur(r.sum)}</span></div>
-    ${r.items.map(it=>`<div class="smartitem"><span class="sn">${it.q>1?`<b class="tnum">${it.q}×</b> `:""}${escT(it.p.name)}<small>${escT(it.v.flavor)}${it.v.size?" · "+escT(it.v.size):""}${it.p._total!=null?` · Score ${it.p._total}`:""}</small></span><span class="tnum sp">${eur(it.v.pr*it.q)}</span></div>`).join("")}
+    ${r.items.map(it=>`<div class="smartitem"><span class="sn withimg">${thumbHTML(it.p,false)}<span class="snt">${it.q>1?`<b class="tnum">${it.q}×</b> `:""}${escT(it.p.name)}<small>${escT(it.v.flavor)}${it.v.size?" · "+escT(it.v.size):""}${it.p._total!=null?` · Score ${it.p._total}`:""}</small></span></span><span class="tnum sp">${eur(it.v.pr*it.q)}</span></div>`).join("")}
     <div class="smartfoot">${r.reached?`Gratisversand-Schwelle erreicht (ab 55 €)`:`Ziel nicht ganz erreicht – mehr ist für dieses Ziel gerade nicht lieferbar`} · Sorten sind Vorschläge, andere findest du auf den Produktkarten.</div>
     <button type="button" class="goalbtn" id="smartAdd">In den Merkzettel legen</button>
   </div>`;
@@ -1260,6 +1277,20 @@ function setAltLinksHTML(p){
   const ls=shopLinks(p); if(!ls.length)return "";
   return ` · <span class="setalts">bei ${ls.map(l=>`<a href="${l.href}" target="_blank" rel="noopener" title="${l.direct?"Direkt zum Produkt":"Produktsuche beim Anbieter"}">${escT(l.label)}${l.direct?" ↗":""}</a>`).join(" · ")}</span>`;
 }
+/* Produkt-Thumb: echtes Bild oder Kategorie-Icon auf Kategorie-Farbe (SHOW_PRODUCT_IMGS=false
+   und Bild-Ladefehler nutzen denselben Fallback) — die Namen sprechen weiterhin die Textzeilen */
+window.thumbFail=function(el){const c=el.dataset.cat;el.outerHTML=`<span class="phi" style="--acc:${CATS[c]?CATS[c].color:"var(--muted)"}">${PH_ICONS[c]||""}</span>`;};
+function thumbHTML(p,gone){
+  const core=p.img
+    ?`<img src="${imgURL(p.img)}" alt="" loading="lazy" data-cat="${p.cat}" onerror="thumbFail(this)">`
+    :`<span class="phi" style="--acc:${CATS[p.cat].color}">${PH_ICONS[p.cat]||""}</span>`;
+  return `<span class="pthumb${gone?" gone":""}" title="${esc(p.name)}">${core}</span>`;
+}
+function setThumbsHTML(rows,goneFn){
+  if(!rows.length)return "";
+  const max=5,vis=rows.slice(0,max);
+  return `<div class="setthumbs">${vis.map(r=>thumbHTML(r.p,goneFn(r))).join("")}${rows.length>max?`<span class="pthumb morecnt">+${rows.length-max}</span>`:""}</div>`;
+}
 function renderSets(){
   let hidden=0,miss=0;
   const q=setsQuery;
@@ -1270,8 +1301,8 @@ function renderSets(){
     if(setsOnlyAvail&&buyable.length<rows.length){hidden++;return "";}
     const sum=buyable.reduce((a,r)=>a+r.v.pr,0);
     const items=rows.map(r=>r.v&&r.v.pr
-      ? `<div class="setit"><span class="sn"><b>${escT(r.p.name)}</b><small>${escT(r.v.flavor)}${r.v.size?" · "+escT(r.v.size):""}${r.p._total!=null?" · Score "+r.p._total:""}</small></span><span class="sp tnum">${eur(r.v.pr)}</span></div>`
-      : `<div class="setit gone"><span class="sn"><b>${escT(r.p.name)}</b><small>zzt. ausverkauft${setsAltSrc?setAltLinksHTML(r.p):""}</small></span><span class="sp">–</span></div>`
+      ? `<div class="setit"><span class="sn withimg">${thumbHTML(r.p,false)}<span class="snt"><b>${escT(r.p.name)}</b><small>${escT(r.v.flavor)}${r.v.size?" · "+escT(r.v.size):""}${r.p._total!=null?" · Score "+r.p._total:""}</small></span></span><span class="sp tnum">${eur(r.v.pr)}</span></div>`
+      : `<div class="setit gone"><span class="sn withimg">${thumbHTML(r.p,true)}<span class="snt"><b>${escT(r.p.name)}</b><small>zzt. ausverkauft${setsAltSrc?setAltLinksHTML(r.p):""}</small></span></span><span class="sp">–</span></div>`
     ).join("");
     const ship=sum>=55?"Gratisversand erreicht (ab 55 €)":"noch "+eur(55-sum)+" bis Gratisversand";
     const foot=buyable.length
@@ -1280,6 +1311,7 @@ function renderSets(){
     return `<div class="setcard" style="--acc:var(${s.acc})">
       <div class="sethead"><h3>${escT(s.title)}</h3>${buyable.length?`<span class="setsum tnum">${eur(sum)}</span>`:""}</div>
       <p class="setwhy">${escT(s.why)}</p>
+      ${setThumbsHTML(rows,r=>!(r.v&&r.v.pr))}
       <div class="setitems">${items}</div>
       <div class="setfoot">${foot}</div>
       <button type="button" class="setadd" data-set="${s.key}"${buyable.length?"":" disabled"}>${buyable.length?`Lieferbare in den Merkzettel (${buyable.length})`:"Gerade nicht lieferbar"}</button>
@@ -1335,7 +1367,7 @@ document.getElementById("sgGo").onclick=()=>{
   if(!r.items.length){out.innerHTML=`<p class="note" style="margin-top:10px">Für „${g.label}" ist gerade nichts lieferbar – der Restock-Radar auf der Übersicht zeigt, wenn etwas zurückkommt.</p>`;return;}
   out.innerHTML=`<div class="smartbox">
     <div class="smarthead"><b>${g.label} – aus dem Bestand</b><span class="tnum">${eur(r.sum)}</span></div>
-    ${r.items.map(it=>`<div class="smartitem"><span class="sn">${it.q>1?`<b class="tnum">${it.q}×</b> `:""}${escT(it.p.name)}<small>${escT(it.v.flavor)}${it.v.size?" · "+escT(it.v.size):""}${it.p._total!=null?` · Score ${it.p._total}`:""}</small></span><span class="tnum sp">${eur(it.v.pr*it.q)}</span></div>`).join("")}
+    ${r.items.map(it=>`<div class="smartitem"><span class="sn withimg">${thumbHTML(it.p,false)}<span class="snt">${it.q>1?`<b class="tnum">${it.q}×</b> `:""}${escT(it.p.name)}<small>${escT(it.v.flavor)}${it.v.size?" · "+escT(it.v.size):""}${it.p._total!=null?` · Score ${it.p._total}`:""}</small></span></span><span class="tnum sp">${eur(it.v.pr*it.q)}</span></div>`).join("")}
     <div class="smartfoot">${r.reached?"Gratisversand-Schwelle erreicht (ab 55 €)":"Ziel nicht ganz erreicht – mehr ist für dieses Thema gerade nicht lieferbar"} · nur gerade lieferbare Produkte · Sorten sind Vorschläge.</div>
     <div class="setacts"><button type="button" class="goalbtn" id="sgAdd">In den Merkzettel legen</button><button type="button" class="goalbtn" id="sgSave">Als Set speichern &amp; teilen</button></div>
   </div>`;
@@ -1401,13 +1433,14 @@ function renderComSets(){
     if(setsOnlyAvail&&(!rows.length||buyable.length<rows.length)){hidden++;return "";}
     const sum=buyable.reduce((a,r)=>a+r.px.pr*r.q,0);
     const items=rows.map(r=>r.px.av&&r.px.pr
-      ? `<div class="setit"><span class="sn"><b>${r.q>1?`${r.q}× `:""}${escT(r.p.name)}</b><small>${escT(r.px.flavor)}${r.px.size?" · "+escT(r.px.size):""}</small></span><span class="sp tnum">${eur(r.px.pr*r.q)}</span></div>`
-      : `<div class="setit gone"><span class="sn"><b>${r.q>1?`${r.q}× `:""}${escT(r.p.name)}</b><small>zzt. ausverkauft${setsAltSrc?setAltLinksHTML(r.p):""}</small></span><span class="sp">–</span></div>`
+      ? `<div class="setit"><span class="sn withimg">${thumbHTML(r.p,false)}<span class="snt"><b>${r.q>1?`${r.q}× `:""}${escT(r.p.name)}</b><small>${escT(r.px.flavor)}${r.px.size?" · "+escT(r.px.size):""}</small></span></span><span class="sp tnum">${eur(r.px.pr*r.q)}</span></div>`
+      : `<div class="setit gone"><span class="sn withimg">${thumbHTML(r.p,true)}<span class="snt"><b>${r.q>1?`${r.q}× `:""}${escT(r.p.name)}</b><small>zzt. ausverkauft${setsAltSrc?setAltLinksHTML(r.p):""}</small></span></span><span class="sp">–</span></div>`
     ).join("")||`<div class="setit gone"><span class="sn"><b>Kein Posten mehr im Sortiment</b></span><span class="sp">–</span></div>`;
     const when=cs.ts?new Date(cs.ts).toLocaleDateString("de-DE"):"";
     return `<div class="setcard" style="--acc:var(--m-value)">
       <div class="sethead"><h3>${escT(cs.n)}</h3>${buyable.length?`<span class="setsum tnum">${eur(sum)}</span>`:""}</div>
       <div class="setby">${cs.c?`von ${escT(cs.c)} · `:""}per Link gespeichert${when?` am ${when}`:""}</div>
+      ${setThumbsHTML(rows,r=>!(r.px.av&&r.px.pr))}
       <div class="setitems">${items}</div>
       <div class="setfoot">${rows.length?`${buyable.length} von ${rows.length} lieferbar · Sorten wie geteilt.`:"Die Posten dieses Sets sind nicht mehr im Sortiment."}</div>
       <button type="button" class="setadd" data-comadd="${ix}"${buyable.length?"":" disabled"}>${buyable.length?`Lieferbare in den Merkzettel (${buyable.length})`:"Gerade nicht lieferbar"}</button>
@@ -1443,7 +1476,7 @@ function openSetBuilder(){
     return;
   }
   const w=setOvShow(`<div class="cmpbox shopbox"><h3>Eigenes Set erstellen <button type="button" class="x" aria-label="Schließen">✕</button></h3>
-    <div class="setitems">${cart.map(i=>`<div class="setit"><span class="sn"><b>${i.q>1?`${i.q}× `:""}${escT(i.name)}</b><small>${escT(i.vt)}</small></span><span class="sp tnum">${eur(i.pr*i.q)}</span></div>`).join("")}</div>
+    <div class="setitems">${cart.map(i=>{const p=PRODUCTS.find(x=>x.id===i.pid);return `<div class="setit"><span class="sn${p?" withimg":""}">${p?thumbHTML(p,false):""}<span class="snt"><b>${i.q>1?`${i.q}× `:""}${escT(i.name)}</b><small>${escT(i.vt)}</small></span></span><span class="sp tnum">${eur(i.pr*i.q)}</span></div>`;}).join("")}</div>
     <div class="setform">
       <input id="setBn" maxlength="40" placeholder="Set-Name, z. B. „Meine Frühstücks-Basics“" aria-label="Set-Name">
       <input id="setBc" maxlength="30" placeholder="Dein Name / Creator-Name (optional)" aria-label="Creator-Name (optional)">
@@ -1488,8 +1521,8 @@ function openSetImport(str){
   const w=setOvShow(`<div class="cmpbox shopbox"><h3>Geteiltes Set <button type="button" class="x" aria-label="Schließen">✕</button></h3>
     <div class="shopprod">${escT(n)}${c?` <small style="color:var(--muted);font-weight:600">von ${escT(c)}</small>`:""}</div>
     <div class="setitems">${rows.map(r=>r.px.av&&r.px.pr
-      ?`<div class="setit"><span class="sn"><b>${r.q>1?`${r.q}× `:""}${escT(r.p.name)}</b><small>${escT(r.px.flavor)}${r.px.size?" · "+escT(r.px.size):""}</small></span><span class="sp tnum">${eur(r.px.pr*r.q)}</span></div>`
-      :`<div class="setit gone"><span class="sn"><b>${r.q>1?`${r.q}× `:""}${escT(r.p.name)}</b><small>zzt. ausverkauft</small></span><span class="sp">–</span></div>`).join("")}</div>
+      ?`<div class="setit"><span class="sn withimg">${thumbHTML(r.p,false)}<span class="snt"><b>${r.q>1?`${r.q}× `:""}${escT(r.p.name)}</b><small>${escT(r.px.flavor)}${r.px.size?" · "+escT(r.px.size):""}</small></span></span><span class="sp tnum">${eur(r.px.pr*r.q)}</span></div>`
+      :`<div class="setit gone"><span class="sn withimg">${thumbHTML(r.p,true)}<span class="snt"><b>${r.q>1?`${r.q}× `:""}${escT(r.p.name)}</b><small>zzt. ausverkauft</small></span></span><span class="sp">–</span></div>`).join("")}</div>
     <div class="shopnote">${buyable.length} von ${rows.length} Posten lieferbar${buyable.length?` · zusammen ${eur(sum)}`:""}. Jemand hat dir dieses Set geteilt. „Speichern" legt es unter Creator- &amp; Community-Sets ab (nur in deinem Browser) – bestellt wird wie immer erst im MORE-Shop, nicht hier.</div>
     <button type="button" class="setadd" id="impSetSave">Im Sets-Tab speichern</button>
     <div class="setacts"><button type="button" class="goalbtn" id="impSetCart"${buyable.length?"":" disabled"}>${buyable.length?`Lieferbare in den Merkzettel (${buyable.reduce((a,r)=>a+r.q,0)})`:"Gerade nicht lieferbar"}</button></div></div>`);

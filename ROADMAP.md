@@ -101,7 +101,11 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
 > **Sets-Ausbau II: Bestands-Generator + Anbieter-Wahl (18.07.):** *(Nachträge: Generator-Box
 > ist zuklappbar — natives details/summary, startet zu; ein generierter Vorschlag überlebt
 > das Zuklappen. Sets-Suchfeld in der Optionsleiste filtert kuratierte + Community-Sets live
-> über Titel/Beschreibung/Produktnamen/Creator, mit ehrlichen Kein-Treffer-Hinweisen.)* (a) „Set aus dem aktuellen
+> über Titel/Beschreibung/Produktnamen/Creator, mit ehrlichen Kein-Treffer-Hinweisen.
+> Produktbilder in Sets: überlappender Bild-Stapel am Karten-Kopf (Hover fächert auf,
+> Ausverkauftes grayscale, „+N" bei >5) + 28px-Thumbs an allen Posten-Zeilen inkl. Generator,
+> Builder, Import-Dialog und Ratgeber-Smart-Warenkorb — mit Kategorie-Icon-Fallback, also
+> SHOW_PRODUCT_IMGS-launch-sicher.)* (a) „Set aus dem aktuellen
 > Bestand generieren": Themen-Chips (die 6 kuratierten GOALS-Pools aus dem Ratgeber) + Budget
 > → deterministisches Set NUR aus gerade lieferbaren Produkten via smartCart (Score-Rangfolge,
 > Versandschwellen-Logik) — „sinnvoll statt Kram", weil nur thematisch kuratierte Pools in
