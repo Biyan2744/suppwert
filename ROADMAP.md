@@ -106,6 +106,18 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Reichweite überall (18.07. nachts, Biyan: „bei Sets sehen, wie lange die halten, und
+> allgemein bei den Produkten — Prämisse 1 Portion/Tag"):** Die „reicht ca. …"-Angabe
+> (bisher Karten + Detail + Vergleichstabelle) steht jetzt auch an jedem SET-Posten, im
+> Set-Fuß (kuratiert + Community + Set-Generator, Menge multipliziert), im Merkzettel je
+> Posten, im Smart-Warenkorb und als sortierbare Spalte der Tabellen-Ansicht. Ehrlichkeits-
+> Regeln dabei gehärtet: Ein-Portions-Beutel drücken das Set-Minimum nicht mehr auf „1 Tag",
+> und NEU `servingsFor(p, size)` — kuratierte Portionszahlen gelten nur für die
+> Standardgröße, bei abweichender Varianten-Größe (z. B. 25-g-Probe) gibt es KEINE
+> Reichweiten-Angabe (vorher hätte die Probe „reicht ca. 6 Wochen" behauptet); ausgelassene
+> Posten nennt der Set-Fuß („Einzelportionen/Probiergrößen nicht mitgerechnet").
+> Größen-Matching normalisiert ×/x und Leerzeichen, Packungszähler == Portionszahl gilt
+> als Match („30 Sticks" vs „30 x 5g").
 > **Feature-Runde „Fertig machen" (18.07. abends, Biyans abgesprochene 5er-Liste — Design
 > kommt DANACH als großer Wurf):** Alle fünf Punkte umgesetzt, je ein Commit mit voller
 > Verifikation: (1) **Preis-Historie-Grundstein** — `refresh.py` schreibt die echten

@@ -1294,11 +1294,26 @@ function perServing(p){ if(p.perServ!=null) return p.perServ; if(p.price!=null&&
    gerundet in Wochen, ab 60 in Monaten ("ca.", weil gerundet). Die 1-Portion-Annahme steht
    IMMER sichtbar dabei — gleiche Ehrlichkeits-Logik wie die Set-Reichweite. Nur ab 2 Portionen
    (Ein-Portions-Beutel "reichen" nicht). */
-function reichTxt(p){
-  const d2=p.servings;
+function reichFmt(d2){ /* Tage -> "ca. …"-Text (ab 14 Tagen Wochen, ab 60 Monate, ab 365 Jahre) */
   if(!d2||d2<2)return "";
   if(d2>=365){const j=Math.round(d2/365);return `ca. ${j} ${j===1?"Jahr":"Jahre"}`;}
   return d2>=60?`ca. ${Math.round(d2/30)} Monate`:d2>=14?`ca. ${Math.round(d2/7)} Wochen`:`ca. ${d2} Tage`;
+}
+function reichTxt(p){ return reichFmt(p.servings); }
+/* Kuratierte Portionszahlen gelten NUR fuer die Standardgroesse — wo eine konkrete Variante
+   bekannt ist (Sets/Merkzettel/Vorschlaege), gibt es die Reichweite nur bei passender Groesse
+   (sonst "reicht die 25g-Probe ca. 6 Wochen"-Unsinn). Groessen-Vergleich normalisiert
+   ("600 g" == "600g"); unbekannte/abweichende Groesse -> ehrlich KEINE Angabe. */
+function servingsFor(p,size){
+  if(!p||!p.servings)return null;
+  if(!size||!p.size)return p.servings;
+  const n=s=>String(s).toLowerCase().replace(/×/g,"x").replace(/\s+/g,"");
+  const a=n(p.size),b=n(size);
+  if(a.indexOf(b)>=0||b.indexOf(a)>=0)return p.servings;
+  /* "30 Sticks" vs "30 x 5g" / "12 × 50 g" vs "12 x 2x25g": fuehrender Packungs-Zaehler
+     der Variante == kuratierte Portionszahl -> gleiche Standardpackung, nur anders notiert */
+  const lead=parseInt(b,10);
+  return lead&&lead===p.servings?p.servings:null;
 }
 /* "Im Angebot" = mind. eine KAUFBARE Variante hat einen echten Streichpreis (compare_at aus
    dem Shopify-Abgleich, 5. Feld in VARIANTS — echte Shop-Daten, kein geratener Rabatt) */
@@ -1652,8 +1667,8 @@ function renderSmart(){
   if(!r.items.length){out.innerHTML=`<p class="note" style="margin-top:10px">Für „${g.label}" ist gerade nichts lieferbar – der große Restock startet üblicherweise sonntags um 11 Uhr (Countdown oben im Seitenkopf, ohne Gewähr).</p>`;return;}
   out.innerHTML=`<div class="smartbox">
     <div class="smarthead"><b>Vorschlag für „${g.label}"</b><span class="tnum">${eur(r.sum)}</span></div>
-    ${r.items.map(it=>`<div class="smartitem"><span class="sn withimg">${thumbHTML(it.p,false)}<span class="snt">${it.q>1?`<b class="tnum">${it.q}×</b> `:""}${escT(it.p.name)}<small>${escT(it.v.flavor)}${it.v.size?" · "+escT(it.v.size):""}${it.p._total!=null?` · Score ${it.p._total}`:""}</small></span></span><span class="tnum sp">${eur(it.v.pr*it.q)}</span></div>`).join("")}
-    <div class="smartfoot">${r.reached?`Gratisversand-Schwelle erreicht (ab 55 €)`:`Ziel nicht ganz erreicht – mehr ist für dieses Ziel gerade nicht lieferbar`} · Sorten sind Vorschläge, andere findest du auf den Produktkarten.</div>
+    ${r.items.map(it=>`<div class="smartitem"><span class="sn withimg">${thumbHTML(it.p,false)}<span class="snt">${it.q>1?`<b class="tnum">${it.q}×</b> `:""}${escT(it.p.name)}<small>${escT(it.v.flavor)}${it.v.size?" · "+escT(it.v.size):""}${servingsFor(it.p,it.v.size)*it.q>1?` · reicht ${reichFmt(servingsFor(it.p,it.v.size)*it.q)}`:""}${it.p._total!=null?` · Score ${it.p._total}`:""}</small></span></span><span class="tnum sp">${eur(it.v.pr*it.q)}</span></div>`).join("")}
+    <div class="smartfoot">${r.reached?`Gratisversand-Schwelle erreicht (ab 55 €)`:`Ziel nicht ganz erreicht – mehr ist für dieses Ziel gerade nicht lieferbar`} · „reicht" = bei 1 Portion pro Tag · Sorten sind Vorschläge, andere findest du auf den Produktkarten.</div>
     <button type="button" class="goalbtn" id="smartAdd">In den Merkzettel legen</button>
   </div>`;
   document.getElementById("smartAdd").onclick=()=>{
@@ -1780,16 +1795,20 @@ function renderSets(){
     /* Alt-Modus zeigt die Anbieter-Links an JEDEM Posten (Biyan: theoretisch bekommt man
        jedes Produkt auch woanders, auch wenn teurer) — nicht nur an ausverkauften */
     const items=rows.map(r=>r.v&&r.v.pr
-      ? `<div class="setit"><span class="sn withimg">${thumbHTML(r.p,false)}<span class="snt"><b>${escT(r.p.name)}</b><small>${escT(r.v.flavor)}${r.v.size?" · "+escT(r.v.size):""}${r.p._total!=null?" · Score "+r.p._total:""}${setsAltSrc?setAltLinksHTML(r.p):""}</small></span></span><span class="sp tnum">${eur(r.v.pr)}</span></div>`
+      ? `<div class="setit"><span class="sn withimg">${thumbHTML(r.p,false)}<span class="snt"><b>${escT(r.p.name)}</b><small>${escT(r.v.flavor)}${r.v.size?" · "+escT(r.v.size):""}${reichFmt(servingsFor(r.p,r.v.size))?` · reicht ${reichFmt(servingsFor(r.p,r.v.size))}`:""}${r.p._total!=null?" · Score "+r.p._total:""}${setsAltSrc?setAltLinksHTML(r.p):""}</small></span></span><span class="sp tnum">${eur(r.v.pr)}</span></div>`
       : `<div class="setit gone"><span class="sn withimg">${thumbHTML(r.p,true)}<span class="snt"><b>${escT(r.p.name)}</b><small>zzt. ausverkauft${setsAltSrc?setAltLinksHTML(r.p):""}</small></span></span><span class="sp">–</span></div>`
     ).join("");
     const ship=sum>=55?"Gratisversand erreicht (ab 55 €)":"noch "+eur(55-sum)+" bis Gratisversand";
     /* Reichweite (Biyan): kleinstes servings der lieferbaren Posten = wann das erste Produkt
-       leer ist. Nur wo servings kuratiert sind; ehrlich als "ca." mit Erklaerung. */
-    const servBuy=buyable.filter(r=>r.p.servings);
-    const days=servBuy.length?Math.min(...servBuy.map(r=>r.p.servings)):null;
+       leer ist. Nur wo servings kuratiert sind; ehrlich als "ca." mit Erklaerung.
+       Ein-Portions-Beutel zaehlen NICHT als Minimum (gleiche Regel wie reichTxt — sonst
+       "reicht das Set 1 Tag" wegen einer Probierpackung); wenn welche ausgelassen wurden,
+       steht das ehrlich in der Klammer. */
+    const servBuy=buyable.filter(r=>servingsFor(r.p,r.v.size)>1);
+    const days=servBuy.length?Math.min(...servBuy.map(r=>servingsFor(r.p,r.v.size))):null;
+    const allMulti=servBuy.length===buyable.length;
     const foot=buyable.length
-      ? `${buyable.length} von ${rows.length} lieferbar · ${ship}${days?` · bei 1 Portion pro Tag reicht das Set ca. ${days} Tag${days!==1?"e":""} (dann ist das erste Produkt leer)`:""} · Sorten sind Vorschläge.`
+      ? `${buyable.length} von ${rows.length} lieferbar · ${ship}${days?` · bei 1 Portion pro Tag reicht das Set ${reichFmt(days)} (${allMulti?"dann ist das erste Produkt leer":"Einzelportionen/Probiergrößen nicht mitgerechnet"})`:""} · Sorten sind Vorschläge.`
       : `Gerade ist nichts aus diesem Set lieferbar – der große Restock startet üblicherweise sonntags um 11 Uhr (Countdown oben im Seitenkopf, ohne Gewähr).`;
     return `<div class="setcard" style="--acc:var(${s.acc})">
       <div class="sethead">${SET_ICONS[s.key]?`<span class="seticon" aria-hidden="true">${SET_ICONS[s.key]}</span>`:""}<h3>${escT(s.title)}</h3>${buyable.length?`<span class="setsum tnum">${eur(sum)}</span>`:""}</div>
@@ -1964,8 +1983,8 @@ document.getElementById("sgGo").onclick=()=>{
   if(!r.items.length){out.innerHTML=`<p class="note" style="margin-top:10px">Für „${g.label}" ist gerade nichts lieferbar – der große Restock startet üblicherweise sonntags um 11 Uhr (Countdown oben im Seitenkopf, ohne Gewähr).</p>`;return;}
   out.innerHTML=`<div class="smartbox">
     <div class="smarthead"><b>${g.label} – aus dem Bestand</b><span class="tnum">${eur(r.sum)}</span></div>
-    ${r.items.map(it=>`<div class="smartitem"><span class="sn withimg">${thumbHTML(it.p,false)}<span class="snt">${it.q>1?`<b class="tnum">${it.q}×</b> `:""}${escT(it.p.name)}<small>${escT(it.v.flavor)}${it.v.size?" · "+escT(it.v.size):""}${it.p._total!=null?` · Score ${it.p._total}`:""}</small></span></span><span class="tnum sp">${eur(it.v.pr*it.q)}</span></div>`).join("")}
-    <div class="smartfoot">${r.reached?"Gratisversand-Schwelle erreicht (ab 55 €)":"Ziel nicht ganz erreicht – mehr ist für dieses Thema gerade nicht lieferbar"} · nur gerade lieferbare Produkte${(()=>{const sd=r.items.filter(it=>it.p.servings);const gd=sd.length?Math.min(...sd.map(it=>it.p.servings*it.q)):null;return gd?` · reicht bei 1 Portion pro Tag ca. ${gd} Tag${gd!==1?"e":""}`:"";})()} · Sorten sind Vorschläge.</div>
+    ${r.items.map(it=>`<div class="smartitem"><span class="sn withimg">${thumbHTML(it.p,false)}<span class="snt">${it.q>1?`<b class="tnum">${it.q}×</b> `:""}${escT(it.p.name)}<small>${escT(it.v.flavor)}${it.v.size?" · "+escT(it.v.size):""}${servingsFor(it.p,it.v.size)*it.q>1?` · reicht ${reichFmt(servingsFor(it.p,it.v.size)*it.q)}`:""}${it.p._total!=null?` · Score ${it.p._total}`:""}</small></span></span><span class="tnum sp">${eur(it.v.pr*it.q)}</span></div>`).join("")}
+    <div class="smartfoot">${r.reached?"Gratisversand-Schwelle erreicht (ab 55 €)":"Ziel nicht ganz erreicht – mehr ist für dieses Thema gerade nicht lieferbar"} · nur gerade lieferbare Produkte${(()=>{const sd=r.items.filter(it=>servingsFor(it.p,it.v.size)*it.q>1);const gd=sd.length?Math.min(...sd.map(it=>servingsFor(it.p,it.v.size)*it.q)):null;return gd?` · reicht bei 1 Portion pro Tag ${reichFmt(gd)} (${sd.length===r.items.length?"dann ist das erste Produkt leer":"Einzelportionen/Probiergrößen nicht mitgerechnet"})`:"";})()} · Sorten sind Vorschläge.</div>
     <div class="setacts"><button type="button" class="goalbtn" id="sgAdd">In den Merkzettel legen</button><button type="button" class="goalbtn" id="sgSave">Als Set speichern &amp; teilen</button></div>
   </div>`;
   document.getElementById("sgAdd").onclick=()=>{
@@ -2041,7 +2060,7 @@ function renderComSets(){
     const buyable=rows.filter(r=>r.px.av&&r.px.pr);
     const sum=buyable.reduce((a,r)=>a+r.px.pr*r.q,0);
     const items=rows.map(r=>r.px.av&&r.px.pr
-      ? `<div class="setit"><span class="sn withimg">${thumbHTML(r.p,false)}<span class="snt"><b>${r.q>1?`${r.q}× `:""}${escT(r.p.name)}</b><small>${escT(r.px.flavor)}${r.px.size?" · "+escT(r.px.size):""}${setsAltSrc?setAltLinksHTML(r.p):""}</small></span></span><span class="sp tnum">${eur(r.px.pr*r.q)}</span></div>`
+      ? `<div class="setit"><span class="sn withimg">${thumbHTML(r.p,false)}<span class="snt"><b>${r.q>1?`${r.q}× `:""}${escT(r.p.name)}</b><small>${escT(r.px.flavor)}${r.px.size?" · "+escT(r.px.size):""}${servingsFor(r.p,r.px.size)*r.q>1?` · reicht ${reichFmt(servingsFor(r.p,r.px.size)*r.q)}`:""}${setsAltSrc?setAltLinksHTML(r.p):""}</small></span></span><span class="sp tnum">${eur(r.px.pr*r.q)}</span></div>`
       : `<div class="setit gone"><span class="sn withimg">${thumbHTML(r.p,true)}<span class="snt"><b>${r.q>1?`${r.q}× `:""}${escT(r.p.name)}</b><small>zzt. ausverkauft${setAltLinksHTML(r.p)}</small></span></span><span class="sp">–</span></div>`
     ).join("")||`<div class="setit gone"><span class="sn"><b>Kein Posten mehr im Sortiment</b></span><span class="sp">–</span></div>`;
     const when=cs.ts?new Date(cs.ts).toLocaleDateString("de-DE"):"";
@@ -2050,7 +2069,7 @@ function renderComSets(){
       <div class="setby">${cs.c?`von ${escT(cs.c)} · `:""}per Link gespeichert${when?` am ${when}`:""}</div>
       ${setThumbsHTML(rows,r=>!(r.px.av&&r.px.pr))}
       <div class="setitems">${items}</div>
-      <div class="setfoot">${rows.length?`${buyable.length} von ${rows.length} lieferbar · Sorten wie geteilt.`:"Die Posten dieses Sets sind nicht mehr im Sortiment."}</div>
+      <div class="setfoot">${rows.length?`${buyable.length} von ${rows.length} lieferbar${(()=>{const sv=buyable.filter(r=>servingsFor(r.p,r.px.size)*r.q>1);const d=sv.length?Math.min(...sv.map(r=>servingsFor(r.p,r.px.size)*r.q)):null;return d?` · bei 1 Portion pro Tag reicht das Set ${reichFmt(d)} (${sv.length===buyable.length?"dann ist das erste Produkt leer":"Einzelportionen/Probiergrößen nicht mitgerechnet"})`:"";})()} · Sorten wie geteilt.`:"Die Posten dieses Sets sind nicht mehr im Sortiment."}</div>
       <button type="button" class="setadd" data-comadd="${ix}"${buyable.length?"":" disabled"}>${buyable.length?`Lieferbare in den Merkzettel (${buyable.length})`:"Gerade nicht lieferbar"}</button>
       <div class="setacts">${buyable.length?`<button type="button" class="goalbtn" data-comcust="${ix}">Anpassen</button>`:""}<button type="button" class="goalbtn" data-comshare="${ix}">Link teilen</button><button type="button" class="goalbtn" data-comrm="${ix}">✕ Entfernen</button></div>
     </div>`;
@@ -2498,10 +2517,10 @@ function renderCatChips(){
 }
 function renderTable(list){
   const alle=activeCats.length!==1; /* Kategorie-Spalte immer, wenn mehr als eine Kategorie sichtbar ist */
-  const cols=[...(alle?[["cat","Kategorie",0]]:[]),["name","Produkt",0],["price","Preis",1],["base","Grundpreis",1],["perserv","€/Port.",1],["protein","Protein",1],["sugar","Zucker",1],["kcal","kcal",1],["rating","Bew.",1],["_total","Score",1],["avail","Verfügbar",0]];
+  const cols=[...(alle?[["cat","Kategorie",0]]:[]),["name","Produkt",0],["price","Preis",1],["base","Grundpreis",1],["perserv","€/Port.",1],["servings","Reichweite",1],["protein","Protein",1],["sugar","Zucker",1],["kcal","kcal",1],["rating","Bew.",1],["_total","Score",1],["avail","Verfügbar",0]];
   let h="<thead><tr>"+cols.map(c=>`<th class="${c[2]?'num':''}" data-k="${c[0]}" aria-sort="${tsort.key===c[0]?(tsort.dir>0?"ascending":"descending"):"none"}">${c[1]}${tsort.key===c[0]?`<span class="sortind">${tsort.dir>0?" ▲":" ▼"}</span>`:""}</th>`).join("")+"</tr></thead>";
   const rows=list.map(p=>{const ps=perServing(p),a=AVAIL[p.avail]||AVAIL["limitiert"];const im=p.img?`<img src="${imgURL(p.img)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:"";
-    return `<tr>${alle?`<td>${CATS[p.cat].label}</td>`:""}<td><span class="tprod">${im}${p.name}</span></td><td class="num tnum">${eur(p.price)}</td><td class="num tnum">${fmtBase(p)||"–"}</td><td class="num tnum">${ps==null?"–":eur(ps)}</td><td class="num tnum">${p.protein==null?"–":p.protein.toLocaleString("de-DE")+" g"}</td><td class="num tnum">${p.sugar==null?"–":p.sugar.toLocaleString("de-DE")+" g"}</td><td class="num tnum">${p.kcal==null?"–":p.kcal}</td><td class="num tnum">${p.rating==null?"–":p.rating.toLocaleString("de-DE")+"★"}</td><td class="num">${p._total==null?"–":`<span class="scorepill" style="background:${scoreColor(p._total)}">${p._total}</span>`}</td><td><span style="color:${a.c}">●</span> ${a.t}</td></tr>`;}).join("");
+    return `<tr>${alle?`<td>${CATS[p.cat].label}</td>`:""}<td><span class="tprod">${im}${p.name}</span></td><td class="num tnum">${eur(p.price)}</td><td class="num tnum">${fmtBase(p)||"–"}</td><td class="num tnum">${ps==null?"–":eur(ps)}</td><td class="num" title="bei 1 Portion pro Tag">${reichTxt(p)||"–"}</td><td class="num tnum">${p.protein==null?"–":p.protein.toLocaleString("de-DE")+" g"}</td><td class="num tnum">${p.sugar==null?"–":p.sugar.toLocaleString("de-DE")+" g"}</td><td class="num tnum">${p.kcal==null?"–":p.kcal}</td><td class="num tnum">${p.rating==null?"–":p.rating.toLocaleString("de-DE")+"★"}</td><td class="num">${p._total==null?"–":`<span class="scorepill" style="background:${scoreColor(p._total)}">${p._total}</span>`}</td><td><span style="color:${a.c}">●</span> ${a.t}</td></tr>`;}).join("");
   const tbl=document.getElementById("tbl"); tbl.innerHTML=h+"<tbody>"+rows+"</tbody>";
   tbl.querySelectorAll("th").forEach(th=>th.onclick=()=>{const k=th.dataset.k;tsort.dir=tsort.key===k?-tsort.dir:(["name","avail","cat"].includes(k)?1:-1);tsort.key=k;render();});
 }
@@ -2701,8 +2720,8 @@ function renderCart(){
     setTimeout(()=>{if(cx.isConnected){cx.classList.remove("arm");cx.textContent="✕";}},2500);
   };
   if(!panel.hidden){
-    panel.innerHTML=cart.map((i,ix)=>`<div class="citem"><span class="cn">${escT(i.name)}<small>${escT(i.vt)}${i.pr?" · "+eur(i.pr):""}</small></span><span class="q"><button type="button" data-cq="${ix}" data-d="-1" aria-label="Menge verringern">−</button><span class="tnum">${i.q}</span><button type="button" data-cq="${ix}" data-d="1" aria-label="Menge erhöhen">+</button></span><button type="button" class="rm" data-crm="${ix}" aria-label="${escT(i.name)} entfernen">✕</button></div>`).join("")+
-      `<div class="cartnote">Der Link öffnet den MORE-Shop mit diesen Positionen vorbefüllt – bestellt wird dort, nicht hier. Preise laut Shop-Varianten, ohne Gewähr. „Merkzettel teilen" erzeugt einen Link, über den andere genau diese Zusammenstellung übernehmen können – ideal, um deinen Warenkorb weiterzugeben.</div>`+
+    panel.innerHTML=cart.map((i,ix)=>`<div class="citem"><span class="cn">${escT(i.name)}<small>${escT(i.vt)}${i.pr?" · "+eur(i.pr):""}${(()=>{const p=PRODUCTS.find(x=>x.id===i.pid);if(!p)return "";const px=parseVariants(i.pid).parsed.find(x=>x.vid===i.vid);const sv=servingsFor(p,px?px.size:null);return sv*i.q>1?` · reicht ${reichFmt(sv*i.q)}`:"";})()}</small></span><span class="q"><button type="button" data-cq="${ix}" data-d="-1" aria-label="Menge verringern">−</button><span class="tnum">${i.q}</span><button type="button" data-cq="${ix}" data-d="1" aria-label="Menge erhöhen">+</button></span><button type="button" class="rm" data-crm="${ix}" aria-label="${escT(i.name)} entfernen">✕</button></div>`).join("")+
+      `<div class="cartnote">Der Link öffnet den MORE-Shop mit diesen Positionen vorbefüllt – bestellt wird dort, nicht hier. Preise laut Shop-Varianten, ohne Gewähr. „Reicht" rechnet mit 1 Portion pro Tag. „Merkzettel teilen" erzeugt einen Link, über den andere genau diese Zusammenstellung übernehmen können – ideal, um deinen Warenkorb weiterzugeben.</div>`+
       `<button class="cmpclear" id="cartShare">Merkzettel teilen</button>`+
       `<button class="cmpclear" id="cartClear">Merkzettel leeren</button>`;
     document.getElementById("cartClear").onclick=()=>{cart=[];saveCart();renderCart();};
