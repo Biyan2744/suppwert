@@ -18,7 +18,9 @@ const opt = (name, fallback) => {
   const i = args.indexOf(`--${name}`);
   return i !== -1 && args[i + 1] ? args[i + 1] : fallback;
 };
-const OUT = opt("out", path.join(homedir(), "Desktop", "suppwert-screenshots"));
+/* Windows leitet den sichtbaren Desktop oft auf OneDrive um — dort ablegen, wo Biyan ihn sieht */
+const oneDriveDesktop = path.join(homedir(), "OneDrive", "Desktop");
+const OUT = opt("out", path.join(existsSync(oneDriveDesktop) ? oneDriveDesktop : path.join(homedir(), "Desktop"), "suppwert-screenshots"));
 const BASE = "file:///" + path.join(import.meta.dirname, "index.html").replaceAll("\\", "/");
 
 const CHROME_PATHS = [
