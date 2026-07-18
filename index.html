@@ -196,7 +196,23 @@ header.top{background:var(--surface-1);border-bottom:1px solid var(--grid);posit
 :root[data-theme="dark"] .radar{background:radial-gradient(480px circle at 10% 0%,rgba(122,33,66,.12),transparent 60%),var(--card)}
 /* (Gold-Corner-Detail vom Perplexity-Paket ist durch das Hanko-Siegel ersetzt — Samurai-Rebranding) */
 .updated b{color:var(--text-2);font-weight:600}
-.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:20px 0 8px}
+/* Start-Suche im Hero (Uebersicht-Konzept 18.07.): Button fest #c13a6b in BEIDEN Themes —
+   Weiss darauf 5,14:1; das hellere Dunkel-Beere #d95f8f laege bei nur 3,4:1 (kein Large Text) */
+.homesearch{display:flex;gap:9px;margin:22px 0 0;max-width:600px}
+.homesearch input{flex:1;min-width:0;border:1px solid var(--line);background:var(--card);color:var(--text-1);border-radius:13px;padding:13px 16px;font-size:15px}
+.homesearch input::placeholder{color:var(--muted)}
+.homesearch input:focus{outline:2px solid var(--brand);outline-offset:1px;border-color:transparent}
+.homesearch .hsbtn{border:0;background:#c13a6b;color:#fff;border-radius:13px;padding:13px 22px;font-size:14.5px;font-weight:700;cursor:pointer;flex-shrink:0}
+.homesearch .hsbtn:hover{filter:brightness(1.08)}
+/* "Gerade aktuell"-Zeile: Live-Pillen (Angebote/neu/wieder da), leer = komplett unsichtbar */
+.nowrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:14px 0 0}
+.nowrow[hidden],.nowchips[hidden]{display:none}
+.nowlab{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+.nowpill{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--card);color:var(--text-1);border-radius:11px;padding:7px 13px;font-size:12.5px;font-weight:600;cursor:pointer;text-decoration:none}
+.nowpill .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.nowpill:hover{border-color:var(--muted)}
+.nowchips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0 8px}
 .kpi{background:var(--card);border:1px solid var(--ring);border-radius:var(--r);padding:15px 16px;box-shadow:var(--shadow);transition:transform .16s ease,box-shadow .16s ease}
 .kpi:hover{transform:translateY(-1px);box-shadow:var(--shadow-lg)}
 /* KPI-Zahlen in Beere (Biyan 18.07., passend zur Beeren-H1; als grosser Bold-Text weit ueber
@@ -739,10 +755,17 @@ header.top.scrolled{box-shadow:var(--shadow)}
       <h1>Alle MORE-Nutrition-Produkte im ehrlichen Vergleich</h1>
       <!-- Kalligrafie-Schwung: japanische Pinselstrich-Anmutung OHNE japanische Schrift (Biyan) -->
       <svg class="h1swash" viewBox="0 0 420 16" preserveAspectRatio="none" aria-hidden="true"><path d="M4 11 C 70 3, 210 1, 330 6 C 380 8, 405 9, 416 7 C 400 12, 300 15, 180 14 C 100 13, 30 13, 4 11 Z" fill="var(--gold)"/></svg>
+      <!-- Start-Suche: der Standard-Einstieg eines Vergleichsportals (Uebersicht-Konzept 18.07.) -->
+      <form class="homesearch" id="homesearch" role="search">
+        <input id="hsq" type="search" placeholder="Produkt suchen – z. B. Clear Protein, Riegel, Kreatin …" aria-label="Produkte durchsuchen" autocomplete="off">
+        <button type="submit" class="hsbtn">Suchen</button>
+      </form>
     </div>
     <div class="kpis" id="kpis"></div>
-    <!-- Restock-Radar-Block auf Biyans Wunsch entfernt (18.07.) — Daten (RESTOCKS/CATALOG_NEW)
-         bleiben im Build, UI ist geparkt (Kandidat: Japan-Haus-Design oder Empfehlungen-Tab) -->
+    <!-- "Gerade aktuell": Angebote + Restock-News als selbstausblendende Zeile (ersetzt den
+         entfernten Radar-Block in schlank; Details erst auf Klick, leer = unsichtbar) -->
+    <div class="nowrow" id="nowrow" hidden></div>
+    <div class="nowchips" id="nowchips" hidden></div>
     <div class="sub-h">Schnell zu einer Kategorie</div>
     <div class="jump" id="jump"></div>
   </section>
@@ -1410,17 +1433,53 @@ const PH_VESSELS={
 function phHTML(cat,name){ return `<div class="ph phv" style="--acc:${CATS[cat].color}">${PH_VESSELS[cat]||PH_VESSELS.proteine}<span class="phl">${name}</span></div>`; }
 window.imgFail=function(el){ const w=document.createElement("div"); w.innerHTML=phHTML(el.dataset.cat,esc(el.dataset.name)); const d=w.firstChild; el.parentNode.insertBefore(d,el); el.remove(); };
 
+/* Uebersicht-Konzept 18.07.: nur noch DREI Kennzahlen (Substanz-Beweis in einer Zeile) —
+   "6 Kategorien" war redundant zu den Chips darunter, die Preisspanne sagte niemandem etwas */
 function renderKPIs(){
-  const prices=PRODUCTS.map(p=>p.price).filter(x=>x!=null);
   const avail=PRODUCTS.filter(p=>p.avail==="auf Lager").length;
   document.getElementById("kpis").innerHTML=[
     {v:PRODUCTS.length,l:"Produkte im Vergleich",s:`über ${CATORDER.length} Kategorien`},
-    {v:"6",l:"Kategorien",s:"eigener Reiter je Kategorie"},
-    {v:Math.min(...prices).toLocaleString("de-DE")+"–"+Math.max(...prices).toLocaleString("de-DE")+" €",l:"Preisspanne",s:"Einzelprodukte"},
-    {v:"gratis ab 55 €",l:"Versand (DE)",s:"sonst 4,90 €"},
-    {v:avail+" / "+PRODUCTS.length,l:"aktuell auf Lager",s:"viele Artikel rotieren"}
+    {v:avail+" / "+PRODUCTS.length,l:"aktuell auf Lager",s:"viele Artikel rotieren"},
+    {v:"gratis ab 55 €",l:"Versand (DE)",s:"sonst 4,90 €"}
   ].map(k=>`<div class="kpi"><div class="v tnum">${k.v}</div><div class="l">${k.l}</div><div class="s">${k.s}</div></div>`).join("");
 }
+/* "Gerade aktuell": Angebote (echte compare_at-Streichpreise) + Restock-News (RESTOCKS/
+   CATALOG_NEW — die geparkten Radar-Daten in schlank). Pillen erscheinen nur mit Inhalt,
+   Namen klappen erst auf Klick aus (Progressive Disclosure statt Dauerrauschen). */
+function renderNow(){
+  const row=document.getElementById("nowrow"),box=document.getElementById("nowchips");
+  if(!row)return;
+  const deals=PRODUCTS.filter(p=>prodOnSale(p.id)).length;
+  const neu=CATALOG_NEW||[];
+  const back=(RESTOCKS.back||[]).map(id=>PRODUCTS.find(p=>p.id===id)).filter(Boolean);
+  const pills=[];
+  if(deals)pills.push(`<a class="nowpill" href="#produkte?f=o"><span class="dot" style="background:var(--gold)"></span><b class="tnum">${deals}</b>&nbsp;im Angebot</a>`);
+  if(neu.length)pills.push(`<button type="button" class="nowpill" data-now="neu" aria-expanded="false" aria-controls="nowchips"><span class="dot" style="background:var(--brand)"></span><b class="tnum">${neu.length}</b>&nbsp;neu im Sortiment</button>`);
+  if(back.length)pills.push(`<button type="button" class="nowpill" data-now="back" aria-expanded="false" aria-controls="nowchips"><span class="dot" style="background:var(--ok)"></span><b class="tnum">${back.length}</b>&nbsp;wieder da</button>`);
+  if(!pills.length){row.hidden=true;box.hidden=true;return;}
+  row.innerHTML=`<span class="nowlab">Gerade aktuell</span>${pills.join("")}`;
+  row.hidden=false;
+  const chipsFor=k=>k==="back"
+    ? back.map(p=>`<a class="rchip" href="#${p.cat}?q=${encodeURIComponent(p.name)}">${escT(p.name)}</a>`).join("")
+    : neu.map(n=>{
+        const p=n.known?PRODUCTS.find(x=>x.url&&x.url.endsWith("/"+n.handle)):null;
+        const href=p?`#${p.cat}?q=${encodeURIComponent(p.name)}`:affLink("https://morenutrition.de/products/"+n.handle);
+        return `<a class="rchip newp" href="${esc(href)}"${p?"":' target="_blank" rel="noopener"'}>${escT(n.title)}</a>`;
+      }).join("");
+  let open=null;
+  row.querySelectorAll("[data-now]").forEach(b=>b.onclick=()=>{
+    const k=b.dataset.now;
+    row.querySelectorAll("[data-now]").forEach(x=>x.setAttribute("aria-expanded","false"));
+    if(open===k){box.hidden=true;open=null;return;}
+    box.innerHTML=chipsFor(k);box.hidden=false;open=k;b.setAttribute("aria-expanded","true");
+  });
+}
+/* Start-Suche -> Produkte-Reiter mit Suchbegriff (bestehende Deep-Link-Logik) */
+document.getElementById("homesearch").onsubmit=e=>{
+  e.preventDefault();
+  const q=document.getElementById("hsq").value.trim();
+  location.hash=q?`#produkte?q=${encodeURIComponent(q)}`:"#produkte";
+};
 function renderJump(){
   document.getElementById("jump").innerHTML=CATORDER.map(c=>`<button class="jchip" data-go="${c}" style="--c:${CATS[c].hex}"><span class="dot"></span>${CATS[c].label} <span class="tnum" style="color:var(--muted)">${PRODUCTS.filter(p=>p.cat===c).length}</span></button>`).join("");
   document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>showTab(b.dataset.go));
@@ -2815,7 +2874,7 @@ themeBtn.onclick=()=>{theme=theme==="dark"?"light":"dark";setTheme(theme);};
 
 var _ad=document.getElementById("availDate"); if(_ad)_ad.textContent=AVAIL_DATE;
 var _fd=document.getElementById("footDate"); if(_fd)_fd.textContent=AVAIL_DATE;
-renderTabs();renderKPIs();renderJump();renderRecs();renderBest();renderNew();renderRetailers();renderAff();renderRadar();startRestock();renderGuide();renderSets();renderFaqs();render();
+renderTabs();renderKPIs();renderNow();renderJump();renderRecs();renderBest();renderNew();renderRetailers();renderAff();renderRadar();startRestock();renderGuide();renderSets();renderFaqs();render();
 if(!applyHash())showTab("uebersicht");
 hashReady=true;updateHash();
 revealInit(); /* nach dem kompletten Erst-Render — genau einmal, Re-Renders bleiben animationsfrei */

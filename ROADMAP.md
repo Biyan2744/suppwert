@@ -106,6 +106,20 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Übersicht-Konzept „5 essenzielle Blöcke" (18.07., Biyans Brainstorm-Go):** Nach dem
+> Standard-Kanon der Vergleichsportale (idealo/geizhals/Vergleich.org) neu strukturiert,
+> bewusst OHNE Produkt-Kacheln (Biyans Veto): (1) Beeren-Titel + Schwung; (2) NEU:
+> **Start-Suchleiste** im Hero → routet in den Produkte-Reiter (`#produkte?q=`, bestehende
+> Deep-Link-Logik; Button fest #c13a6b — das helle Dunkel-Beere hätte mit Weiß nur 3,4:1);
+> (3) KPIs von 5 auf DREI gekürzt (62 Produkte · 34/62 lieferbar · gratis ab 55 € — „6
+> Kategorien" war redundant zu den Chips, Preisspanne sagte nichts); (4) NEU: **„Gerade
+> aktuell"-Zeile** — Live-Pillen „X im Angebot" (echte compare_at-Streichpreise → gefilterter
+> Produkte-Reiter) + „X neu im Sortiment" + „X wieder da" (die geparkten Radar-Daten sind
+> damit wieder sichtbar, in schlank); Namen klappen erst auf Klick aus (aria-expanded),
+> leere Pillen erscheinen nicht, ganz leer = Zeile unsichtbar; (5) Kategorie-Chips.
+> Verifiziert: Suche end-to-end (Begriff → panel-products vorbefüllt, 1 Treffer), Pillen
+> mit Testdaten (Aufklappen/Toggle/extern-Links, danach zurückgesetzt), mobil 375 ohne
+> H-Scroll, Konsole leer.
 > **Übersicht entschlackt für Japan-Haus-Redesign (18.07.):** Auf Biyans Wunsch aus dem Hero
 > entfernt: Lead-Absatz, drei Trust-Chips, Datenstand-Zeile (Transparenz bleibt in Footer +
 > Info-Tab, Unabhängigkeit im Header-Badge); H1 jetzt in BEERE, bis 56 px, mit goldenem
