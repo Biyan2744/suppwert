@@ -106,6 +106,20 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Dunkel-Deko nach Perplexity-Review (18.07.):** Biyans Wunsch „die schwarze Version mehr
+> Leben einhauchen" — Perplexity lieferte 6 Ideen mit eigener Priorisierung, umgesetzt sind
+> genau die empfohlenen risikoarmen: (1) samtiger **Grain-Layer** über der ganzen Seite
+> (Inline-SVG feTurbulence als data-URI, per feColorMatrix ENTSÄTTIGT — das rohe
+> Turbulence-Rauschen wäre bunt, hatte der Vorschlag übersehen; opacity .035, z-99 als
+> gleichmäßiger Film), (2) genau DREI **warme Lichtinseln** (Hero: Beere links + Gold
+> rechts als background-Schichten, ersetzt dort den alten ::after-Glow; KPI-Zone als
+> ::before z-−1; Radar als background-Schicht — als Pseudo wäre sie hinter der
+> Kartenfläche verschwunden), (3) **Gold-Corner-Detail** NUR am Hero — am Radar
+> nachgemessen ENTFERNT, weil es mit dem „Nächster Abgleich"-Label kollidierte (Deko
+> verliert gegen Inhalt). Alles über `:root[data-theme="dark"]` gescoped, **Hell-Theme
+> nachweislich unverändert** (Gegenprobe: Grain/Corner/Glows weg, alter Hero-Glow zurück).
+> Bewusst NICHT übernommen (Perplexitys eigene Risiko-Einstufung): Punkt-/Linienraster,
+> Sektions-Trenner, Mikro-Animationen.
 > **Design-Feinschliff I nach externem Review (18.07.):** GPT- und Perplexity-Design-Reviews
 > (via Screenshot-Paket) waren sich einig: weniger Fett, weniger Pillen/Schatten, ruhigerer
 > Hero, härtere Hierarchie. Umgesetzt: (a) Schatten radikal flacher (hell 1 Schicht 5 %,

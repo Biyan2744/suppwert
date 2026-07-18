@@ -154,6 +154,21 @@ header.top{background:var(--surface-1);border-bottom:1px solid var(--grid);posit
 .hero p.lead{color:var(--text-2);font-size:16px;max-width:720px;margin:0;line-height:1.6}
 @media(max-width:600px){.hero{padding:28px 20px}}
 .updated{font-size:12px;color:var(--muted);margin-top:18px}
+/* ------ Dunkel-Deko (Perplexity-Review 18.07., NUR Dark-Theme — "flaechig schwarz" beleben):
+   (1) samtiger Grain-Layer ueber der ganzen Seite (feTurbulence, per feColorMatrix ENTSAETTIGT —
+   das rohe Turbulence-Rauschen waere bunt), (2) maximal DREI warme Lichtinseln (Hero/KPIs/Radar,
+   Beere+Gold, Review-Grenze: mehr kippt in Template-Optik), (3) Gold-Corner-Detail nur auf
+   Hero + Radar (nicht auf jeder Karte — waere ornamental). Hell-Theme bewusst unveraendert. */
+:root[data-theme="dark"] body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:99;opacity:.035;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.15' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='180' height='180' filter='url(%23n)'/></svg>");background-size:220px 220px}
+:root[data-theme="dark"] .hero{background:radial-gradient(560px circle at 88% 18%,rgba(224,182,74,.09),transparent 58%),radial-gradient(620px circle at 8% 0%,rgba(122,33,66,.15),transparent 54%),linear-gradient(135deg,color-mix(in srgb,var(--brand) 7%,var(--card)),var(--card) 60%)}
+:root[data-theme="dark"] .hero::after{display:none} /* Gold-Glow steckt jetzt in der Lichtinsel */
+:root[data-theme="dark"] .kpis{position:relative}
+:root[data-theme="dark"] .kpis::before{content:"";position:absolute;inset:-14% 0;z-index:-1;pointer-events:none;background:radial-gradient(480px circle at 14% 50%,rgba(122,33,66,.09),transparent 60%),radial-gradient(420px circle at 84% 40%,rgba(224,182,74,.05),transparent 62%)}
+:root[data-theme="dark"] .radar{background:radial-gradient(480px circle at 10% 0%,rgba(122,33,66,.12),transparent 60%),var(--card)}
+/* Corner-Detail NUR am Hero — am Radar kollidierte es mit dem "Naechster Abgleich"-Label
+   (nachgemessen), Deko verliert gegen Inhalt */
+:root[data-theme="dark"] .hero::before{content:"";position:absolute;top:10px;right:10px;width:18px;height:18px;border-top:1px solid rgba(224,182,74,.24);border-right:1px solid rgba(224,182,74,.24);border-top-right-radius:12px;pointer-events:none}
+:root[data-theme="dark"] .hero>*{z-index:1} /* Content ueber dem Corner-Detail halten (war schon so, hier nur explizit) */
 .updated b{color:var(--text-2);font-weight:600}
 .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:20px 0 8px}
 .kpi{background:var(--card);border:1px solid var(--ring);border-radius:var(--r);padding:15px 16px;box-shadow:var(--shadow);transition:transform .16s ease,box-shadow .16s ease}
