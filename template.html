@@ -270,6 +270,7 @@ select.sort{border:1px solid var(--line);background:var(--surface-1);color:var(-
    (absolute inset 0) wuerde sie sonst ueberdecken */
 .pc-img .catbadge{position:absolute;top:9px;left:9px;z-index:1;font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#fff;background:var(--acc);padding:3px 8px;border-radius:999px;box-shadow:0 1px 4px rgba(0,0,0,.2)}
 .pc-img .tp{position:absolute;top:9px;right:9px;z-index:1;background:var(--gold);color:#241c00;font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.pc-img .saleb{position:absolute;top:34px;left:9px;z-index:1;background:var(--gold);color:#241c00;font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;box-shadow:0 1px 4px rgba(0,0,0,.2)}
 .pc-b{padding:12px 14px 0}
 .pc-b .nm{font-size:14.5px;font-weight:650;letter-spacing:-.2px;line-height:1.25}
 .pc-price{display:flex;align-items:center;gap:8px;margin-top:7px}
@@ -2531,7 +2532,7 @@ function cardHTML(p){
   }
   const badges=(p.tags||[]).slice(0,4).map(t=>`<span class="b">${t}</span>`).join("");
   return `<div class="pc">
-    <div class="pc-img"><span class="catbadge" style="--acc:${c.color}">${c.label}</span>${win}${img}${cmpchk}${watchBtnHTML(p)}</div>
+    <div class="pc-img"><span class="catbadge" style="--acc:${c.color}">${c.label}</span>${prodOnSale(p.id)?`<span class="saleb" title="Mindestens eine kaufbare Sorte hat gerade einen echten Streichpreis – Details in der Produktansicht">% Angebot</span>`:""}${win}${img}${cmpchk}${watchBtnHTML(p)}</div>
     <div class="pc-b">
       <div class="nm"><button type="button" class="nmbtn" data-detail="${p.id}" title="Details ansehen">${p.name}</button></div>
       <div class="pc-price"><span class="pr tnum">${eur(p.price)}</span>${fmtBase(p)?`<span class="bp tnum">${fmtBase(p)}</span>`:""}<span class="avail"><span class="adot" style="background:${a.c}"></span>${a.t}</span></div>
@@ -2617,8 +2618,17 @@ function renderCatChips(){
   const box=document.getElementById("catchips"); if(!box)return;
   const on=key=>key==="alle"?activeCats.length===0:activeCats.includes(key);
   const mk=(key,label,hex,n)=>`<button type="button" class="catchip${on(key)?" on":""}" data-cat="${key}" ${hex?`style="--c:${hex}"`:""} aria-pressed="${on(key)}">${hex?'<span class="dot"></span>':""}${label} <span class="cn tnum">${n}</span></button>`;
-  box.innerHTML=mk("alle","Alle",null,PRODUCTS.length)+CATORDER.map(c=>mk(c,CATS[c].label,CATS[c].hex,PRODUCTS.filter(p=>p.cat===c).length)).join("");
-  box.querySelectorAll(".catchip").forEach(b=>b.onclick=()=>{
+  /* "% Angebote"-Chip (Biyan: Angebote-Ansicht IM Produkte-Reiter statt eigenem Tab):
+     spiegelt den bestehenden fSale-Filter — Klick toggelt das Haekchen, Deep-Link
+     #produkte?f=o setzt beides. Erscheint nur, wenn gerade wirklich etwas im Angebot
+     ist (echte compare_at-Streichpreise; leerer Angebote-Chip waere Rauschen). */
+  const deals=PRODUCTS.filter(p=>prodOnSale(p.id)).length;
+  const saleOn=document.getElementById("fSale").checked;
+  const saleChip=deals?`<button type="button" class="catchip${saleOn?" on":""}" data-salechip style="--c:var(--gold)" aria-pressed="${saleOn}"><span class="dot"></span>% Angebote <span class="cn tnum">${deals}</span></button>`:"";
+  box.innerHTML=mk("alle","Alle",null,PRODUCTS.length)+CATORDER.map(c=>mk(c,CATS[c].label,CATS[c].hex,PRODUCTS.filter(p=>p.cat===c).length)).join("")+saleChip;
+  const sc=box.querySelector("[data-salechip]");
+  if(sc)sc.onclick=()=>{const f=document.getElementById("fSale");f.checked=!f.checked;render();};
+  box.querySelectorAll(".catchip[data-cat]").forEach(b=>b.onclick=()=>{
     const k=b.dataset.cat;
     if(k==="alle")activeCats=[];
     else if(activeCats.includes(k))activeCats=activeCats.filter(x=>x!==k);

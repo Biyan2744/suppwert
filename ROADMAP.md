@@ -106,6 +106,20 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Katalog-Vollständigkeits-Audit (18.07. nachts, Biyans Auftrag „prüf, ob jedes Produkt
+> von der MORE-Seite auch bei uns ist"): BESTANDEN, 0 Lücken.** Live-Abgleich gegen
+> products.json: 104 Katalog-Produkte = 62 bei uns kuratiert + 42 bewusste Ausschlüsse
+> (15 Kochbücher, 11 Bundles/Multipacks, 13 Taster-/Boxen-Artikel, Pfand/Gutschein/
+> Kühlpack) — Rechnung geht exakt auf; Gegenrichtung ebenfalls sauber (wir führen nichts,
+> was der Shop nicht mehr hat). Der wöchentliche refresh.py-Kandidaten-Mechanismus meldet
+> künftig Neues.
+> **Angebote-Ansicht im Produkte-Reiter (18.07. nachts, Biyan: „Reiter mit Angeboten …
+> könnten wir in Produkte einbauen"):** goldener **„% Angebote"-Chip** mit Live-Zähler in
+> der Kategorie-Chip-Zeile — spiegelt den bestehenden „im Angebot"-Filter (Klick toggelt,
+> Deep-Link `#produkte?f=o` setzt beides, „Gerade aktuell"-Pille zeigt hierhin); erscheint
+> nur, wenn wirklich etwas im Angebot ist. Dazu goldenes **„% Angebot"-Badge** auf den
+> betroffenen Produktkarten (unter dem Kategorie-Badge; echte compare_at-Streichpreise,
+> Details zeigt die Produktansicht je Sorte).
 > **Tab-Konsolidierung (18.07. nachts, Biyan: „lohnt sich eigener Reiter nicht"):** Ratgeber
 > und „Wo kaufen" sind KEINE eigenen Reiter mehr, sondern Sektionen im Info-Tab (Reihenfolge:
 > Ratgeber & Kaufberatung → Wo bekommt man MORE? → Methodik & Hinweise). Tab-Leiste 10 → 8.
