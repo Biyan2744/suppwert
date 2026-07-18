@@ -674,7 +674,7 @@ body.has-cart .cmpchip{bottom:74px}
   <section class="panel" id="panel-sets" role="tabpanel">
     <div class="phead"><h2><span class="hbar" style="--acc:var(--acc-supplements)"></span>Fertige Sets</h2><p>Von uns redaktionell zusammengestellte Produkt-Kombis – ein Klick legt alle lieferbaren Artikel in den Merkzettel. Das sind unsere Empfehlungen aus dem Sortiment, keine Kaufdaten.</p></div>
     <div class="setctl">
-      <input class="search setsearch" id="setSearch" placeholder="Sets durchsuchen (Name, Produkt, Creator)…" aria-label="Sets durchsuchen" autocomplete="off">
+      <input class="search setsearch" id="setSearch" placeholder="Sets durchsuchen (Name, Produkt)…" aria-label="Sets durchsuchen" autocomplete="off">
       <button type="button" class="catchip" id="setAvail" aria-pressed="false">Nur komplett lieferbare Sets</button>
       <button type="button" class="catchip on" id="setSrcMore" aria-pressed="true">Nur MORE-Shop</button>
       <button type="button" class="catchip" id="setSrcAlt" aria-pressed="false">+ andere Anbieter</button>
@@ -700,7 +700,15 @@ body.has-cart .cmpchip{bottom:74px}
       <div id="sgOut"></div>
     </details>
     <div class="setgrid" id="setgrid"></div>
-    <div class="sub-h">Creator- &amp; Community-Sets</div>
+  </section>
+
+  <!-- COMMUNITY-SETS (eigener Reiter, Biyan) -->
+  <section class="panel" id="panel-community" role="tabpanel">
+    <div class="phead"><h2><span class="hbar" style="--acc:var(--m-value)"></span>Community-Sets</h2><p>Per Link geteilte Sets von Creatorn und aus der Community – gespeichert nur in deinem Browser, Preise und Verfügbarkeit live vom Shop-Abgleich. Erstelle dein eigenes Set aus deinem Merkzettel und teile den Link.</p></div>
+    <div class="setctl">
+      <div class="goalbtns" id="comCreators" style="margin:0"></div>
+      <button type="button" class="catchip" id="comNew">＋ Eigenes Set erstellen &amp; teilen</button>
+    </div>
     <p class="note" id="comnote"></p>
     <div class="setgrid" id="comgrid"></div>
   </section>
@@ -1256,7 +1264,11 @@ function renderSmart(){
    LIVE aus bestBuyable() abgeleitet: ausverkaufte Posten werden durchgestrichen gezeigt, aus
    der Summe genommen und nicht mitgelegt — selbstheilend beim woechentlichen Refresh. */
 const SETS=[
-  {key:"fasten",acc:"--gold",title:"Protein-Fasten-Set",why:"Passend zur Protein-Fasten-Methode (WPF) von MORE-Gründer Christian Wolf: Clear Whey und Iced Coffee für die Fastenphase, Zerup zum kalorienfreien Trinken, dazu eine warme Protein-Mahlzeit und ein Shake fürs Essensfenster. Hinweis: MORE bietet dafür auch eine offizielle MPF-Box an – das hier ist unsere Zusammenstellung aus einzeln erhältlichen Produkten.",ids:["clear","icedcoffee","zerupbarista","porridge","milkshake"]},
+  /* Biyan: 'WPF-Paket, darunter kennt es jeder' — Titel traegt jetzt WPF, aber mit SICHTBARER
+     Inoffiziell-Zeile (hint) direkt unterm Titel, weil die Abgrenzung zum offiziellen Wolf-/
+     MORE-Produkt (MPF-Box) seit dem Sets-Commit bewusste Rechts-Linie ist und der why-Text
+     mit dem Disclaimer inzwischen eingeklappt ist. */
+  {key:"fasten",acc:"--gold",title:"WPF-Paket",hint:"Inoffizielle Zusammenstellung nach der Protein-Fasten-Methode (WPF) – nicht die offizielle MPF-Box",why:"Passend zur Protein-Fasten-Methode (WPF) von MORE-Gründer Christian Wolf: Clear Whey und Iced Coffee für die Fastenphase, Zerup zum kalorienfreien Trinken, dazu eine warme Protein-Mahlzeit und ein Shake fürs Essensfenster. Hinweis: MORE bietet dafür auch eine offizielle MPF-Box an – das hier ist unsere Zusammenstellung aus einzeln erhältlichen Produkten.",ids:["clear","icedcoffee","zerupbarista","porridge","milkshake"]},
   {key:"muskeln",acc:"--acc-proteine",title:"Muskelaufbau-Set",why:"Whey-Isolat für viel Protein, ein Riegel für unterwegs, Kreatin als günstigste Ergänzung und ein Pre-Workout fürs Training.",ids:["clear","proteinbar","creastick","everyworkout"]},
   {key:"bestseller",acc:"--acc-riegel",title:"Der Bestseller-Mix",why:"Die meistverkaufte Whey-Casein-Basis, proteinreiche Riegel und der Chunky-Flavour-Trick, um Alltagsessen kalorienärmer zu würzen.",ids:["milkshake","satisbites","chunky"]},
   {key:"beauty",acc:"--acc-chunky",title:"Beauty-Routine",why:"Clear Whey mit Kollagenpeptiden, pures Kollagen und die Skin-Formel – für Haut, Haare und Gelenke.",ids:["glow","collagen","skinstructure"]},
@@ -1317,6 +1329,7 @@ function renderSets(){
       : `Gerade ist nichts aus diesem Set lieferbar – der Restock-Radar auf der Übersicht zeigt, wenn etwas zurückkommt.`;
     return `<div class="setcard" style="--acc:var(${s.acc})">
       <div class="sethead"><h3>${escT(s.title)}</h3>${buyable.length?`<span class="setsum tnum">${eur(sum)}</span>`:""}</div>
+      ${s.hint?`<div class="setby">${escT(s.hint)}</div>`:""}
       ${setThumbsHTML(rows,r=>!(r.v&&r.v.pr))}
       <div class="setitems">${items}</div>
       <details class="setwhyd"><summary>Warum dieses Set?</summary><p class="setwhy">${escT(s.why)}</p></details>
@@ -1342,6 +1355,7 @@ document.getElementById("setAvail").onclick=()=>{
   renderSets();
 };
 document.getElementById("setNew").onclick=()=>openSetBuilder();
+document.getElementById("comNew").onclick=()=>openSetBuilder();
 function setSetsSrc(alt){
   setsAltSrc=alt;
   const m=document.getElementById("setSrcMore"),a=document.getElementById("setSrcAlt");
@@ -1422,26 +1436,37 @@ async function shareSetLink(cs,btn,idle){
   catch(e){window.prompt("Link zum Teilen kopieren:",url);}
   setTimeout(()=>{if(btn.isConnected)btn.textContent=idle;},1600);
 }
+/* Creator-Chips im Community-Reiter (Biyan: 'Creator-Tabs'): 'Alle' + ein Chip je Creator;
+   Sets ohne Creator-Namen laufen unter 'Ohne Creator'. Chips erscheinen erst, wenn es
+   mindestens einen benannten Creator gibt (sonst waeren sie Rauschen). */
+let comCreatorFilter="alle";
+function renderComCreators(){
+  const box=document.getElementById("comCreators"); if(!box)return;
+  const names=[...new Set(comSets.map(cs=>cs.c||""))];
+  if(!comSets.length||!names.some(c=>c!=="")){box.innerHTML="";comCreatorFilter="alle";return;}
+  if(comCreatorFilter!=="alle"&&!names.includes(comCreatorFilter))comCreatorFilter="alle";
+  const mk=(key,lab,n)=>`<button type="button" class="catchip${comCreatorFilter===key?" on":""}" data-cc="${esc(key)}" aria-pressed="${comCreatorFilter===key}">${escT(lab)} <span class="cn tnum">${n}</span></button>`;
+  box.innerHTML=mk("alle","Alle",comSets.length)+names.map(c=>mk(c,c===""?"Ohne Creator":c,comSets.filter(x=>(x.c||"")===c).length)).join("");
+  box.querySelectorAll("[data-cc]").forEach(b=>b.onclick=()=>{comCreatorFilter=b.dataset.cc;renderComSets();});
+}
 function renderComSets(){
   const grid=document.getElementById("comgrid"),note=document.getElementById("comnote");
   if(!grid)return;
+  renderComCreators();
   if(!comSets.length){
     grid.innerHTML="";
     note.textContent="Noch keine Sets gespeichert. Creator- und Community-Sets funktionieren per Link: Jemand stellt aus seinem Merkzettel ein Set zusammen („Eigenes Set erstellen & teilen“) und verschickt den Link – wer ihn öffnet, kann das Set hier speichern und mit einem Klick in den Merkzettel legen. Gespeichert wird nur in deinem Browser; wir betreiben keinen Server und sehen die Sets nicht.";
     return;
   }
   note.textContent="Per Link geteilte Sets, die du gespeichert hast – sie liegen nur in deinem Browser. Preise und Verfügbarkeit kommen live vom Shop-Abgleich.";
-  let hidden=0,miss=0;
-  const q=setsQuery;
   grid.innerHTML=comSets.map((cs,ix)=>{
+    if(comCreatorFilter!=="alle"&&(cs.c||"")!==comCreatorFilter)return "";
     const rows=cs.i.map(it=>comSetRow(it[0],it[1])).filter(Boolean);
-    if(!setMatches(q,[cs.n,cs.c].concat(rows.map(r=>r.p.name)))){miss++;return "";}
     const buyable=rows.filter(r=>r.px.av&&r.px.pr);
-    if(setsOnlyAvail&&(!rows.length||buyable.length<rows.length)){hidden++;return "";}
     const sum=buyable.reduce((a,r)=>a+r.px.pr*r.q,0);
     const items=rows.map(r=>r.px.av&&r.px.pr
       ? `<div class="setit"><span class="sn withimg">${thumbHTML(r.p,false)}<span class="snt"><b>${r.q>1?`${r.q}× `:""}${escT(r.p.name)}</b><small>${escT(r.px.flavor)}${r.px.size?" · "+escT(r.px.size):""}</small></span></span><span class="sp tnum">${eur(r.px.pr*r.q)}</span></div>`
-      : `<div class="setit gone"><span class="sn withimg">${thumbHTML(r.p,true)}<span class="snt"><b>${r.q>1?`${r.q}× `:""}${escT(r.p.name)}</b><small>zzt. ausverkauft${setsAltSrc?setAltLinksHTML(r.p):""}</small></span></span><span class="sp">–</span></div>`
+      : `<div class="setit gone"><span class="sn withimg">${thumbHTML(r.p,true)}<span class="snt"><b>${r.q>1?`${r.q}× `:""}${escT(r.p.name)}</b><small>zzt. ausverkauft${setAltLinksHTML(r.p)}</small></span></span><span class="sp">–</span></div>`
     ).join("")||`<div class="setit gone"><span class="sn"><b>Kein Posten mehr im Sortiment</b></span><span class="sp">–</span></div>`;
     const when=cs.ts?new Date(cs.ts).toLocaleDateString("de-DE"):"";
     return `<div class="setcard" style="--acc:var(--m-value)">
@@ -1453,9 +1478,7 @@ function renderComSets(){
       <button type="button" class="setadd" data-comadd="${ix}"${buyable.length?"":" disabled"}>${buyable.length?`Lieferbare in den Merkzettel (${buyable.length})`:"Gerade nicht lieferbar"}</button>
       <div class="setacts"><button type="button" class="goalbtn" data-comshare="${ix}">Link teilen</button><button type="button" class="goalbtn" data-comrm="${ix}">✕ Entfernen</button></div>
     </div>`;
-  }).join("")
-    +(q&&miss===comSets.length?`<div class="note">Kein gespeichertes Set passt zu „${escT(q)}".</div>`:"")
-    +(hidden?`<div class="note">${hidden} gespeichertes Set${hidden!==1?"s":""} ausgeblendet – nicht komplett lieferbar.</div>`:"");
+  }).join("");
   grid.querySelectorAll("[data-comadd]").forEach(b=>b.onclick=()=>{
     const cs=comSets[Number(b.dataset.comadd)]; if(!cs)return;
     let n=0;
@@ -1500,7 +1523,7 @@ function openSetBuilder(){
     if(!comSets.some(x=>JSON.stringify([x.n,x.i])===key)){comSets.unshift(cs);comSets=comSets.slice(0,20);saveComSets();renderComSets();}
     const b=document.getElementById("setBgo");
     shareSetLink(cs,b,"Teilen-Link erstellen");
-    b.insertAdjacentHTML("afterend",`<div class="shopnote">Dein Set ist zusätzlich unter „Creator- &amp; Community-Sets" gespeichert (nur in diesem Browser).</div>`);
+    b.insertAdjacentHTML("afterend",`<div class="shopnote">Dein Set ist zusätzlich im Reiter „Community-Sets" gespeichert (nur in diesem Browser).</div>`);
   };
   document.getElementById("setBn").focus();
 }
@@ -1519,8 +1542,8 @@ function openSetImport(str){
     q=Math.min(Math.max(q,1),99);
     if(comSetRow(vid,q))items.push([vid,q]);
   });
-  history.replaceState(null,"","#sets");
-  showTab("sets");
+  history.replaceState(null,"","#community");
+  showTab("community");
   if(!items.length)return;
   const rows=items.map(it=>comSetRow(it[0],it[1])).filter(Boolean);
   const buyable=rows.filter(r=>r.px.av&&r.px.pr);
@@ -1531,7 +1554,7 @@ function openSetImport(str){
       ?`<div class="setit"><span class="sn withimg">${thumbHTML(r.p,false)}<span class="snt"><b>${r.q>1?`${r.q}× `:""}${escT(r.p.name)}</b><small>${escT(r.px.flavor)}${r.px.size?" · "+escT(r.px.size):""}</small></span></span><span class="sp tnum">${eur(r.px.pr*r.q)}</span></div>`
       :`<div class="setit gone"><span class="sn withimg">${thumbHTML(r.p,true)}<span class="snt"><b>${r.q>1?`${r.q}× `:""}${escT(r.p.name)}</b><small>zzt. ausverkauft</small></span></span><span class="sp">–</span></div>`).join("")}</div>
     <div class="shopnote">${buyable.length} von ${rows.length} Posten lieferbar${buyable.length?` · zusammen ${eur(sum)}`:""}. Jemand hat dir dieses Set geteilt. „Speichern" legt es unter Creator- &amp; Community-Sets ab (nur in deinem Browser) – bestellt wird wie immer erst im MORE-Shop, nicht hier.</div>
-    <button type="button" class="setadd" id="impSetSave">Im Sets-Tab speichern</button>
+    <button type="button" class="setadd" id="impSetSave">Unter Community-Sets speichern</button>
     <div class="setacts"><button type="button" class="goalbtn" id="impSetCart"${buyable.length?"":" disabled"}>${buyable.length?`Lieferbare in den Merkzettel (${buyable.reduce((a,r)=>a+r.q,0)})`:"Gerade nicht lieferbar"}</button></div></div>`);
   document.getElementById("impSetSave").onclick=()=>{
     const cs={n:n,c:c,i:items,ts:Date.now()};
@@ -1788,7 +1811,7 @@ function render(){
    Ueberblick, nicht aneinandergereiht): darin Kategorie-Chips als Filter, Standard "Alle"
    zeigt das komplette Sortiment in Kategorie-SEKTIONEN. Alte Deep-Links #proteine etc.
    funktionieren weiter (applyHash/showTab routen sie auf den Produkte-Reiter + Filter). */
-const TABS=[["uebersicht","Übersicht",null],["produkte","Produkte",null],["vergleich","Vergleich",null],["empfehlungen","Empfehlungen",null],["sets","Sets",null],["ratgeber","Ratgeber",null],["buy","Wo kaufen",null],["info","Info",null]];
+const TABS=[["uebersicht","Übersicht",null],["produkte","Produkte",null],["vergleich","Vergleich",null],["empfehlungen","Empfehlungen",null],["sets","Sets",null],["community","Community-Sets",null],["ratgeber","Ratgeber",null],["buy","Wo kaufen",null],["info","Info",null]];
 function renderTabs(){
   document.getElementById("tabs").innerHTML=TABS.map(t=>`<button class="tab" data-tab="${t[0]}" role="tab" aria-selected="false" aria-controls="${t[0]==="produkte"?"panel-products":"panel-"+t[0]}">${t[1]}${t[0]==="produkte"?`<span class="tcount">${PRODUCTS.length}</span>`:""}</button>`).join("");
   document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
@@ -1801,6 +1824,8 @@ function showTab(tab){
   document.getElementById("panel-vergleich").classList.toggle("on",tab==="vergleich");
   document.getElementById("panel-empfehlungen").classList.toggle("on",tab==="empfehlungen");
   document.getElementById("panel-sets").classList.toggle("on",tab==="sets");
+  document.getElementById("panel-community").classList.toggle("on",tab==="community");
+  if(tab==="community")renderComSets();
   if(tab==="vergleich"){renderVchips();renderDuel();renderVtable();}
   document.getElementById("panel-ratgeber").classList.toggle("on",tab==="ratgeber");
   document.getElementById("panel-buy").classList.toggle("on",tab==="buy");
@@ -1870,7 +1895,37 @@ function addToCart(pid,vid){
   if(hit)hit.q++;else cart.push({vid:vid,pid:pid,name:p.name,vt:px?px.flavor+(px.size?" · "+px.size:""):varName(v[1]),pr:v[3]||0,q:1});
   saveCart();renderCart();
 }
-function cartURL(){return affLink("https://morenutrition.de/cart/"+cart.map(i=>i.vid+":"+i.q).join(","));}
+/* Shopify-Cart-Permalinks akzeptieren ?discount=CODE — der Code liegt dann beim Checkout
+   schon im Feld (Biyan-Frage: ja, das geht). Aktiv NUR mit eigenem Partner-Code
+   (AFF.enabled + AFF.moreCode): fremde Codes automatisch einzutragen waere unserioes und
+   wuerde die Partner-Bewerbung gefaehrden. affLink haengt danach den Tracking-Parameter an. */
+function cartURLFor(items){
+  let u="https://morenutrition.de/cart/"+items.map(i=>i.vid+":"+i.q).join(",");
+  if(AFF.enabled&&AFF.moreCode)u+="?discount="+encodeURIComponent(AFF.moreCode);
+  return affLink(u);
+}
+function cartURL(){return cartURLFor(cart);}
+/* Posten noch bei MORE kaufbar? (VARIANTS-Zeile: [vid, Sorte, kaufbar, Preis]) */
+function cartItemAv(i){const v=(VARIANTS[i.pid]||[]).find(x=>x[0]===i.vid);return !!(v&&v[2]);}
+/* Aufteil-Dialog (Biyan): fuehrt der Merkzettel Posten, die MORE gerade NICHT liefern kann,
+   faengt der Warenkorb-Klick ab und zeigt 'das hier bei MORE holen, das hier woanders' —
+   lieferbare per 1-Klick-Permalink, der Rest mit den besten BEKANNTEN Alternativen
+   (Amazon-Direktlink zuerst, sonst Produktsuche). Ehrlich: Live-Preise anderer Shops kennen
+   wir nicht, deshalb keine 'Guenstigst'-Garantie. */
+function openCartSplit(){
+  const avIt=cart.filter(cartItemAv),unIt=cart.filter(i=>!cartItemAv(i));
+  const row=i=>{const p=PRODUCTS.find(x=>x.id===i.pid);
+    return `<div class="setit"><span class="sn${p?" withimg":""}">${p?thumbHTML(p,false):""}<span class="snt"><b>${i.q>1?`${i.q}× `:""}${escT(i.name)}</b><small>${escT(i.vt)}</small></span></span><span class="sp tnum">${eur(i.pr*i.q)}</span></div>`;};
+  const unRow=i=>{const p=PRODUCTS.find(x=>x.id===i.pid);
+    return `<div class="setit gone"><span class="sn${p?" withimg":""}">${p?thumbHTML(p,true):""}<span class="snt"><b>${i.q>1?`${i.q}× `:""}${escT(i.name)}</b><small>zzt. nicht bei MORE${p?setAltLinksHTML(p):""}</small></span></span><span class="sp">–</span></div>`;};
+  setOvShow(`<div class="cmpbox shopbox"><h3>Nicht alles ist gerade bei MORE lieferbar <button type="button" class="x" aria-label="Schließen">✕</button></h3>
+    ${avIt.length?`<div class="sub-h" style="margin-top:10px">Bei MORE holen (${avIt.reduce((a,i)=>a+i.q,0)})</div>
+    <div class="setitems">${avIt.map(row).join("")}</div>
+    <a class="setadd" style="display:block;text-align:center;text-decoration:none;margin-top:10px" href="${cartURLFor(avIt)}" target="_blank" rel="noopener">Diese bei MORE in den Warenkorb →</a>`:""}
+    <div class="sub-h" style="margin-top:14px">Woanders holen (${unIt.reduce((a,i)=>a+i.q,0)})</div>
+    <div class="setitems">${unIt.map(unRow).join("")}</div>
+    <div class="shopnote">Für diese Posten hat MORE gerade keine kaufbare Variante. Die Links zeigen die besten bekannten Wege (Amazon-Direktlink zuerst, sonst Produktsuche) – dort bestellst du separat, und Live-Preise anderer Shops kennen wir nicht, deshalb ohne Günstigst-Garantie. Der Merkzettel bleibt unverändert.</div></div>`);
+}
 function renderCart(){
   const bar=document.getElementById("cartbar"),panel=document.getElementById("cartpanel");
   document.body.classList.toggle("has-cart",cart.length>0);
@@ -1879,9 +1934,12 @@ function renderCart(){
   const ship=sum>=55?"Gratisversand ✓":"noch "+eur(55-sum)+" bis Gratisversand (DE)";
   bar.innerHTML=`<span><b class="tnum">${n}</b> Artikel · <b class="tnum">${eur(sum)}</b><span class="ship"> · ${ship}</span></span>`+
     `<button class="go sec" id="cartToggle" aria-expanded="${String(!panel.hidden)}">Merkzettel</button>`+
-    `<a class="go" href="${cartURL()}" target="_blank" rel="noopener">Zum MORE-Warenkorb →</a>`+
+    `<a class="go" id="cartGo" href="${cartURL()}" target="_blank" rel="noopener">Zum MORE-Warenkorb →</a>`+
     `<button class="cartx" id="cartX" aria-label="Merkzettel komplett leeren" title="Merkzettel komplett leeren">✕</button>`;
   bar.hidden=false;
+  /* Teil-Verfuegbarkeit: statt stumpf zum MORE-Cart (wo Ausverkauftes fehlen wuerde) den
+     Aufteil-Dialog oeffnen — bei voller Verfuegbarkeit bleibt der Direktlink unangetastet */
+  document.getElementById("cartGo").onclick=e=>{if(cart.some(i=>!cartItemAv(i))){e.preventDefault();openCartSplit();}};
   document.getElementById("cartToggle").onclick=()=>{panel.hidden=!panel.hidden;renderCart();};
   /* Schnell-Leeren direkt auf der Leiste (Biyan-Wunsch) — Zwei-Klick-Schutz: erster Klick
      armiert ("Leeren?"), zweiter innerhalb von 2,5 s leert wirklich. Kein Versehens-Wegklick. */
@@ -2171,7 +2229,7 @@ function applyHash(){
   if(m.startsWith("warenkorb=")){openCartImport(m.slice(10));return true;}
   if(m.startsWith("set=")){openSetImport(m.slice(4));return true;}
   const qi=m.indexOf("?"),tab=qi<0?m:m.slice(0,qi),qs=qi<0?"":m.slice(qi+1);
-  if(!(CATS[tab]||["uebersicht","produkte","vergleich","empfehlungen","sets","ratgeber","buy","info"].includes(tab)))return false;
+  if(!(CATS[tab]||["uebersicht","produkte","vergleich","empfehlungen","sets","community","ratgeber","buy","info"].includes(tab)))return false;
   showTab(tab);
   if(CATS[tab]||tab==="produkte"){ /* Parameter anwenden — leeres qs setzt bewusst auf Defaults zurück (der Hash ist die Wahrheit) */
     const ps=new URLSearchParams(qs);

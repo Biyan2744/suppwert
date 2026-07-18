@@ -98,6 +98,21 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Sets-Ausbau III: WPF-Name + Warenkorb-Split + Community-Reiter + Code-Plumbing (18.07.):**
+> (a) „Protein-Fasten-Set" heißt jetzt **„WPF-Paket"** (Biyan: darunter kennt es jeder) — mit
+> SICHTBARER Inoffiziell-Zeile unterm Titel („nicht die offizielle MPF-Box"), weil die
+> WPF-Anmutungs-Vorsicht bewusste Rechts-Linie bleibt und der why-Disclaimer eingeklappt ist.
+> (b) **Warenkorb-Split:** Führt der Merkzettel Posten, die MORE gerade nicht liefern kann,
+> fängt „Zum MORE-Warenkorb" den Klick ab und zeigt einen Aufteil-Dialog: „Bei MORE holen (n)"
+> mit 1-Klick-Permalink nur der lieferbaren + „Woanders holen (n)" je Posten mit den besten
+> bekannten Alternativen (Amazon-Direktlink zuerst, sonst Suche) — ehrlich ohne
+> „Günstigst"-Garantie (keine Live-Preise anderer Shops). Voll lieferbar = Direktlink wie immer.
+> (c) **Eigener Reiter „Community-Sets"** (9. Tab, Hash `#community`): Creator-Chips („Alle" +
+> je Creator + „Ohne Creator", erscheinen erst ab einem benannten Creator), eigener
+> Erstellen-Button; Sets-Tab behält kuratierte Sets + Generator, seine Such-/Filter-Optionen
+> wirken nur noch dort; Set-Import landet jetzt im Community-Reiter. (d) **Auto-Rabattcode:**
+> Shopify-Cart-Permalink unterstützt `?discount=CODE` — verkabelt in cartURL, aktiv erst mit
+> eigenem Partner-Code (AFF.enabled + moreCode); fremde Codes werden nicht auto-eingetragen.
 > **Sets-Ausbau II: Bestands-Generator + Anbieter-Wahl (18.07.):** *(Nachträge: Generator-Box
 > ist zuklappbar — natives details/summary, startet zu; ein generierter Vorschlag überlebt
 > das Zuklappen. Sets-Suchfeld in der Optionsleiste filtert kuratierte + Community-Sets live
