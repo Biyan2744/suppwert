@@ -49,7 +49,13 @@ Priorisierte Ausbaustufen mit Akzeptanzkriterien. Reihenfolge ist ein Vorschlag.
 > (Domain-abhängig, s. o.), Grundpreise €/kg bzw. €/l auf Karten + als sortierbare
 > Tabellenspalte. **Nach-Launch-Ideen:** Verfügbarkeits-Historie aus history.json
 > (wächst wöchentlich), Review-Refresh von den Produktseiten, Search Console,
-> ggf. Produkt-Unterseiten für SEO, Restock-Alerts (Backend).
+> ggf. Produkt-Unterseiten für SEO, Restock-Alerts (Backend). **Set-Zähler (18.07. geklärt):**
+> „so oft bestellt" geht NIE zuverlässig (Bestellung passiert bei MORE, wir sehen sie nicht;
+> erfundene Kaufzahlen sind tabu). Ehrlich möglich: (a) nach Partner-Freischaltung echte
+> „über unseren Link bestellt"-Zahlen aus dem Partner-Dashboard, falls das Programm Sub-IDs
+> je Set erlaubt; (b) globaler anonymer Klick-Zähler „X-mal in den MORE-Warenkorb gelegt"
+> via Serverless (Cloudflare Worker, ohne Cookies, Datenschutz-§-Ergänzung) — sinnvoll
+> zusammen mit dem Restock-Alerts-Backend umzusetzen.
 
 ## 1. 1-Klick-Warenkorb (vorbefüllter Shopify-Link) — *statisch, kein Backend* ✅
 Kunden stellen auf der Seite einen Warenkorb zusammen und landen per Klick im MORE-Shop mit
