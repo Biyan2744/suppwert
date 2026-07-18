@@ -1,9 +1,13 @@
-# CLAUDE.md — Suppwert (Produktvergleich für MORE Nutrition)
+# CLAUDE.md — Protein Samurai (Produktvergleich für MORE Nutrition)
 
 Kontext & Konventionen für Claude Code. Bitte vor Änderungen lesen.
 
-## Namensregel (Markenrecht — WICHTIG, 17.07.2026)
-Der Eigenname der Seite ist **Suppwert** (Fantasiewort, Domain-Kandidat suppwert.de).
+## Namensregel (Markenrecht — WICHTIG, 17.07.2026; Rebranding 18.07.2026)
+Der Eigenname der Seite ist **Protein Samurai** (Biyans Wahl vom 18.07.2026, Domain-Kandidat
+proteinsamurai.de — Registrierung macht Biyan, war zum Rebranding-Zeitpunkt frei; Vorgängername
+„Suppwert" vom 17.07., suppwert.de war ebenfalls nie registriert). Samurai-Motiv erfüllt die
+Leitplanken: kein MORE-Bezug, kein Bezug zu Gründer Christian Wolf (ein „Vergleichswolf" o. Ä.
+wäre Herkunftstäuschung + § 12 BGB und wurde verworfen).
 „MORE Nutrition" darf überall **beschreibend** genannt werden („unabhängiger Vergleich für
 MORE-Nutrition-Produkte"), aber **NIE** als Teil des Eigennamens, der Domain, des Repo-Namens
 oder der Wortmarke/des Logos (BGH I ZR 236/16: fremde Marke im Domainnamen ist auch für

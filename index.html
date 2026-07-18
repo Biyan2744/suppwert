@@ -3,19 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Suppwert – unabhängiger Produktvergleich für MORE Nutrition</title>
-<meta name="description" content="Suppwert: unabhängiger Produktvergleich für MORE-Nutrition-Produkte – alle Kategorien mit Preisen, Nährwerten, Bewertungen, transparentem Score und Live-Verfügbarkeit je Sorte, plus Merkzettel mit 1-Klick-Warenkorb.">
-<meta property="og:title" content="Suppwert – unabhängiger Produktvergleich für MORE Nutrition">
+<title>Protein Samurai – unabhängiger Produktvergleich für MORE Nutrition</title>
+<meta name="description" content="Protein Samurai: unabhängiger Produktvergleich für MORE-Nutrition-Produkte – alle Kategorien mit Preisen, Nährwerten, Bewertungen, transparentem Score und Live-Verfügbarkeit je Sorte, plus Merkzettel mit 1-Klick-Warenkorb.">
+<meta property="og:title" content="Protein Samurai – unabhängiger Produktvergleich für MORE Nutrition">
 <meta property="og:description" content="Alle MORE-Nutrition-Produkte im Vergleich: Preise, Nährwerte, Scores & Live-Verfügbarkeit je Sorte.">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="de_DE">
 <!-- og:image braucht eine ABSOLUTE URL (Scraper ignorieren relative) — zeigt auf die
-     geplante Domain suppwert.de; falls die finale Domain abweicht: hier anpassen (Launch-Checkliste). -->
-<meta property="og:image" content="https://suppwert.de/og-image.png">
+     geplante Domain proteinsamurai.de; falls die finale Domain abweicht: hier anpassen (Launch-Checkliste). -->
+<meta property="og:image" content="https://proteinsamurai.de/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://suppwert.de/og-image.png">
+<meta name="twitter:image" content="https://proteinsamurai.de/og-image.png">
 <meta name="theme-color" content="#fcfcfb">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.json">
@@ -33,7 +33,7 @@
   --acc-proteine:#2a78d6; --acc-riegel:#1baf7a; --acc-snacks:#eda100;
   --acc-supplements:#4a3aa7; --acc-chunky:#d55181; --acc-kochen:#eb6834; --acc-zubehoer:#0d8f8f;
   --gold:#eda100;
-  /* Suppwert-Identitätsfarbe (Biyan wollte Pink-Akzente; bewusst EIGENSTÄNDIGER Beeren-Ton
+  /* Marken-Identitätsfarbe (Biyan wollte Pink-Akzente; bewusst EIGENSTÄNDIGER Beeren-Ton
      statt MORE-Magenta — Look-alike wäre Herkunftstäuschung). Nur Identitäts-Akzente;
      Score-Metriken (--m-*), Kategorie- und Status-Farben bleiben unangetastet. */
   --brand:#c13a6b;
@@ -145,12 +145,18 @@ header.top{background:var(--surface-1);border-bottom:1px solid var(--grid);posit
 /* Overview */
 /* Hero ruhiger (Design-Review 18.07.): Beeren-Tint + Gold-Glow stark reduziert (Landingpage-
    Anmutung), mehr vertikale Luft, Datumszeile kleiner — redaktioneller Ersteindruck. */
-.hero{position:relative;overflow:hidden;margin-top:20px;padding:42px 36px;border:1px solid var(--ring);border-radius:22px;box-shadow:var(--shadow);background:linear-gradient(135deg,color-mix(in srgb,var(--brand) 7%,var(--card)),var(--card) 60%)}
+/* Seigaiha-Wellenbordüre (Samurai-Rebranding 18.07.): klassisches Edo-Muster als dezente
+   Zeile am Hero-Boden — Beeren-Strich, Opazität im SVG eingebacken (hell .14 / dunkel .2) */
+.hero{position:relative;overflow:hidden;margin-top:20px;padding:42px 36px;border:1px solid var(--ring);border-radius:22px;box-shadow:var(--shadow);background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='56' height='28' viewBox='0 0 56 28'><g fill='none' stroke='%23c13a6b' stroke-opacity='.14' stroke-width='1.3'><path d='M0 28a28 28 0 0 1 56 0'/><path d='M8 28a20 20 0 0 1 40 0'/><path d='M16 28a12 12 0 0 1 24 0'/></g></svg>") left bottom/56px 28px repeat-x,linear-gradient(135deg,color-mix(in srgb,var(--brand) 7%,var(--card)),var(--card) 60%)}
+/* Hanko-Siegel: dekorativer Beeren-Stempel oben rechts (ersetzt das fruehere Gold-Corner-Detail).
+   Selektor .hero .hseal noetig: die spaetere .hero>*-Regel (position:relative) wuerde das
+   absolute sonst ueberschreiben — der Stempel rutschte in den Textfluss (im Muster passiert). */
+.hero .hseal{position:absolute;top:16px;right:18px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border:2px solid var(--brand);color:var(--brand);border-radius:9px;font-size:19px;font-weight:700;opacity:.55;transform:rotate(6deg);pointer-events:none;z-index:1}
 .hero::after{content:"";position:absolute;top:-70px;right:-50px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--gold) 12%,transparent),transparent 68%);pointer-events:none}
 .hero>*{position:relative;z-index:1}
 /* H1 bleibt als einzige Stelle 800 — die grosse Ausnahme gibt der Hierarchie ihren Anker
    (Design-Review: sonst ueberall 700/600/400 statt Fett-Einheitsbrei) */
-.hero h1{font-size:clamp(28px,4.8vw,48px);letter-spacing:-1px;line-height:1.08;margin-bottom:14px;font-weight:800}
+.hero h1{font-size:clamp(28px,4.8vw,48px);letter-spacing:-1px;line-height:1.08;margin-bottom:14px;font-weight:800;padding-right:48px} /* rechts Platz fuers Hanko-Siegel */
 .hero p.lead{color:var(--text-2);font-size:16px;max-width:720px;margin:0;line-height:1.6}
 @media(max-width:600px){.hero{padding:28px 20px}}
 .updated{font-size:12px;color:var(--muted);margin-top:18px}
@@ -168,15 +174,12 @@ header.top{background:var(--surface-1);border-bottom:1px solid var(--grid);posit
    Rauchglas-Anmutung, Lichtquelle von oben (bewusst nicht an allen 4 Seiten) */
 :root[data-theme="dark"] .hero{box-shadow:var(--shadow),inset 0 1px 0 0 rgba(255,255,255,.05)}
 :root[data-theme="dark"] .radar{box-shadow:var(--shadow),inset 0 1px 0 0 rgba(255,255,255,.05)}
-:root[data-theme="dark"] .hero{background:radial-gradient(560px circle at 88% 18%,rgba(224,182,74,.09),transparent 58%),radial-gradient(620px circle at 8% 0%,rgba(122,33,66,.15),transparent 54%),linear-gradient(135deg,color-mix(in srgb,var(--brand) 7%,var(--card)),var(--card) 60%)}
+:root[data-theme="dark"] .hero{background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='56' height='28' viewBox='0 0 56 28'><g fill='none' stroke='%23d95f8f' stroke-opacity='.2' stroke-width='1.3'><path d='M0 28a28 28 0 0 1 56 0'/><path d='M8 28a20 20 0 0 1 40 0'/><path d='M16 28a12 12 0 0 1 24 0'/></g></svg>") left bottom/56px 28px repeat-x,radial-gradient(560px circle at 88% 18%,rgba(224,182,74,.09),transparent 58%),radial-gradient(620px circle at 8% 0%,rgba(122,33,66,.15),transparent 54%),linear-gradient(135deg,color-mix(in srgb,var(--brand) 7%,var(--card)),var(--card) 60%)}
 :root[data-theme="dark"] .hero::after{display:none} /* Gold-Glow steckt jetzt in der Lichtinsel */
 :root[data-theme="dark"] .kpis{position:relative}
 :root[data-theme="dark"] .kpis::before{content:"";position:absolute;inset:-14% 0;z-index:-1;pointer-events:none;background:radial-gradient(480px circle at 14% 50%,rgba(122,33,66,.09),transparent 60%),radial-gradient(420px circle at 84% 40%,rgba(224,182,74,.05),transparent 62%)}
 :root[data-theme="dark"] .radar{background:radial-gradient(480px circle at 10% 0%,rgba(122,33,66,.12),transparent 60%),var(--card)}
-/* Corner-Detail NUR am Hero — am Radar kollidierte es mit dem "Naechster Abgleich"-Label
-   (nachgemessen), Deko verliert gegen Inhalt */
-:root[data-theme="dark"] .hero::before{content:"";position:absolute;top:10px;right:10px;width:18px;height:18px;border-top:1px solid rgba(224,182,74,.24);border-right:1px solid rgba(224,182,74,.24);border-top-right-radius:12px;pointer-events:none}
-:root[data-theme="dark"] .hero>*{z-index:1} /* Content ueber dem Corner-Detail halten (war schon so, hier nur explizit) */
+/* (Gold-Corner-Detail vom Perplexity-Paket ist durch das Hanko-Siegel ersetzt — Samurai-Rebranding) */
 .updated b{color:var(--text-2);font-weight:600}
 .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:20px 0 8px}
 .kpi{background:var(--card);border:1px solid var(--ring);border-radius:var(--r);padding:15px 16px;box-shadow:var(--shadow);transition:transform .16s ease,box-shadow .16s ease}
@@ -650,8 +653,10 @@ header.top.scrolled{box-shadow:var(--shadow)}
 <header class="top">
   <div class="wrap top-in">
     <a class="brand" href="#uebersicht" aria-label="Zur Übersicht">
-      <svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#1baf7a"/><circle cx="32" cy="32" r="18" fill="none" stroke="#fff" stroke-width="4"/><g transform="rotate(45 32 32)"><path d="M32 17L38 32H26Z" fill="#fff"/><path d="M32 47L38 32H26Z" fill="#eda100"/></g></svg>
-      <span class="bt"><b>Suppwert</b><span>Unabhängiger MORE-Nutrition-Vergleich</span></span>
+      <!-- Kamon-Logo (Rebranding Protein Samurai 18.07.): Beeren-Wappen — Ring, gekreuzte
+           Gold-Klingen, Proteindose. Identisch in favicon.svg. -->
+      <svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#c13a6b"/><g stroke="#eda100" stroke-width="3" stroke-linecap="round"><path d="M20 44 44 20M20 20l24 24"/></g><circle cx="32" cy="32" r="21" fill="none" stroke="#fff" stroke-width="3.2"/><g fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="24.5" y="26" width="15" height="15" rx="4"/><rect x="27" y="19.5" width="10" height="6.5" rx="2.5"/></g></svg>
+      <span class="bt"><b>Protein Samurai</b><span>Unabhängiger MORE-Nutrition-Vergleich</span></span>
     </a>
     <div class="top-sp"></div>
     <span class="restock tnum" id="restock" hidden title="Üblicher Start des wöchentlichen MORE-Restocks und der Sonntags-Aktionen: sonntags um 11:00 Uhr (deutsche Zeit). Von der Community dokumentiert – MORE nennt offiziell keine festen Termine, Angabe ohne Gewähr. Tipp: Merkzettel vorher füllen, dann um 11 Uhr nur noch zur Kasse."><span class="rdot"></span><b>MORE-Restock</b><span class="rtime" id="restockT"></span></span>
@@ -668,6 +673,8 @@ header.top.scrolled{box-shadow:var(--shadow)}
   <!-- ÜBERSICHT -->
   <section class="panel" id="panel-uebersicht" role="tabpanel">
     <div class="hero">
+      <!-- Hanko-Siegel (Samurai-Deko): dekorativer Stempel, 侍 = "Samurai" -->
+      <span class="hseal" aria-hidden="true">侍</span>
       <h1>Alle MORE-Nutrition-Produkte im ehrlichen Vergleich</h1>
       <p class="lead">Preise, Nährwerte, ein transparenter Score für Proteine, Riegel &amp; Snacks und die Live-Verfügbarkeit jeder Sorte – unabhängig zusammengetragen. Wähle oben einen Reiter.</p>
       <div class="trust"><span>Unabhängig &amp; redaktionell</span><span>Transparente Score-Methodik</span><span>Live-Verfügbarkeit je Sorte</span></div>
@@ -828,7 +835,7 @@ header.top.scrolled{box-shadow:var(--shadow)}
 
   <!-- COMMUNITY: WUENSCHE & VORSCHLAEGE -->
   <section class="panel" id="panel-wuensche" role="tabpanel">
-    <div class="phead"><h2><span class="hbar" style="--acc:var(--brand)"></span>Community – Wünsche &amp; Vorschläge</h2><p>Wähl ein Produkt und wünsch dir neue Sorten oder sag ehrlich, was dich stört – oder schick uns Ideen für neue Produkte und die Seite. Wir sind unabhängig: dein Feedback landet bei Suppwert, nicht direkt bei MORE.</p></div>
+    <div class="phead"><h2><span class="hbar" style="--acc:var(--brand)"></span>Community – Wünsche &amp; Vorschläge</h2><p>Wähl ein Produkt und wünsch dir neue Sorten oder sag ehrlich, was dich stört – oder schick uns Ideen für neue Produkte und die Seite. Wir sind unabhängig: dein Feedback landet bei Protein Samurai, nicht direkt bei MORE.</p></div>
     <div class="pnl" style="margin-bottom:14px">
       <h3>Wunsch aufschreiben</h3>
       <div class="setform" style="max-width:520px">
@@ -920,7 +927,7 @@ header.top.scrolled{box-shadow:var(--shadow)}
 <footer class="foot">
   <div class="wrap foot-in">
     <div class="fcol">
-      <div class="fbrand">Suppwert</div>
+      <div class="fbrand">Protein Samurai</div>
       <p>Unabhängiger, redaktioneller Produktvergleich für das Sortiment von MORE Nutrition – ohne Verbindung zu MORE Nutrition. Keine Kauf-, Ernährungs- oder Gesundheitsberatung.</p>
     </div>
     <div class="fcol">
@@ -1634,10 +1641,10 @@ document.getElementById("ccAdd").onclick=()=>{
 const FEEDBACK_MAIL="";
 let wishes=[];try{wishes=JSON.parse(localStorage.getItem("mn-wishes")||"[]")||[];}catch(e){wishes=[];}
 function saveWishes(){try{localStorage.setItem("mn-wishes",JSON.stringify(wishes));}catch(e){}}
-function wishMailto(w2){return `mailto:${FEEDBACK_MAIL}?subject=${encodeURIComponent("Suppwert-Wunsch: "+w2.type+(w2.prod?" – "+w2.prod:""))}&body=${encodeURIComponent((w2.prod?"Betrifft: "+w2.prod+"\n\n":"")+w2.text)}`;}
+function wishMailto(w2){return `mailto:${FEEDBACK_MAIL}?subject=${encodeURIComponent("Protein-Samurai-Wunsch: "+w2.type+(w2.prod?" – "+w2.prod:""))}&body=${encodeURIComponent((w2.prod?"Betrifft: "+w2.prod+"\n\n":"")+w2.text)}`;}
 /* Produktbezug je Wunsch-Art: pflicht = ohne Produkt kein Speichern, optional = darf */
 const WISH_PROD={"Neue Sorte":"pflicht","Produkt-Kritik":"pflicht","Sonstiges":"optional"};
-const WISH_PH={"Neue Sorte":"Welche Sorte wünschst du dir – und warum wäre sie gut?","Produkt-Kritik":"Was stört dich? Geschmack, Konsistenz, Preis, Verfügbarkeit …","Neues Produkt":"Welches Produkt soll MORE bringen?","Verbesserung der Seite":"Was können wir an Suppwert besser machen?","Sonstiges":"Dein Wunsch oder Vorschlag…"};
+const WISH_PH={"Neue Sorte":"Welche Sorte wünschst du dir – und warum wäre sie gut?","Produkt-Kritik":"Was stört dich? Geschmack, Konsistenz, Preis, Verfügbarkeit …","Neues Produkt":"Welches Produkt soll MORE bringen?","Verbesserung der Seite":"Was können wir an Protein Samurai besser machen?","Sonstiges":"Dein Wunsch oder Vorschlag…"};
 let wishProd=null; /* Produkt-ID aus der Galerie */
 function renderWishForm(){
   const type=document.getElementById("wType").value, need=WISH_PROD[type];
@@ -1754,7 +1761,7 @@ function setShareURL(cs){
 async function shareSetLink(cs,btn,idle){
   const url=setShareURL(cs);
   if(navigator.share){
-    try{await navigator.share({title:`Suppwert-Set: ${cs.n}`,text:`Set „${cs.n}"${cs.c?` von ${cs.c}`:""} auf Suppwert – Link öffnen, speichern oder direkt in den Merkzettel legen:`,url:url});return;}
+    try{await navigator.share({title:`Protein-Samurai-Set: ${cs.n}`,text:`Set „${cs.n}"${cs.c?` von ${cs.c}`:""} auf Protein Samurai – Link öffnen, speichern oder direkt in den Merkzettel legen:`,url:url});return;}
     catch(e){if(e&&e.name==="AbortError")return;}
   }
   try{await navigator.clipboard.writeText(url);btn.textContent="✓ Link kopiert!";}
@@ -2422,7 +2429,7 @@ function renderCart(){
       const url=location.href.split("#")[0]+"#warenkorb="+cart.map(i=>i.vid+":"+i.q).join(",");
       const btn=document.getElementById("cartShare");
       if(navigator.share){
-        try{await navigator.share({title:"Suppwert-Merkzettel",text:"Mein MORE-Merkzettel auf Suppwert – Link öffnen und übernehmen:",url:url});return;}
+        try{await navigator.share({title:"Protein-Samurai-Merkzettel",text:"Mein MORE-Merkzettel auf Protein Samurai – Link öffnen und übernehmen:",url:url});return;}
         catch(e){if(e&&e.name==="AbortError")return;}
       }
       try{await navigator.clipboard.writeText(url);btn.textContent="✓ Link kopiert!";}
@@ -2775,7 +2782,7 @@ renderCart();renderCmpChip();
 
 /* SEO: strukturierte Daten direkt aus dem Produktbestand */
 (function(){
-  const ld={"@context":"https://schema.org","@type":"ItemList","name":"Suppwert – unabhängiger Produktvergleich für MORE Nutrition","numberOfItems":PRODUCTS.length,
+  const ld={"@context":"https://schema.org","@type":"ItemList","name":"Protein Samurai – unabhängiger Produktvergleich für MORE Nutrition","numberOfItems":PRODUCTS.length,
     "itemListElement":PRODUCTS.map((p,i)=>({"@type":"ListItem","position":i+1,"item":Object.assign({"@type":"Product","name":p.name,"url":p.url},
       p.rating!=null&&p.reviews?{"aggregateRating":{"@type":"AggregateRating","ratingValue":p.rating,"reviewCount":p.reviews}}:{})}))};
   const s=document.createElement("script");s.type="application/ld+json";s.textContent=JSON.stringify(ld);document.head.appendChild(s);

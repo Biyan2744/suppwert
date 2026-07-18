@@ -106,6 +106,22 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **REBRANDING: Suppwert → Protein Samurai (18.07., Stufe 1):** Biyans Entscheidung nach
+> Namens-Brainstorming (DENIC-geprüft; „Vergleichswolf" wegen Christian-Wolf-Anmutung
+> verworfen — steht jetzt als Leitplanke in CLAUDE.md). Umgesetzt: Name in ALLEN Dateien
+> (template inkl. title/meta/OG/JSON-LD/Share-Texten/mailto, manifest [short_name
+> „Samurai"], 404, Impressums-/Datenschutz-Entwürfe, README, robots/sitemap inkl.
+> Domain-Wechsel auf proteinsamurai.de, BEWERBUNG-NOTIZEN, CLAUDE.md-Namensregel);
+> **Kamon-Logo** neu (Beeren-Wappen: Ring, gekreuzte Gold-Klingen, Proteindose — favicon.svg
+> + Header identisch, ersetzt das grüne Altlogo); **Samurai-Deko dezent**: Seigaiha-
+> Wellenbordüre am Hero-Boden (Edo-Klassiker als SVG-Pattern in Beere, hell .14/dunkel .2)
+> + Hanko-Siegel 侍 oben rechts im Hero (ersetzt das Gold-Corner-Detail; H1 bekommt
+> padding-right; Spezifitäts-Falle .hero>* vs. .hseal gefixt — Stempel rutschte erst in
+> den Textfluss). Beeren-Identität bleibt unverändert („stylisch pink halten").
+> WICHTIG/OFFEN: (a) Biyan registriert proteinsamurai.de (war beim Rebranding frei!),
+> (b) GitHub-Repo heißt noch „suppwert" — Umbenennung optional (Redirects bleiben),
+> (c) weitere Samurai-Verzierungen (mehr Muster-Zonen, Sektions-Akzente) erst nach
+> Biyans Urteil zum Muster, (d) og-image.png zeigt noch nichts Samurai-haftes.
 > **Stil-A-Platzhalter „Redaktionelle Line-Art" (18.07., Gemini-Artwork-Review):** Der
 > Launch-Look ohne Produktfotos ist jetzt Design-Statement statt Notlösung: `phHTML` rendert
 > statt des Farbblocks eine große, präzise Gefäß-Silhouette je Kategorie (PH_VESSELS,
