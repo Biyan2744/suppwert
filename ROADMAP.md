@@ -106,6 +106,20 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Stil-A-Platzhalter „Redaktionelle Line-Art" (18.07., Gemini-Artwork-Review):** Der
+> Launch-Look ohne Produktfotos ist jetzt Design-Statement statt Notlösung: `phHTML` rendert
+> statt des Farbblocks eine große, präzise Gefäß-Silhouette je Kategorie (PH_VESSELS,
+> 120×160-Line-Art in der Datenfarbe: Pulverdose/Riegel/Standbeutel/Kapsel-Dose+Pille/
+> flache Dose/Sirup-Flasche/Shaker — generische Formen, bewusst KEINE MORE-Verpackungs-
+> Anmutung) auf neutraler Kartenfläche, Produktname als typografisches Etikett mit
+> Haarlinien darüber. Gilt zentral für Produktkarten, Duell-Slots und den onerror-Fallback;
+> Galerie-/Thumb-Icons (PH_ICONS) bleiben. Fix dabei: catbadge/„Kategorie-Sieger" brauchen
+> z-index 1, weil der randlose Platzhalter sie sonst überdeckt (im Muster-Screenshot
+> aufgefallen). Muster-Screenshots 11 (dunkel) + 12 (hell) im Desktop-Paket — Biyans Urteil
+> steht aus. OFFEN aus dem Artwork-Review (erst nach Biyans Go): Ghost-Sektions-Nummern,
+> Verfügbarkeits-Timeline aus history.json (bräuchte neuen generate-Platzhalter; Historie
+> hat erst 3 Snapshots — Timeline wächst wöchentlich), Spot-Illustrationen für Ratgeber/
+> Leerzustände in derselben Strichsprache.
 > **Dunkel-Deko II nach Gemini-Review (18.07.):** Zwei Ergänzungen aus Geminis 5 Ideen:
 > (1) **Amber-Aura** — großer, sehr weicher Gold→Beere-Lichtkegel als fixes body-Background
 > von oben (Gold .05, Review-Grenze .08 „sonst braun"), nimmt den langen Leerflächen das
