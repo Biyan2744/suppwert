@@ -106,7 +106,12 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
-> **Bug-Jagd (18.07. tief nachts, Biyans Auftrag „alles überprüfen" — Eigen-Review + zwei
+> **Kuratierte Sets teilbar (18.07. tief nachts, Biyan: „seine Sets teilen können"):**
+> „Link teilen" jetzt auch an den 7 kuratierten Sets (vorher nur Builder-/Community-Sets):
+> geteilt werden die gerade lieferbaren Posten in Standard-Sorte als normaler `#set=`-Link,
+> Absender ehrlich „Protein Samurai"; Empfänger bekommt den bekannten Übernehmen-Dialog
+> und kann das Set unter Community-Sets speichern. Share-Text dedupliziert („von Protein
+> Samurai auf Protein Samurai").
 > Finder-Agenten, jeder Fund einzeln am Build verifiziert):** 17 echte Fixe, u. a.:
 > `bestBuyable` griff zur TEUERSTEN Variante statt der Standardgröße (2000g-Sauce für
 > 114,99 € statt 600g für 34,99 — traf Sets/Builder/Smart-Korb; jetzt Größen-Match mit

@@ -1879,7 +1879,7 @@ function renderSets(){
       <details class="setwhyd"><summary>Warum dieses Set?</summary><p class="setwhy">${escT(s.why)}</p></details>
       <div class="setfoot">${foot}</div>
       <button type="button" class="setadd" data-set="${s.key}"${buyable.length?"":" disabled"}>${buyable.length?`Lieferbare in den Merkzettel (${buyable.length})`:"Gerade nicht lieferbar"}</button>
-      ${buyable.length?`<div class="setacts"><button type="button" class="goalbtn" data-setcust="${s.key}">Anpassen – Sorte &amp; Auswahl</button></div>`:""}
+      ${buyable.length?`<div class="setacts"><button type="button" class="goalbtn" data-setcust="${s.key}">Anpassen – Sorte &amp; Auswahl</button><button type="button" class="goalbtn" data-setshare="${s.key}">Link teilen</button></div>`:""}
     </div>`;
   }).join("")
     +(q&&miss===SETS.length?`<div class="note">Kein Set passt zu „${escT(q)}" – die Suche prüft Set-Namen, Beschreibungen und enthaltene Produkte.</div>`:"")
@@ -1888,6 +1888,18 @@ function renderSets(){
   renderComSets();
 }
 document.getElementById("setgrid").addEventListener("click",e=>{
+  /* Kuratierte Sets teilen (Biyan 18.07.): gleicher #set=-Link wie Builder/Community —
+     geteilt werden die gerade lieferbaren Posten in der aktuellen Standard-Sorte,
+     Absender ehrlich "Protein Samurai" (es IST unser Set) */
+  const sh=e.target.closest("[data-setshare]");
+  if(sh){
+    const s=SETS.find(x=>x.key===sh.dataset.setshare);
+    if(s){
+      const items=s.ids.map(id=>{const v=bestBuyable(id);return v&&v.pr?[v.vid,1]:null;}).filter(Boolean);
+      if(items.length)shareSetLink({n:s.title,c:"Protein Samurai",i:items},sh,"Link teilen");
+    }
+    return;
+  }
   const c=e.target.closest("[data-setcust]");
   if(c){const s=SETS.find(x=>x.key===c.dataset.setcust);if(s)openSetCustomize(s.title,s.ids.map(id=>{const v=bestBuyable(id);return {pid:id,vid:v?v.vid:null,q:1};}));return;}
   const b=e.target.closest(".setadd"); if(!b||b.disabled)return;
@@ -2181,7 +2193,7 @@ function setShareURL(cs){
 async function shareSetLink(cs,btn,idle){
   const url=setShareURL(cs);
   if(navigator.share){
-    try{await navigator.share({title:`Protein-Samurai-Set: ${cs.n}`,text:`Set „${cs.n}"${cs.c?` von ${cs.c}`:""} auf Protein Samurai – Link öffnen, speichern oder direkt in den Merkzettel legen:`,url:url});return;}
+    try{await navigator.share({title:`Protein-Samurai-Set: ${cs.n}`,text:`Set „${cs.n}"${cs.c&&cs.c!=="Protein Samurai"?` von ${cs.c}`:""} auf Protein Samurai – Link öffnen, speichern oder direkt in den Merkzettel legen:`,url:url});return;}
     catch(e){if(e&&e.name==="AbortError")return;}
   }
   try{await navigator.clipboard.writeText(url);btn.textContent="✓ Link kopiert!";}
