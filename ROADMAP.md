@@ -106,6 +106,27 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Design-Feinschliff I nach externem Review (18.07.):** GPT- und Perplexity-Design-Reviews
+> (via Screenshot-Paket) waren sich einig: weniger Fett, weniger Pillen/Schatten, ruhigerer
+> Hero, härtere Hierarchie. Umgesetzt: (a) Schatten radikal flacher (hell 1 Schicht 5 %,
+> dunkel ohne Streu-Schatten — Tiefe kommt aus den drei bestehenden Flächen-Ebenen);
+> (b) Fett-Hierarchie: ALLE 800er auf 700 außer Hero-H1 (bewusster einziger Anker; Labels
+> 600, Sekundär 400 — Inter liegt lokal nur in 400/600/700/800 vor, „500" wäre Faux);
+> (c) Hero ruhiger: Beeren-Tint 12→7 %, Gold-Glow 30→12 %, H1 bis 48 px/−1 px/1.08, mehr
+> Luft (42/36 px, mobil 28/20), Datumszeile 12 px, Trust-Chips leichter (400, Grid-Border);
+> (d) Header entschlackt: „Unabhängig"- und Update-Chip ohne Pillen-Rahmen (nur Text),
+> Restock-Chip als flache Status-Fläche (#6d2342, kein Schatten/Gradient, Weiß 10,7:1),
+> Tab-Counter „62" als Mini-Zähler-Chip, aktive Tabs mit 2-px-BEEREN-Unterstreichung
+> (Marke gezielt statt überall); (e) Restock-Radar strukturiert: Countdown als eigener
+> Block (Caps-Label + tnum-Wert rechts), Leerzustand als normaler Text statt gequetschtem
+> Caps-Label; (f) Kategorie-/Jump-Chips: Radius 999→11 px, größerer Farbpunkt, kleinere
+> Zähler; (g) Muted-Töne nachgeschärft: hell #6f6b64 (vorher 3,4:1, jetzt 5,3:1 auf Karte!),
+> dunkel #8f8c86 — alle geänderten Kombis rechnerisch AA-geprüft (4,8–10,7:1).
+> BEWUSST NICHT übernommen: Manrope-Font-Wechsel (bräuchte neuen Font-Download; lokales
+> Inter + saubere Staffelung reicht laut Perplexity), GPTs Kalt-Palette (unsere warmen
+> Neutralen bleiben, nur Kontraste nachgezogen), Header-Zweizeiler-Umbau (Beruhigung ohne
+> DOM-Umbau erreicht). OFFEN als Feinschliff II: Produktkarten entclustern (zwei Zonen,
+> Subscores vereinheitlichen) + Sets-Karten „entadminpanelen" (Perplexity P4/P5).
 > **Produkt-Reichweite (18.07.):** Jede Produktkarte mit ≥2 kuratierten Portionen zeigt in
 > der Meta-Zeile jetzt „reicht ca. X (1 Portion/Tag)" — Tage bei kleinen Packungen, ab
 > 14 Tagen gerundet in Wochen, ab 60 in Monaten, ab 365 in Jahren (Ölspray: „ca. 2 Jahre"
