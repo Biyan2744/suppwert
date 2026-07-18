@@ -106,6 +106,30 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Community-Ausbau (18.07. nachts, Biyans Richtung „massiv aufweiten" — beschlossene
+> 3-Stufen-Linie):** **Stufe 1 GEBAUT — Sortenvorschläge zum Mitzeichnen** im Community-Tab:
+> Produkt wählen (Galerie-Picker), Sortenname + optionale Begründung, Vorschlag wird als
+> Link geteilt (`#sorte=pid~name~why~zähler`, komplette Daten im Link wie bei den
+> Community-Sets); wer den Link öffnet, bekommt einen Mitzeichnen-Dialog — Mitzeichnen
+> speichert lokal mit Zähler+1 und reicht den NEUEN Link weiter. Der Zähler ist damit
+> ehrlich „per Link gezählt, nicht zentral" (steht wörtlich im UI; doppelt mitzeichnen im
+> selben Browser erhöht nicht — Dedupe auf Produkt+Name). BEWUSST NICHT in Stufe 1:
+> Bild-Upload (fremde Inhalte hosten = Urheber-/Missbrauchs-/Moderationsrisiko VOR Launch
+> und ohne Impressum) und ein Support-/Feedback-Forum über MORE-Erfahrungen (Haftung für
+> nutzergenerierte Aussagen über eine fremde Marke, ausgerechnet während der
+> Partner-Bewerbung — braucht Moderation + Regeln). **Stufe 2 GEPLANT — der eine
+> Backend-Sprint (Cloudflare Worker + D1/KV, eigene Session):** trägt VIER Features auf
+> einmal: (a) echte zentrale Votes für Sortenvorschläge (POST /vote mit Rate-Limit,
+> Moderations-Queue für Biyan via Admin-Key), (b) „Bring es zurück"-Votes an ausverkauften
+> Produkten (passt zum Restock-Radar), (c) Community-Sets-Ranking („X-mal gespeichert" =
+> der ehrliche Set-Zähler aus dem 18.07.-Eintrag oben), (d) der dort schon angedachte
+> anonyme Klick-Zähler. Ohne Cookies/Accounts (Datensparsamkeit), Datenschutzerklärung um
+> Worker-Abschnitt ergänzen, Spam-Schutz über Rate-Limit + Honeypot statt Captcha.
+> **Stufe 3 (nach Launch + Impressum):** moderierter Bild-Upload (R2 + Freigabe-Queue),
+> Kurz-Erfahrungsberichte je Produkt, Support-Feedback-Bereich (Alternative: verlinkte
+> Discord-Community — Moderation/Accounts geschenkt), Chunky-Rezept-Ecke (Text-UGC per
+> Link wie Sets), Poll der Woche, öffentlicher Preisverlauf (Daten sammelt history.json
+> seit dem Preis-Historie-Grundstein).
 > **Reichweite überall (18.07. nachts, Biyan: „bei Sets sehen, wie lange die halten, und
 > allgemein bei den Produkten — Prämisse 1 Portion/Tag"):** Die „reicht ca. …"-Angabe
 > (bisher Karten + Detail + Vergleichstabelle) steht jetzt auch an jedem SET-Posten, im

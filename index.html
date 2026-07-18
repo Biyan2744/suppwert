@@ -984,6 +984,22 @@ header.top.scrolled{box-shadow:var(--shadow)}
       </div>
       <p class="note" id="wNote"></p>
     </div>
+    <div class="pnl" style="margin-bottom:14px">
+      <h3>Sortenvorschläge zum Mitzeichnen</h3>
+      <p class="note" style="margin-top:4px">Schlag eine neue Sorte vor und teile den Link – wer ihn öffnet, kann <b>mitzeichnen</b> und den Link weiterreichen. Der Unterstützer-Zähler wandert dabei im Link mit: Wir betreiben keinen Server und zählen nichts zentral nach – der Zähler ist so verlässlich wie die Kette der Teilenden. Echte, zentral gezählte Stimmen stehen auf der Roadmap.</p>
+      <div class="setform" style="max-width:520px">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <button type="button" class="goalbtn" id="fpPick">Produkt wählen…</button>
+          <span id="fpProdChip" style="display:inline-flex;align-items:center"></span>
+        </div>
+        <p class="note" id="fpFlavors" style="margin:0;display:none"></p>
+        <input id="fpName" class="sort" type="text" maxlength="40" placeholder="Sortenname – z. B. Salted Caramel" aria-label="Sortenname">
+        <textarea id="fpWhy" maxlength="200" rows="2" placeholder="Warum wäre die Sorte gut? (optional)" aria-label="Begründung (optional)"></textarea>
+        <button type="button" class="setadd" id="fpSave">Vorschlag erstellen &amp; Link teilen</button>
+      </div>
+      <p class="note" id="fpNote"></p>
+      <div id="fpList"></div>
+    </div>
     <div class="pnl">
       <h3>Deine Wünsche</h3>
       <p class="note" style="margin-top:4px">Ohne Server liegen Wünsche zunächst nur in deinem Browser. Zum Launch kommt eine Kontakt-E-Mail ins Impressum – dann bekommt jeder Wunsch einen direkten Absende-Knopf.</p>
@@ -1960,6 +1976,102 @@ document.getElementById("wSend").onclick=()=>{
     :`Gespeichert (nur in deinem Browser). Zum Launch kommt die Kontakt-E-Mail dazu – dann bekommt jeder Wunsch einen Absende-Knopf.`;
   renderWishes();
 };
+/* SORTENVORSCHLAEGE ZUM MITZEICHNEN (Community-Ausbau Stufe 1, 18.07. — Biyans Wunsch
+   'neue Sortenvorschlaege, andere koennen hochvoten'): OHNE Server geht echtes globales
+   Voting nicht — deshalb das ehrliche Link-Modell der Community-Sets: der Vorschlag
+   (Produkt + Sortenname + Begruendung + Zaehler) steckt KOMPLETT im Link (#sorte=...),
+   Mitzeichnen erhoeht den Zaehler und erzeugt einen neuen Link zum Weiterreichen.
+   Der Zaehler ist damit so ehrlich wie die Teilen-Kette (steht sichtbar im UI-Text);
+   echte zentrale Votes = Backend-Sprint (ROADMAP). Kein Bild-Upload (Rechts-/
+   Moderations-Risiko vor Launch — ROADMAP Stufe 3). */
+let fprops=[];try{fprops=JSON.parse(localStorage.getItem("mn-fprops")||"[]")||[];}catch(e){fprops=[];}
+function saveFprops(){try{localStorage.setItem("mn-fprops",JSON.stringify(fprops));}catch(e){}}
+let fpProd=null;
+function renderFpForm(){
+  const p=fpProd?PRODUCTS.find(x=>x.id===fpProd):null;
+  const pick=document.getElementById("fpPick");
+  pick.textContent=p?"Anderes Produkt wählen":"Produkt wählen…";
+  if(p)pick.style.borderColor="";
+  document.getElementById("fpProdChip").innerHTML=p?`<span class="vchip" style="padding-left:6px">${thumbHTML(p,false)}${escT(p.name)}<button type="button" id="fpProdRm" aria-label="Produktauswahl entfernen">✕</button></span>`:"";
+  const rm=document.getElementById("fpProdRm"); if(rm)rm.onclick=()=>{fpProd=null;renderFpForm();};
+  /* gleiche Live-Sorten-Hilfe wie beim Wunsch-Formular: zeigen, was es schon gibt */
+  const fl=document.getElementById("fpFlavors");
+  let hint="";
+  if(p){
+    const names=(VARIANTS[p.id]||[]).length?parseVariants(p.id).flavors.map(f=>f.flavor).filter(n=>n&&n!=="Standard"):[];
+    if(names.length)hint=`Gibt's schon (laut Shop): ${names.slice(0,8).join(", ")}${names.length>8?` – und ${names.length-8} weitere`:""}.`;
+  }
+  fl.textContent=hint;fl.style.display=hint?"":"none";
+}
+function fpShareURL(fp){return location.href.split("#")[0]+"#sorte="+fp.pid+"~"+encodeURIComponent(fp.name)+"~"+encodeURIComponent(fp.why||"")+"~"+fp.n;}
+async function shareFlavorLink(fp,btn,idle){
+  const p=PRODUCTS.find(x=>x.id===fp.pid), url=fpShareURL(fp);
+  if(navigator.share){
+    try{await navigator.share({title:`Sorten-Vorschlag: ${fp.name}`,text:`Sorten-Vorschlag für ${p?p.name:"ein MORE-Produkt"} auf Protein Samurai – Link öffnen und mitzeichnen:`,url:url});return;}
+    catch(e){if(e&&e.name==="AbortError")return;}
+  }
+  try{await navigator.clipboard.writeText(url);btn.textContent="✓ Link kopiert!";}
+  catch(e){window.prompt("Link zum Teilen kopieren:",url);}
+  setTimeout(()=>{if(btn.isConnected)btn.textContent=idle;},1600);
+}
+function renderFprops(){
+  const l=document.getElementById("fpList"); if(!l)return;
+  l.innerHTML=fprops.length
+    ?fprops.map((fp,ix)=>{const p=PRODUCTS.find(x=>x.id===fp.pid);if(!p)return "";
+      return `<div class="coderow">${thumbHTML(p,false)}<span class="cdesc"><b>${escT(fp.name)}</b> · ${escT(p.name)}${fp.why?`<br>${escT(fp.why)}`:""}<br><span style="color:var(--muted)"><b class="tnum">${fp.n}</b> Mitzeichner${fp.n===1?"":""} (per Link gezählt)</span></span><small style="color:var(--muted)">${new Date(fp.ts).toLocaleDateString("de-DE")}</small><button type="button" class="goalbtn" data-fpsh="${ix}">Link teilen</button><button type="button" class="goalbtn" data-fprm="${ix}" aria-label="Vorschlag entfernen">✕</button></div>`;}).join("")
+    :`<p class="note">Noch keine Sortenvorschläge – deiner kann der erste sein.</p>`;
+  l.querySelectorAll("[data-fpsh]").forEach(b=>b.onclick=()=>shareFlavorLink(fprops[Number(b.dataset.fpsh)],b,"Link teilen"));
+  l.querySelectorAll("[data-fprm]").forEach(b=>b.onclick=()=>{fprops.splice(Number(b.dataset.fprm),1);saveFprops();renderFprops();});
+}
+document.getElementById("fpPick").onclick=()=>openGallery({selTxt:"✓ gewählt",isSel:id=>id===fpProd,onPick:id=>{fpProd=id;closePicker();renderFpForm();}});
+document.getElementById("fpSave").onclick=()=>{
+  const p=fpProd?PRODUCTS.find(x=>x.id===fpProd):null;
+  const nEl=document.getElementById("fpName");
+  const name=nEl.value.replace(/[<>~]/g,"").trim().slice(0,40);
+  if(!p){document.getElementById("fpPick").style.borderColor="var(--crit)";document.getElementById("fpNote").textContent="Bitte wähl zuerst das Produkt, für das du die Sorte vorschlägst.";return;}
+  if(!name){nEl.style.borderColor="var(--crit)";document.getElementById("fpNote").textContent="Der Sortenname fehlt noch.";return;}
+  nEl.style.borderColor="";
+  const why=document.getElementById("fpWhy").value.replace(/[<>~]/g,"").trim().slice(0,200);
+  const fp={pid:p.id,name:name,why:why,n:1,ts:Date.now()};
+  fprops.unshift(fp);fprops=fprops.slice(0,50);saveFprops();
+  nEl.value="";document.getElementById("fpWhy").value="";fpProd=null;renderFpForm();
+  document.getElementById("fpNote").textContent="Gespeichert – der Teilen-Dialog öffnet sich gleich. Jeder, der den Link öffnet, kann mitzeichnen.";
+  renderFprops();
+  shareFlavorLink(fp,document.getElementById("fpSave"),"Vorschlag erstellen & Link teilen");
+};
+renderFpForm();
+/* Empfaenger-Seite eines #sorte=-Links: validieren, Dialog mit Mitzeichnen-Option.
+   Mitzeichnen speichert den Vorschlag lokal mit Zaehler+1 — geteilt wird danach der
+   NEUE Link (sonst waere die Stimme nur im eigenen Browser). Doppelt mitzeichnen im
+   selben Browser aktualisiert nur den Zaehler auf das Maximum (kein Selbst-Hochvoten). */
+function openFlavorImport(raw){
+  const parts=String(raw).split("~");
+  const dec=s=>{try{return decodeURIComponent(s||"");}catch(e){return "";}};
+  const clean=(s,len)=>dec(s).replace(/[<>\x00-\x1f]/g,"").trim().slice(0,len);
+  const pid=parts[0], name=clean(parts[1],40), why=clean(parts[2],200);
+  const n=Math.min(Math.max(Math.floor(Number(parts[3]))||1,1),9999);
+  const p=PRODUCTS.find(x=>x.id===pid);
+  history.replaceState(null,"","#wuensche");
+  showTab("wuensche");
+  if(!p||!name)return;
+  const w=setOvShow(`<div class="cmpbox shopbox"><h3>Geteilter Sorten-Vorschlag <button type="button" class="x" aria-label="Schließen">✕</button></h3>
+    <div class="setitems"><div class="setit"><span class="sn withimg">${thumbHTML(p,false)}<span class="snt"><b>${escT(name)}</b><small>für ${escT(p.name)}${why?`<br>${escT(why)}`:""}</small></span></span><span class="sp tnum">${n}×</span></div></div>
+    <div class="shopnote">Jemand wünscht sich diese Sorte und hat bisher <b class="tnum">${n}</b> Mitzeichner gesammelt – per Link gezählt, nicht zentral (wir betreiben keinen Server). Mitzeichnen speichert den Vorschlag mit deiner Stimme in deinem Browser; damit sie zählt, teile danach den neuen Link weiter.</div>
+    <button type="button" class="setadd" id="fpImpSign">Mitzeichnen (${n+1}. Stimme)</button>
+    <div class="setacts"><button type="button" class="goalbtn" id="fpImpShare" hidden>Link mit deiner Stimme teilen</button></div></div>`);
+  document.getElementById("fpImpSign").onclick=()=>{
+    const key=x=>x.pid+"|"+x.name.toLowerCase();
+    const mine={pid:pid,name:name,why:why,n:n+1,ts:Date.now()};
+    const ex=fprops.find(x=>key(x)===key(mine));
+    if(ex){ex.n=Math.max(ex.n,mine.n);ex.why=ex.why||why;}else fprops.unshift(mine);
+    fprops=fprops.slice(0,50);saveFprops();renderFprops();
+    const b=document.getElementById("fpImpSign");
+    b.textContent="✓ Mitgezeichnet – jetzt weiterreichen";b.disabled=true;
+    const sh=document.getElementById("fpImpShare");
+    sh.hidden=false;
+    sh.onclick=()=>shareFlavorLink(ex||mine,sh,"Link mit deiner Stimme teilen");
+  };
+}
 document.getElementById("setSearch").oninput=()=>{
   setsQuery=document.getElementById("setSearch").value.trim().toLowerCase();
   renderSets();
@@ -2575,7 +2687,7 @@ function showTab(tab){
   document.getElementById("panel-rabatte").classList.toggle("on",tab==="rabatte");
   document.getElementById("panel-wuensche").classList.toggle("on",tab==="wuensche");
   if(tab==="rabatte")renderCodes();
-  if(tab==="wuensche")renderWishes();
+  if(tab==="wuensche"){renderWishes();renderFprops();}
   if(tab==="sets")applySetsView();
   if(tab==="vergleich"){renderVchips();renderDuel();renderVtable();}
   document.getElementById("panel-ratgeber").classList.toggle("on",tab==="ratgeber");
@@ -3084,6 +3196,7 @@ function applyHash(){
   const m=location.hash.slice(1);if(!m)return false;
   if(m.startsWith("warenkorb=")){openCartImport(m.slice(10));return true;}
   if(m.startsWith("set=")){openSetImport(m.slice(4));return true;}
+  if(m.startsWith("sorte=")){openFlavorImport(m.slice(6));return true;}
   const qi=m.indexOf("?"),tab=qi<0?m:m.slice(0,qi),qs=qi<0?"":m.slice(qi+1);
   if(!(CATS[tab]||["uebersicht","produkte","vergleich","empfehlungen","sets","community","rabatte","wuensche","ratgeber","buy","info"].includes(tab)))return false;
   showTab(tab);
