@@ -106,7 +106,29 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
-> **Übersicht-Konzept „5 essenzielle Blöcke" (18.07., Biyans Brainstorm-Go):** Nach dem
+> **Feature-Runde „Fertig machen" (18.07. abends, Biyans abgesprochene 5er-Liste — Design
+> kommt DANACH als großer Wurf):** Alle fünf Punkte umgesetzt, je ein Commit mit voller
+> Verifikation: (1) **Preis-Historie-Grundstein** — `refresh.py` schreibt die echten
+> Varianten-Preise still in `history.json` mit (neues Format je Datum
+> `{avail, prices: {id: {variantId: [preis, streichpreis]}}}`, Alt-Snapshots migriert;
+> kuratierte Karten-Preise unberührt). Preisverläufe bauen sich ab jetzt wöchentlich auf —
+> UI dafür bewusst später. (2) **Beobachten-Liste** — Auge auf jeder Produktkarte
+> (localStorage `mn-watch`), eigene priorisierte Pille „X deiner beobachteten wieder da"
+> in „Gerade aktuell" + beobachtete zuerst in der Wieder-da-Chipliste; ohne Alert-Backend
+> (bleibt Punkt 2). (3) **Produkt-Detailansicht** — Klick auf Karte (Name = fokussierbarer
+> Button, Fläche via Delegation) öffnet Overlay im cmpbox-Muster: alle Sorten+Größen mit
+> echten Varianten-Preisen/Streichpreisen/Live-Status + Merkzettel-Knöpfen, Nährwert-Kacheln,
+> Score-Zerlegung dauerhaft ausgeklappt, Grundpreis, Reichweite, Anbieter-Links,
+> Beobachten-Knopf (synct mit Karten-Auge); Fußnote trennt ehrlich kuratierten Preis von
+> Live-Sorten-Preisen. (4) **Protein-Bedarfsrechner** im Ratgeber — Gewicht+Ziel →
+> Richtwert-SPANNE (D-A-CH 0,8 g/kg bzw. Sport-Empfehlungen bis 2,2; Quelle in der Ausgabe,
+> Disclaimer, „Großteil kommt aus normalem Essen") → Top 5 günstigste Deckung nach €/g
+> Protein (nur Lieferbares), €/Tag-Zahl explizit als Rechenübung gelabelt. (5) **Schlauere
+> Suche** — Umlaut/ß-Normalisierung, kuratierte Synonyme (Eiweiß→Protein, Kreatin→Creatine,
+> Schlaf→Sleep/Melatonin, …), Tippfehler per Damerau-Levenshtein (ab 5 Zeichen 1 Fehler,
+> ab 8 zwei; „Protien" trifft), Kategorie-Label im Suchtext („Riegel" findet Riegel);
+> gilt für Start- UND Produkte-Suche. Details + alle Verifikationen in den fünf
+> Commit-Messages (f18899a, b39ce0c, d0cf15b, 99e2cf0, e2cbb32).
 > Standard-Kanon der Vergleichsportale (idealo/geizhals/Vergleich.org) neu strukturiert,
 > bewusst OHNE Produkt-Kacheln (Biyans Veto): (1) Beeren-Titel + Schwung; (2) NEU:
 > **Start-Suchleiste** im Hero → routet in den Produkte-Reiter (`#produkte?q=`, bestehende
