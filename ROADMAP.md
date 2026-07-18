@@ -106,6 +106,11 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Tab-Konsolidierung (18.07. nachts, Biyan: „lohnt sich eigener Reiter nicht"):** Ratgeber
+> und „Wo kaufen" sind KEINE eigenen Reiter mehr, sondern Sektionen im Info-Tab (Reihenfolge:
+> Ratgeber & Kaufberatung → Wo bekommt man MORE? → Methodik & Hinweise). Tab-Leiste 10 → 8.
+> Alte Deep-Links `#ratgeber`/`#buy` bleiben gültig (showTab mappt auf `#info`, gleiche
+> Legacy-Mechanik wie `#community`).
 > **Community-Ausbau (18.07. nachts, Biyans Richtung „massiv aufweiten" — beschlossene
 > 3-Stufen-Linie):** **Stufe 1 GEBAUT — Sortenvorschläge zum Mitzeichnen** im Community-Tab:
 > Produkt wählen (Galerie-Picker), Sortenname + optionale Begründung, Vorschlag wird als

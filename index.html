@@ -877,29 +877,6 @@ header.top.scrolled{box-shadow:var(--shadow)}
     <div id="tableView" style="display:none"><div class="tblwrap"><table id="tbl"></table></div></div>
   </section>
 
-  <!-- WO KAUFEN -->
-  <section class="panel" id="panel-buy" role="tabpanel">
-    <div class="phead"><h2><span class="hbar" style="--acc:var(--acc-kochen)"></span>Wo bekommt man MORE Nutrition?</h2><p>Offizieller Shop + große Händler · Stand Juli 2026</p></div>
-    <div class="buy-grid">
-      <div class="pnl">
-        <h3>Händler & Sortiment</h3>
-        <table class="rtbl"><thead><tr><th>Händler</th><th>MORE?</th><th>Typisch erhältlich</th></tr></thead><tbody id="retailers"></tbody></table>
-        <p class="note">Gummies & Vitamin-Produkte sind am zuverlässigsten über den <b>offiziellen Shop, Amazon</b> und Fitness-Shops zu bekommen. Im Drogerie-Regal (dm/Rossmann/Müller) rotiert das Sortiment und beschränkt sich meist auf Proteinpulver, Chunky Flavour, Drinks und Riegel.</p>
-      </div>
-      <div class="pnl">
-        <h3>Offizieller Shop – Versand & Codes</h3>
-        <div class="shiprow"><span>Deutschland</span><b>4,90 € · gratis ab 55 €</b></div>
-        <div class="shiprow"><span>Österreich</span><b>6,90 € · gratis ab 55 €</b></div>
-        <div class="shiprow"><span>Schweiz</span><b>9,90 € · gratis ab 150 CHF</b></div>
-        <div class="shiprow"><span>Lieferzeit</span><b>ca. 4–6 Tage</b></div>
-        <div class="shiprow"><span>Sommer-Kühlversand</span><b>ggf. + 3,99 €</b></div>
-        <div class="codebox">Aktueller Code <b>„AKTION"</b>: bis 20 % auf alles / 10 % auf Proteine, plus Staffelrabatt. <b>Codes wechseln wöchentlich</b> – kursierende „bis 50 %"-Codes sind unbestätigt.</div>
-        <div id="persoCode" class="codebox" style="display:none;border-style:solid;border-color:var(--acc-riegel)"></div>
-        <p class="note">Beliebte Artikel sind <b>oft schnell ausverkauft</b>. 2025/26 sorgte eine weltweite Whey-Knappheit für Engpässe (auch bei dm & Müller bestätigt). Feste Restock-Termine nennt MORE bewusst nicht. CH: morenutrition.ch · AT: zusätzlich dm.at, BIPA, Shop-Apotheke.at.</p>
-      </div>
-    </div>
-  </section>
-
   <!-- SETS -->
   <section class="panel" id="panel-sets" role="tabpanel">
     <div class="phead"><h2><span class="hbar" style="--acc:var(--acc-supplements)"></span>Sets</h2><p>Fertige Produkt-Kombis mit 1-Klick-Merkzettel: von uns kuratiert und generiert – oder von Creatorn und der Community per Link geteilt.</p></div>
@@ -1061,6 +1038,29 @@ header.top.scrolled{box-shadow:var(--shadow)}
         </ul>
         <h3 style="margin-top:20px">Wer ist MORE Nutrition?</h3>
         <p class="note">Deutsche Supplement-Marke (gegründet 2017), groß geworden über Social Media rund um Mitgründer Christian Wolf; gehört wie ESN zur The Quality Group. Fokus: kalorienreduzierte Alltagsprodukte („Chunky Flavour"), Proteine und Supplements – verkauft primär über den eigenen Shop, zunehmend auch über Drogerien. Diese Seite ist unabhängig und gehört nicht zur Marke.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WO KAUFEN -->
+  <section class="panel" id="panel-buy" role="tabpanel">
+    <div class="phead"><h2><span class="hbar" style="--acc:var(--acc-kochen)"></span>Wo bekommt man MORE Nutrition?</h2><p>Offizieller Shop + große Händler · Stand Juli 2026</p></div>
+    <div class="buy-grid">
+      <div class="pnl">
+        <h3>Händler & Sortiment</h3>
+        <table class="rtbl"><thead><tr><th>Händler</th><th>MORE?</th><th>Typisch erhältlich</th></tr></thead><tbody id="retailers"></tbody></table>
+        <p class="note">Gummies & Vitamin-Produkte sind am zuverlässigsten über den <b>offiziellen Shop, Amazon</b> und Fitness-Shops zu bekommen. Im Drogerie-Regal (dm/Rossmann/Müller) rotiert das Sortiment und beschränkt sich meist auf Proteinpulver, Chunky Flavour, Drinks und Riegel.</p>
+      </div>
+      <div class="pnl">
+        <h3>Offizieller Shop – Versand & Codes</h3>
+        <div class="shiprow"><span>Deutschland</span><b>4,90 € · gratis ab 55 €</b></div>
+        <div class="shiprow"><span>Österreich</span><b>6,90 € · gratis ab 55 €</b></div>
+        <div class="shiprow"><span>Schweiz</span><b>9,90 € · gratis ab 150 CHF</b></div>
+        <div class="shiprow"><span>Lieferzeit</span><b>ca. 4–6 Tage</b></div>
+        <div class="shiprow"><span>Sommer-Kühlversand</span><b>ggf. + 3,99 €</b></div>
+        <div class="codebox">Aktueller Code <b>„AKTION"</b>: bis 20 % auf alles / 10 % auf Proteine, plus Staffelrabatt. <b>Codes wechseln wöchentlich</b> – kursierende „bis 50 %"-Codes sind unbestätigt.</div>
+        <div id="persoCode" class="codebox" style="display:none;border-style:solid;border-color:var(--acc-riegel)"></div>
+        <p class="note">Beliebte Artikel sind <b>oft schnell ausverkauft</b>. 2025/26 sorgte eine weltweite Whey-Knappheit für Engpässe (auch bei dm & Müller bestätigt). Feste Restock-Termine nennt MORE bewusst nicht. CH: morenutrition.ch · AT: zusätzlich dm.at, BIPA, Shop-Apotheke.at.</p>
       </div>
     </div>
   </section>
@@ -2668,7 +2668,9 @@ function render(){
    Ueberblick, nicht aneinandergereiht): darin Kategorie-Chips als Filter, Standard "Alle"
    zeigt das komplette Sortiment in Kategorie-SEKTIONEN. Alte Deep-Links #proteine etc.
    funktionieren weiter (applyHash/showTab routen sie auf den Produkte-Reiter + Filter). */
-const TABS=[["uebersicht","Übersicht",null],["produkte","Produkte",null],["vergleich","Vergleich",null],["empfehlungen","Empfehlungen",null],["sets","Sets",null],["rabatte","Rabatte",null],["wuensche","Community",null],["ratgeber","Ratgeber",null],["buy","Wo kaufen",null],["info","Info",null]];
+/* Ratgeber + Wo kaufen leben seit 18.07. IM Info-Reiter (Biyan: 'da lohnt sich eigener
+   Reiter nicht') — alte Deep-Links #ratgeber/#buy bleiben gueltig (showTab mappt sie). */
+const TABS=[["uebersicht","Übersicht",null],["produkte","Produkte",null],["vergleich","Vergleich",null],["empfehlungen","Empfehlungen",null],["sets","Sets",null],["rabatte","Rabatte",null],["wuensche","Community",null],["info","Info",null]];
 function renderTabs(){
   document.getElementById("tabs").innerHTML=TABS.map(t=>`<button class="tab" data-tab="${t[0]}" role="tab" aria-selected="false" aria-controls="${t[0]==="produkte"?"panel-products":"panel-"+t[0]}">${t[1]}${t[0]==="produkte"?`<span class="tcount">${PRODUCTS.length}</span>`:""}</button>`).join("");
   document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
@@ -2677,6 +2679,7 @@ function showTab(tab){
   /* Legacy-/Share-Hash #community = Community-Ansicht IM Sets-Reiter (Biyan: ein Reiter,
      prominenter Umschalter) — alte geteilte Links bleiben damit gueltig */
   if(tab==="community"){tab="sets";setsView="com";}
+  if(tab==="ratgeber"||tab==="buy")tab="info"; /* Alt-Links: eigene Reiter bis 18.07. */
   const isCat=!!CATS[tab], btnTab=isCat?"produkte":tab;
   document.querySelectorAll(".tab").forEach(b=>{const on=b.dataset.tab===btnTab;b.classList.toggle("on",on);b.setAttribute("aria-selected",on?"true":"false");b.tabIndex=on?0:-1;});
   document.getElementById("panel-uebersicht").classList.toggle("on",tab==="uebersicht");
@@ -2690,8 +2693,8 @@ function showTab(tab){
   if(tab==="wuensche"){renderWishes();renderFprops();}
   if(tab==="sets")applySetsView();
   if(tab==="vergleich"){renderVchips();renderDuel();renderVtable();}
-  document.getElementById("panel-ratgeber").classList.toggle("on",tab==="ratgeber");
-  document.getElementById("panel-buy").classList.toggle("on",tab==="buy");
+  document.getElementById("panel-ratgeber").classList.toggle("on",tab==="info");
+  document.getElementById("panel-buy").classList.toggle("on",tab==="info");
   document.getElementById("panel-info").classList.toggle("on",tab==="info");
   if(isCat){activeCats=[tab];document.getElementById("search").value="";render();}
   else if(tab==="produkte"){activeCats=[];document.getElementById("search").value="";render();}
