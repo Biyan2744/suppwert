@@ -9,7 +9,11 @@
 #     (Basis fuer die Sorten-Anzeige und die 1-Klick-Warenkorb-Permalinks /cart/<id>:<qty>;
 #     der Varianten-Preis ist der ECHTE Preis genau dieser Variante und dient nur der
 #     Merkzettel-Zwischensumme — die kuratierten Karten-Preise bleiben unberuehrt)
-#   - history.json: ein Verfuegbarkeits-Snapshot {datum: {id: [kaufbar, gesamt]}} pro Tag
+#   - history.json: ein Snapshot pro Tag im Format
+#       {datum: {"avail": {id: [kaufbar, gesamt]}, "prices": {id: {variantId: [preis, streichpreis]}}}}
+#     (Preis-Historie-Grundstein 18.07.2026: die ECHTEN Varianten-Preise werden still
+#     mitgeschrieben, damit sich Preisverlaeufe aufbauen — Alt-Snapshots ohne "avail"-Huelle
+#     werden beim Laden migriert; die kuratierten Karten-Preise bleiben davon unberuehrt)
 #
 # Nutzung: python3 refresh.py [--no-generate]
 import json, re, sys, subprocess, time, urllib.request
@@ -62,13 +66,20 @@ def main():
     # beiden Abgleichen (MORE nennt keine Restock-Termine — wir erfinden auch keine)
     hist_path = ROOT / "history.json"
     hist = json.loads(hist_path.read_text(encoding="utf-8")) if hist_path.exists() else {}
-    hist[heute.isoformat()] = live
+    # Alt-Format {datum: {id: [a, t]}} einmalig in die avail-Huelle migrieren
+    hist = {d: (snap if "avail" in snap else {"avail": snap}) for d, snap in hist.items()}
+    hist[heute.isoformat()] = {
+        "avail": live,
+        # Preis-Historie: echte Varianten-Preise (+ Streichpreis, 0 = keiner) je Snapshot.
+        # Nur Beobachtung fuer spaetere Preisverlaeufe — kuratierte Karten-Preise bleiben fix.
+        "prices": {pid: {str(v[0]): [v[3], v[4]] for v in vs} for pid, vs in variants.items()},
+    }
     hist = dict(sorted(hist.items()))
     hist_path.write_text(json.dumps(hist, ensure_ascii=False), encoding="utf-8")
     dates = sorted(hist.keys())
     data["restocks"] = {}
     if len(dates) >= 2:
-        prev = hist[dates[-2]]
+        prev = hist[dates[-2]]["avail"]
         pd = date.fromisoformat(dates[-2])
         data["restocks"] = {
             "since": f"{pd.day}. {MONATE[pd.month - 1]} {pd.year}",
