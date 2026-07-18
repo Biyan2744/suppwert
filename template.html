@@ -537,7 +537,21 @@ body.has-cart .cmpchip{bottom:74px}
 :focus-visible{outline:2px solid var(--m-value);outline-offset:2px}
 .pc{transition:box-shadow .18s ease,transform .18s ease}
 .pc:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
-.buy,.vadd,.jchip,.tbtn,.cartbar .go,.cmpchip{transition:background-color .15s ease,color .15s ease,border-color .15s ease,opacity .15s ease}
+.buy,.vadd,.jchip,.tbtn,.cartbar .go,.cmpchip{transition:background-color .15s ease,color .15s ease,border-color .15s ease,opacity .15s ease,transform .08s ease}
+/* Motion-Paket (Recherche 18.07.: nur transform/opacity, ease-out, <=300ms, kleine Wege;
+   der globale prefers-reduced-motion-Killswitch unten deckt alles ab) */
+.rvl{opacity:0;transform:translateY(12px);transition:opacity .3s ease-out,transform .3s ease-out}
+.rvl.in{opacity:1;transform:none}
+.panel.on{animation:panelIn .24s ease-out}
+@keyframes panelIn{from{opacity:0;transform:translateY(8px)}}
+.cartbar:not([hidden]){animation:barUp .28s ease-out}
+@keyframes barUp{from{transform:translate(-50%,14px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
+.cmpwrap:not([hidden]) .cmpbox{animation:ovIn .22s ease-out}
+@keyframes ovIn{from{opacity:0;transform:translateY(10px)}}
+.tbtn:active,.goalbtn:active,.setadd:active,.catchip:active,.cartbar .go:active,.tab:active,.buy:active,.dadd:active{transform:scale(.97)}
+:focus-visible{outline:2px solid var(--m-value);outline-offset:2px}
+header.top{transition:box-shadow .2s ease}
+header.top.scrolled{box-shadow:var(--shadow)}
 ::selection{background:var(--m-value);color:#fff}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
 @media print{
@@ -2317,6 +2331,31 @@ document.getElementById("tabs").addEventListener("keydown",e=>{
 const _hdr=document.querySelector("header.top");
 function setHeadH(){document.documentElement.style.setProperty("--headh",_hdr.offsetHeight+"px");}
 setHeadH();window.addEventListener("resize",setHeadH);
+/* dezente Kontur unterm Sticky-Header, sobald gescrollt ist */
+window.addEventListener("scroll",()=>{_hdr.classList.toggle("scrolled",window.scrollY>6);},{passive:true});
+
+/* Scroll-Reveal (Recherche-Leitplanken: IntersectionObserver, einmalig beim ERSTEN Sichtbar-
+   werden, leichter Stagger). Bewusst NUR fuer die beim Laden gerenderten Elemente — spaetere
+   Re-Renders (Suche/Filter tippen) animieren nicht, sonst flackert das Grid bei jedem Zeichen. */
+function revealInit(){
+  if(!("IntersectionObserver" in window)||matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  /* In VERSTECKTEN Dokumenten (Hintergrund-Tab, Prerender) feuert der Observer nicht —
+     dort NICHTS verstecken, sondern erst beim Sichtbarwerden initialisieren. Grundregel:
+     Content darf nie davon abhaengen, dass ein Observer ihn wieder einblendet. */
+  if(document.visibilityState==="hidden"){
+    document.addEventListener("visibilitychange",function once(){document.removeEventListener("visibilitychange",once);revealInit();});
+    return;
+  }
+  const obs=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.add("in");obs.unobserve(en.target);}}),{rootMargin:"0px 0px -8% 0px",threshold:.05});
+  const els=[...document.querySelectorAll(".pc,.setcard,.rec,.besttile,.pnl,.faq")].filter(e=>!e.classList.contains("rvl"));
+  els.forEach((el,i)=>{el.classList.add("rvl");el.style.transitionDelay=(i%5*45)+"ms";obs.observe(el);});
+  /* Sicherheitsnetz: liefert der Observer nach 1,6s GAR nichts (exotischer Kontext), alles
+     einblenden; sonst nur Nachzuegler oberhalb der Falz. Nie unsichtbaren Content zuruecklassen. */
+  setTimeout(()=>{
+    const anyIn=els.some(el=>el.classList.contains("in"));
+    els.forEach(el=>{if(!el.classList.contains("in")&&(!anyIn||el.getBoundingClientRect().top<window.innerHeight))el.classList.add("in");});
+  },1600);
+}
 
 const themeBtn=document.getElementById("themeBtn");
 function setTheme(t){document.documentElement.setAttribute("data-theme",t);document.getElementById("themeLbl").textContent=t==="dark"?"Hell":"Dunkel";themeBtn.firstChild.textContent=t==="dark"?"☀️ ":"🌙 ";}
@@ -2328,6 +2367,7 @@ var _fd=document.getElementById("footDate"); if(_fd)_fd.textContent=AVAIL_DATE;
 renderTabs();renderKPIs();renderJump();renderRecs();renderBest();renderNew();renderRetailers();renderAff();renderRadar();startRestock();renderGuide();renderSets();renderFaqs();render();
 if(!applyHash())showTab("uebersicht");
 hashReady=true;updateHash();
+revealInit(); /* nach dem kompletten Erst-Render — genau einmal, Re-Renders bleiben animationsfrei */
 renderCart();renderCmpChip();
 
 /* SEO: strukturierte Daten direkt aus dem Produktbestand */

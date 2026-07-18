@@ -98,6 +98,16 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Motion-Paket (18.07., recherchebasiert):** Nach Best-Practice-Recherche (nur
+> transform/opacity, ease-out, ≤300 ms, kleine Wege, IntersectionObserver, reduced-motion
+> Pflicht): Scroll-Reveal für Karten/Sektionen (einmalig beim ersten Sichtbarwerden, leichter
+> Stagger; Re-Renders beim Tippen animieren bewusst NICHT), Panel-Wechsel-Fade, Overlay- und
+> Merkzettel-Leisten-Entrance, Button-Press-Feedback (scale .97), globaler
+> :focus-visible-Ring (nicht animiert), Header-Schatten ab Scroll. WICHTIGE Leitplanke aus
+> der Verifikation: In versteckten Dokumenten (Hintergrund-Tab/Prerender — auch die
+> Browser-Pane rendert so!) feuert IntersectionObserver nie → Reveal initialisiert erst beim
+> Sichtbarwerden + Sicherheitsnetz nach 1,6 s; Content darf NIE davon abhängen, dass ein
+> Observer ihn einblendet.
 > **Sets-Anpassen (18.07.):** „Anpassen – Sorte & Auswahl"-Button unter jeder Set-Karte
 > (kuratiert + Community): Dialog mit Häkchen je Posten (rein/raus) und Sorten-/Größen-Select
 > (nur kaufbare Varianten, Preis je Option), Live-Summe + Zähler, Übernahme in den Merkzettel
