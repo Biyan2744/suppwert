@@ -381,6 +381,13 @@ button.dslot{font:inherit;color:inherit;cursor:pointer}
 .ptile .tn{font-size:11px;font-weight:600;line-height:1.3}
 .ptile .tp{font-size:10.5px;color:var(--muted)}
 .ptile .tsel{font-size:10px;font-weight:800;color:var(--ok)}
+/* Stepper direkt auf der Builder-Kachel (Biyan: + fuers Hinzufuegen, − fuers Entfernen) */
+.sbtile{cursor:pointer}
+.sbtile.off{opacity:.55;cursor:default}
+.tstep{display:inline-flex;align-items:center;gap:8px;margin-top:2px}
+.tstep b{font-size:12px}
+.tstep button{width:26px;height:26px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text-1);font-size:16px;font-weight:700;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0}
+.tstep button:hover{border-color:var(--m-value);color:var(--m-value)}
 @media(max-width:640px){
   .duelgrid{flex-direction:column;gap:10px}
   .dvs{align-self:center;padding:2px 0}
@@ -1771,12 +1778,18 @@ function openSetBuilder(){
     ${cart.length?`<div class="setacts"><button type="button" class="goalbtn" id="sbFromCart">Merkzettel übernehmen (${cart.reduce((a,i)=>a+i.q,0)})</button></div>`:""}
     <input class="search picksearch" id="sbSearch" placeholder="Alle ${PRODUCTS.length} Produkte durchsuchen…" aria-label="Produkte durchsuchen" autocomplete="off" style="margin-top:14px">
     <div id="sbCats"></div></div>`);
+  /* Kacheln als div[role=button] (Biyan: +/− DIREKT an der Kachel — verschachtelte Buttons
+     waeren invalides HTML): Kachel-Klick = hinzufuegen, dazu expliziter Stepper − n× + */
   const tilesHTML=()=>CATORDER.map(cat=>{
     const items=PRODUCTS.filter(p=>p.cat===cat);
     return `<div class="picksec"><h4 class="pch"><span class="hbar" style="--acc:${CATS[cat].color}"></span>${CATS[cat].label}<span class="csn tnum">${items.length}</span></h4><div class="pickgrid">${items.map(p=>{
       const q=(sel.find(s=>s.pid===p.id)||{}).q||0;
       const buyable=!!bestBuyable(p.id);
-      return `<button type="button" class="ptile${q?" sel":""}" data-sb="${p.id}"${buyable?"":" disabled"} data-name="${esc(p.name.toLowerCase())}"><span class="ti">${p.img?`<img src="${imgURL(p.img)}" alt="" loading="lazy" onerror="this.remove()">`:`<span class="ph" style="--acc:${CATS[p.cat].color}">${PH_ICONS[p.cat]||""}</span>`}</span><span class="tn">${escT(p.name)}</span><span class="tp tnum">${eur(p.price)}</span>${q?`<span class="tsel">✓ ${q}× im Set</span>`:buyable?"":`<span class="tsel" style="color:var(--muted)">zzt. ausverkauft</span>`}</button>`;
+      const step=buyable
+        ?(q?`<span class="tstep"><button type="button" data-sbminus="${p.id}" aria-label="${esc(p.name)}: eins entfernen">−</button><b class="tnum">${q}×</b><button type="button" data-sbplus="${p.id}" aria-label="${esc(p.name)}: eins hinzufügen">+</button></span>`
+            :`<span class="tstep"><button type="button" data-sbplus="${p.id}" aria-label="${esc(p.name)} ins Set legen">+</button></span>`)
+        :`<span class="tsel" style="color:var(--muted)">zzt. ausverkauft</span>`;
+      return `<div class="ptile sbtile${q?" sel":""}${buyable?"":" off"}" data-sb="${p.id}" role="button" tabindex="${buyable?0:-1}" aria-disabled="${String(!buyable)}" data-name="${esc(p.name.toLowerCase())}"><span class="ti">${p.img?`<img src="${imgURL(p.img)}" alt="" loading="lazy" onerror="this.remove()">`:`<span class="ph" style="--acc:${CATS[p.cat].color}">${PH_ICONS[p.cat]||""}</span>`}</span><span class="tn">${escT(p.name)}</span><span class="tp tnum">${eur(p.price)}</span>${step}</div>`;
     }).join("")}</div></div>`;
   }).join("");
   const selRows=()=>{
@@ -1805,11 +1818,18 @@ function openSetBuilder(){
     const b=document.getElementById("setBgo");
     b.textContent=n?`Teilen-Link erstellen (${n} Artikel)`:"Erst Produkte wählen";
     b.disabled=!n;
-    w.querySelectorAll("[data-sb]").forEach(t=>t.onclick=()=>{
-      const pid=t.dataset.sb,hit=sel.find(s=>s.pid===pid);
+    const inc=pid=>{const hit=sel.find(s=>s.pid===pid);
       if(hit){if(hit.q<99)hit.q++;}
       else{const v=bestBuyable(pid);if(!v)return;sel.push({pid:pid,vid:v.vid,q:1});}
-      paint();
+      paint();};
+    const dec=pid=>{const ix=sel.findIndex(s=>s.pid===pid);if(ix<0)return;
+      if(sel[ix].q>1)sel[ix].q--;else sel.splice(ix,1);
+      paint();};
+    w.querySelectorAll("[data-sbplus]").forEach(b2=>b2.onclick=e=>{e.stopPropagation();inc(b2.dataset.sbplus);});
+    w.querySelectorAll("[data-sbminus]").forEach(b2=>b2.onclick=e=>{e.stopPropagation();dec(b2.dataset.sbminus);});
+    w.querySelectorAll(".sbtile").forEach(t=>{
+      t.onclick=()=>{if(t.classList.contains("off"))return;inc(t.dataset.sb);};
+      t.onkeydown=e=>{if((e.key==="Enter"||e.key===" ")&&!t.classList.contains("off")){e.preventDefault();inc(t.dataset.sb);}};
     });
     w.querySelectorAll("[data-sbrm]").forEach(b2=>b2.onclick=()=>{sel.splice(Number(b2.dataset.sbrm),1);paint();});
     w.querySelectorAll("[data-sbv]").forEach(s2=>s2.onchange=()=>{sel[Number(s2.dataset.sbv)].vid=Number(s2.value);paint();});
