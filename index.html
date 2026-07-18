@@ -443,7 +443,7 @@ body.has-cart .cmpchip{bottom:74px}
 .pthumb .phi{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--acc),color-mix(in srgb,var(--acc) 70%,#000))}
 .pthumb .phi svg{width:62%;height:62%}
 .pthumb.gone{filter:grayscale(1);opacity:.55}
-.setthumbs{display:flex;margin-bottom:11px}
+.setthumbs{display:flex;margin:10px 0 11px}
 .setthumbs .pthumb{width:46px;height:46px;border:2px solid var(--card);box-shadow:var(--shadow);margin-right:-13px;transition:margin-right .25s ease}
 .setthumbs .pthumb:last-child{margin-right:0}
 .setcard:hover .setthumbs .pthumb{margin-right:-3px}
@@ -476,7 +476,14 @@ body.has-cart .cmpchip{bottom:74px}
 
 /* Fertige Sets (eigener Reiter) */
 .setgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
-.setcard{background:var(--card);border:1px solid var(--ring);border-top:3px solid var(--acc);border-radius:var(--r);box-shadow:var(--shadow);padding:15px 16px 14px;display:flex;flex-direction:column}
+.setcard{background:var(--card);border:1px solid var(--ring);border-top:3px solid var(--acc);border-radius:var(--r);box-shadow:var(--shadow);padding:15px 16px 14px;display:flex;flex-direction:column;transition:transform .18s ease,box-shadow .18s ease}
+.setcard:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+@media(prefers-reduced-motion:reduce){.setcard{transition:none}.setcard:hover{transform:none}}
+/* Beschreibung eingeklappt (Biyan: Karten visueller — Bilder/Produkte/Preise sofort, Text nur bei Bedarf) */
+.setwhyd{margin:1px 0 10px}
+.setwhyd summary{font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;user-select:none}
+.setwhyd summary:hover{color:var(--m-value)}
+.setwhyd .setwhy{margin:6px 0 0}
 .sethead{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
 .sethead h3{font-size:15.5px;letter-spacing:-.2px}
 .setsum{font-weight:750;font-size:15px;white-space:nowrap}
@@ -1310,9 +1317,9 @@ function renderSets(){
       : `Gerade ist nichts aus diesem Set lieferbar – der Restock-Radar auf der Übersicht zeigt, wenn etwas zurückkommt.`;
     return `<div class="setcard" style="--acc:var(${s.acc})">
       <div class="sethead"><h3>${escT(s.title)}</h3>${buyable.length?`<span class="setsum tnum">${eur(sum)}</span>`:""}</div>
-      <p class="setwhy">${escT(s.why)}</p>
       ${setThumbsHTML(rows,r=>!(r.v&&r.v.pr))}
       <div class="setitems">${items}</div>
+      <details class="setwhyd"><summary>Warum dieses Set?</summary><p class="setwhy">${escT(s.why)}</p></details>
       <div class="setfoot">${foot}</div>
       <button type="button" class="setadd" data-set="${s.key}"${buyable.length?"":" disabled"}>${buyable.length?`Lieferbare in den Merkzettel (${buyable.length})`:"Gerade nicht lieferbar"}</button>
     </div>`;

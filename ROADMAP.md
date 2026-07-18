@@ -105,7 +105,9 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
 > Produktbilder in Sets: überlappender Bild-Stapel am Karten-Kopf (Hover fächert auf,
 > Ausverkauftes grayscale, „+N" bei >5) + 28px-Thumbs an allen Posten-Zeilen inkl. Generator,
 > Builder, Import-Dialog und Ratgeber-Smart-Warenkorb — mit Kategorie-Icon-Fallback, also
-> SHOW_PRODUCT_IMGS-launch-sicher.)* (a) „Set aus dem aktuellen
+> SHOW_PRODUCT_IMGS-launch-sicher. Karten visueller: Reihenfolge Titel→Bilder→Posten/Preise,
+> Beschreibung eingeklappt hinter „Warum dieses Set?", Hover-Lift auf der Karte. Offen/geparkt:
+> eigene Creator-Features für Creator-Sets — Biyan will das separat klären.)* (a) „Set aus dem aktuellen
 > Bestand generieren": Themen-Chips (die 6 kuratierten GOALS-Pools aus dem Ratgeber) + Budget
 > → deterministisches Set NUR aus gerade lieferbaren Produkten via smartCart (Score-Rangfolge,
 > Versandschwellen-Logik) — „sinnvoll statt Kram", weil nur thematisch kuratierte Pools in
