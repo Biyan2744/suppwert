@@ -154,9 +154,12 @@ header.top{background:var(--surface-1);border-bottom:1px solid var(--grid);posit
 .hero .hseal{position:absolute;top:16px;right:18px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border:2px solid var(--brand);color:var(--brand);border-radius:9px;font-size:19px;font-weight:700;opacity:.55;transform:rotate(6deg);pointer-events:none;z-index:1}
 .hero::after{content:"";position:absolute;top:-70px;right:-50px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--gold) 12%,transparent),transparent 68%);pointer-events:none}
 .hero>*{position:relative;z-index:1}
-/* H1 bleibt als einzige Stelle 800 — die grosse Ausnahme gibt der Hierarchie ihren Anker
-   (Design-Review: sonst ueberall 700/600/400 statt Fett-Einheitsbrei) */
-.hero h1{font-size:clamp(28px,4.8vw,48px);letter-spacing:-1px;line-height:1.08;margin-bottom:14px;font-weight:800;padding-right:48px} /* rechts Platz fuers Hanko-Siegel */
+/* H1 bleibt als einzige Stelle 800 — die grosse Ausnahme gibt der Hierarchie ihren Anker.
+   Seit dem Samurai-Rebranding in BEERE (grosser Text: Kontrast hell 5,4:1 / dunkel ~4,7:1,
+   weit ueber den 3:1 fuer Large Text) und prominenter (bis 56px); darunter der goldene
+   Kalligrafie-Schwung (.h1swash) als Pinselstrich-Anmutung ohne japanische Schrift. */
+.hero h1{font-size:clamp(30px,5.4vw,56px);letter-spacing:-1px;line-height:1.06;margin-bottom:4px;font-weight:800;padding-right:48px;color:var(--brand)} /* rechts Platz fuers Hanko-Siegel */
+.hero .h1swash{display:block;width:min(430px,72%);height:13px;margin:2px 0 0;opacity:.9}
 .hero p.lead{color:var(--text-2);font-size:16px;max-width:720px;margin:0;line-height:1.6}
 @media(max-width:600px){.hero{padding:28px 20px}}
 .updated{font-size:12px;color:var(--muted);margin-top:18px}
@@ -732,6 +735,8 @@ header.top.scrolled{box-shadow:var(--shadow)}
       <!-- Lead/Trust-Chips/Datenstand auf Biyans Wunsch entfernt (18.07.) — Unabhängigkeit
            bleibt im Header-Badge, Datenstand/Quelle bleiben im Footer + Info-Tab sichtbar -->
       <h1>Alle MORE-Nutrition-Produkte im ehrlichen Vergleich</h1>
+      <!-- Kalligrafie-Schwung: japanische Pinselstrich-Anmutung OHNE japanische Schrift (Biyan) -->
+      <svg class="h1swash" viewBox="0 0 420 16" preserveAspectRatio="none" aria-hidden="true"><path d="M4 11 C 70 3, 210 1, 330 6 C 380 8, 405 9, 416 7 C 400 12, 300 15, 180 14 C 100 13, 30 13, 4 11 Z" fill="var(--gold)"/></svg>
     </div>
     <div class="kpis" id="kpis"></div>
     <div class="radar" id="radar" hidden></div>
