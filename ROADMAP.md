@@ -106,6 +106,14 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Produkt-Reichweite (18.07.):** Jede Produktkarte mit ≥2 kuratierten Portionen zeigt in
+> der Meta-Zeile jetzt „reicht ca. X (1 Portion/Tag)" — Tage bei kleinen Packungen, ab
+> 14 Tagen gerundet in Wochen, ab 60 in Monaten, ab 365 in Jahren (Ölspray: „ca. 2 Jahre"
+> statt krummer 27 Monate). Die 1-Portion-Annahme steht immer sichtbar dabei (gleiche
+> Ehrlichkeits-Logik wie die Set-Reichweite); Ein-Portions-Beutel und Produkte ohne
+> servings bleiben ohne Zeile (45 von 62 Karten haben eine). Zusätzlich als Zeile
+> „Reichweite (1 Portion/Tag)" in der Vergleichs-Detailtabelle. Helper reichTxt neben
+> perServing.
 > **Seiten-Helix-Ornament (18.07.):** Biyans Idee „das geschwungene MORE-M als Helix an den
 > Seiten" in der rechtssicheren Variante: das MORE-M selbst ist tabu (Logo-Anmutung =
 > Herkunftstäuschung, dokumentierte Look-alike-Leitplanke) — stattdessen eine EIGENE
