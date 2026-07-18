@@ -391,6 +391,43 @@ body.show-alt .altbtn{display:flex}
 .shoplink.direct{border-color:color-mix(in srgb,var(--m-value) 45%,var(--line))}
 .shoplink.direct .sl-t{color:var(--m-value)}
 .shopnote{font-size:11px;color:var(--muted);line-height:1.5;margin-top:14px}
+/* Produkt-Detailansicht (Overlay im cmpbox-Muster) */
+.detbox{max-width:720px}
+.detbox h3 .catbadge{font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#fff;background:var(--acc);padding:3px 8px;border-radius:999px;margin-right:4px}
+.detbox .dhead{display:flex;gap:16px;margin:12px 0 4px}
+.detbox .dimg{width:150px;height:150px;flex-shrink:0;background:var(--imgbg);border:1px solid var(--grid);border-radius:12px;display:flex;align-items:center;justify-content:center;padding:10px;position:relative;overflow:hidden}
+.detbox .dimg img{max-width:100%;max-height:100%;object-fit:contain}
+.detbox .dimg .ph.phv{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:var(--card)}
+.detbox .dimg .ph.phv .vessel{height:78%;width:auto;opacity:.7}
+.detbox .dimg .ph.phv .phl{display:none} /* Name steht im Kopf daneben — doppeltes Etikett waere Rauschen */
+.detbox .dinfo{flex:1;min-width:0}
+.detbox .dname{font-size:19px;font-weight:700;line-height:1.25;letter-spacing:-.2px}
+.detbox .dnote{font-size:12.5px;color:var(--text-2);line-height:1.55;margin-top:7px}
+.detbox .dmeta{font-size:12px;color:var(--muted);margin-top:7px;line-height:1.5}
+.detbox .dact{display:flex;gap:9px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.detbox .dact .buy{margin-left:0}
+.dwatch{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--ring);background:var(--card);color:var(--text-2);border-radius:9px;padding:7px 13px;font-size:12.5px;font-weight:600;cursor:pointer}
+.dwatch:hover{color:var(--brand);border-color:var(--brand)}
+.dwatch.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.detbox .dministat{padding:0;margin-top:6px;flex-wrap:wrap}
+.detbox .dscores{padding:0}
+.dscoretxt{font-size:12px;color:var(--text-2);line-height:1.65;background:var(--plane);border:1px solid var(--ring);border-radius:10px;padding:10px 12px;margin-top:4px}
+.dflavs{display:flex;flex-direction:column;gap:8px}
+.dfl{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;border-bottom:1px solid var(--grid);padding-bottom:8px}
+.dfl:last-child{border-bottom:0;padding-bottom:0}
+.dfl .dfn{font-size:13px;font-weight:600;min-width:150px;flex-shrink:0}
+.dfl .dfn.out{color:var(--muted);font-weight:400}
+.dfl .dfs{display:flex;gap:7px;flex-wrap:wrap;flex:1}
+.dsz{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--ring);background:var(--plane);border-radius:8px;padding:4px 9px;font-size:11.5px}
+.dsz a{color:var(--text-1);text-decoration:none;font-weight:600}
+.dsz a:hover{color:var(--brand)}
+.dsz b{font-weight:700}
+.dsz s{color:var(--muted)}
+.dsz.out{opacity:.62}
+.dsz.out a{color:var(--muted)}
+.dsz .dso{font-size:10px;color:var(--crit);font-weight:600}
+.detbox .dbadges{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px}
+@media(max-width:560px){.detbox .dhead{flex-direction:column}.detbox .dimg{width:110px;height:110px}.dfl .dfn{min-width:0;width:100%}}
 .pc-meta{font-size:11.5px;color:var(--muted);margin-top:5px}
 .pc-meta b{color:var(--text-2);font-weight:700}
 .pc-meta .rw-note{font-size:10.5px;opacity:.85}
@@ -500,6 +537,10 @@ button.dslot{font:inherit;color:inherit;cursor:pointer}
 .watchbtn{position:absolute;bottom:9px;right:9px;z-index:1;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;padding:0;background:var(--card);border:1px solid var(--ring);border-radius:999px;color:var(--text-2);cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.12)}
 .watchbtn:hover{color:var(--brand);border-color:var(--brand)}
 .watchbtn.on{background:var(--brand);border-color:var(--brand);color:#fff}
+/* Detailansicht-Trigger: ganze Karte klickbar, der Produktname ist der fokussierbare Button */
+.pc{cursor:pointer}
+.nmbtn{border:0;background:transparent;padding:0;margin:0;font:inherit;color:inherit;text-align:left;cursor:pointer}
+.nmbtn:hover{color:var(--brand)}
 .cmpchip{position:fixed;left:14px;bottom:14px;z-index:79;background:var(--m-value);color:#fff;border:0;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 6px 24px rgba(0,0,0,.28)}
 body.has-cart .cmpchip{bottom:74px}
 .cmpwrap{position:fixed;inset:0;z-index:90;background:rgba(11,11,11,.45);display:flex;align-items:center;justify-content:center;padding:16px}
@@ -1047,6 +1088,7 @@ header.top.scrolled{box-shadow:var(--shadow)}
 <div class="cmpwrap" id="pickov" hidden role="dialog" aria-modal="true" aria-label="Produkt wählen"></div>
 <div class="cmpwrap" id="shareov" hidden role="dialog" aria-modal="true" aria-label="Geteilter Merkzettel"></div>
 <div class="cmpwrap" id="setov" hidden role="dialog" aria-modal="true" aria-label="Set erstellen oder übernehmen"></div>
+<div class="cmpwrap" id="prodov" hidden role="dialog" aria-modal="true" aria-label="Produkt-Details"></div>
 
 <script>
 const IMG = {
@@ -2305,7 +2347,7 @@ function cardHTML(p){
   return `<div class="pc">
     <div class="pc-img"><span class="catbadge" style="--acc:${c.color}">${c.label}</span>${win}${img}${cmpchk}${watchBtnHTML(p)}</div>
     <div class="pc-b">
-      <div class="nm">${p.name}</div>
+      <div class="nm"><button type="button" class="nmbtn" data-detail="${p.id}" title="Details ansehen">${p.name}</button></div>
       <div class="pc-price"><span class="pr tnum">${eur(p.price)}</span>${fmtBase(p)?`<span class="bp tnum">${fmtBase(p)}</span>`:""}<span class="avail"><span class="adot" style="background:${a.c}"></span>${a.t}</span></div>
       ${(p.size||(p.servings!=null&&p.servings>1))?`<div class="pc-meta">${p.size?escT(p.size):""}${p.size&&p.servings!=null&&p.servings>1?" · ":""}${p.servings!=null&&p.servings>1?`<b class="tnum">${p.servings}</b> Portionen · reicht ${reichTxt(p)} <span class="rw-note">(1 Portion/Tag)</span>`:""}</div>`:""}
       ${pv?`<div class="varline"><span class="vl">Sorten lieferbar</span><span class="vv tnum">${pv.flavors.filter(f=>f.av).length}/${pv.flavors.length}</span>${pv.flavors.length>4?`<button class="vtog" data-vt="${p.id}" data-more="+${pv.flavors.length-4} weitere ▾" aria-expanded="false" aria-controls="vl-${p.id}">+${pv.flavors.length-4} weitere ▾</button>`:""}</div>`:""}
@@ -2471,6 +2513,15 @@ document.getElementById("grid").addEventListener("click",e=>{
     const orig=va.innerHTML;va.classList.add("did");va.innerHTML="✓";
     setTimeout(()=>{if(va.isConnected){va.innerHTML=orig;va.classList.remove("did");}},1200);
     return;
+  }
+  const nb=e.target.closest(".nmbtn");
+  if(nb){openDetail(nb.dataset.detail);return;}
+  /* Klick auf die Karten-Flaeche (nicht auf ein interaktives Element) oeffnet ebenfalls die
+     Details — der Name-Button bleibt der Weg fuer die Tastatur */
+  const pc=e.target.closest(".pc");
+  if(pc&&!e.target.closest("a,button,input,label")){
+    const t=pc.querySelector(".nmbtn");
+    if(t){openDetail(t.dataset.detail);}
   }
 });
 document.getElementById("grid").addEventListener("change",e=>{
@@ -2771,7 +2822,84 @@ function openShops(pid){
   w.querySelector(".x").focus();
 }
 function closeShops(){document.getElementById("shopov").hidden=true;}
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeCmp();closeShops();closePicker();closeShare();closeSetOv();}});
+
+/* Produkt-Detailansicht: Klick auf eine Karte oeffnet das grosse Overlay (cmpbox-Muster wie
+   Shop-Fenster/Vergleich) mit ALLEN Sorten+Groessen+Live-Status, Naehrwerten, Score-Zerlegung
+   (der Popover-Text der Karte steht hier dauerhaft), Grundpreis, Reichweite, Anbieter-Links
+   und Beobachten-Knopf. Sorten-Preise sind die ECHTEN Varianten-Preise aus dem Shop-Abgleich
+   — der kuratierte Karten-Preis (Standardgroesse) bleibt die Referenz und wird so benannt. */
+function openDetail(pid){
+  const p=PRODUCTS.find(x=>x.id===pid); if(!p)return;
+  const c=CATS[p.cat], a=AVAIL[p.avail]||AVAIL["limitiert"], ps=perServing(p), isProt=PROTEIN_CATS.includes(p.cat);
+  const pv=(VARIANTS[p.id]||[]).length?parseVariants(p.id):null;
+  const img=p.img?`<img src="${imgURL(p.img)}" alt="" data-cat="${p.cat}" data-name="${esc(p.name)}" onerror="imgFail(this)">`:phHTML(p.cat,esc(p.name));
+  const meta=[];
+  if(p.size)meta.push(escT(p.size));
+  if(p.servings!=null&&p.servings>1)meta.push(`<b class="tnum">${p.servings}</b> Portionen · reicht ${reichTxt(p)} <span class="rw-note">(1 Portion/Tag)</span>`);
+  if(p.rating!=null)meta.push(`★ ${p.rating.toLocaleString("de-DE")}${p.reviews!=null?` (${p.reviews.toLocaleString("de-DE")} Bewertungen)`:""}`);
+  const stats=[];
+  if(isProt){
+    if(p.protein!=null)stats.push([p.protein.toLocaleString("de-DE")+" g","Protein/Portion"]);
+    if(p.sugar!=null)stats.push([p.sugar.toLocaleString("de-DE")+" g","Zucker"]);
+    if(p.kcal!=null)stats.push([String(p.kcal),"kcal"]);
+    const pd=proteinDensity(p); if(pd!=null)stats.push([pd.toLocaleString("de-DE",{maximumFractionDigits:1})+" g","Protein/100 kcal"]);
+    const ep=euroPerProtein(p); if(ep!=null)stats.push([ep.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+" €","pro g Protein"]);
+  }
+  if(ps!=null)stats.push([eur(ps),"pro Portion"]);
+  const scoreSec=isProt&&p._total!=null
+    ?`<div class="sub-h">Score-Zerlegung</div><div class="scores dscores">
+        <div class="score-top"><span class="gl">Gesamtscore</span><span class="gv tnum" style="color:${scoreColor(p._total)}">${p._total}</span></div>
+        ${meter("Nährwerte",p._nutri,"var(--m-nutri)")}${meter("Preis-Leistung",p._value,"var(--m-value)")}${meter("Geschmack",p._taste,"var(--m-taste)")}
+        <div class="dscoretxt">${scorePopHTML(p)}</div>
+      </div>`
+    :(!isProt&&p._valueBar!=null?`<div class="sub-h">Preis-Leistung</div><div class="scores dscores">${meter("€/Portion",p._valueBar,"var(--m-value)")}</div>`:"");
+  const flavSec=pv?`<div class="sub-h">Sorten &amp; Größen – Live-Status</div><div class="dflavs">${pv.flavors.map(f=>
+      `<div class="dfl"><span class="dfn${f.av?"":" out"}">${escT(f.flavor)}</span><span class="dfs">${f.sizes.map(s=>{
+        const sale=s.av&&s.ca&&s.ca>s.pr;
+        return `<span class="dsz${s.av?"":" out"}"><a href="${affLink(p.url+"?variant="+s.vid)}" target="_blank" rel="noopener" title="Im MORE-Shop öffnen">${s.size?escT(varName(s.size)):"Standard"}</a><b class="tnum">${s.pr?eur(s.pr):"–"}</b>${sale?`<s class="tnum">${eur(s.ca)}</s>`:""}${s.av?`<button type="button" class="vadd" data-pid="${p.id}" data-vid="${s.vid}" aria-label="${esc(f.flavor)} ${esc(s.size||"Standard")} in den Merkzettel legen" title="In den Merkzettel">${CARTI}</button>`:`<span class="dso">ausverkauft</span>`}</span>`;
+      }).join("")}</span></div>`).join("")}</div>`:"";
+  const links=shopLinks(p);
+  const shopSec=links.length?`<div class="sub-h">Auch bei anderen Shops</div><div class="shoplist">${links.map(l=>`<a class="shoplink${l.direct?" direct":""}" href="${l.href}" target="_blank" rel="noopener"><span class="sl-l">${escT(l.label)}</span><span class="sl-t">${l.direct?"Direkt zum Produkt":"Produktsuche"} ↗</span></a>`).join("")}</div>`:"";
+  const won=isWatched(p.id);
+  const w=document.getElementById("prodov");
+  w.innerHTML=`<div class="cmpbox detbox"><h3><span class="catbadge" style="--acc:${c.color}">${c.label}</span>&nbsp;Produkt-Details <button type="button" class="x" aria-label="Schließen">✕</button></h3>
+    <div class="dhead">
+      <div class="dimg">${img}</div>
+      <div class="dinfo">
+        <div class="dname">${escT(p.name)}</div>
+        <div class="pc-price"><span class="pr tnum">${eur(p.price)}</span>${fmtBase(p)?`<span class="bp tnum">${fmtBase(p)}</span>`:""}<span class="avail"><span class="adot" style="background:${a.c}"></span>${a.t}</span></div>
+        ${meta.length?`<div class="dmeta">${meta.join(" · ")}</div>`:""}
+        ${p.note?`<div class="dnote">${p.note}</div>`:""}
+        ${(p.tags||[]).length?`<div class="dbadges">${(p.tags||[]).map(t=>`<span class="b">${t}</span>`).join("")}</div>`:""}
+        <div class="dact">
+          <a class="buy" href="${affLink(p.url)}" target="_blank" rel="noopener">Im MORE-Shop ansehen →</a>
+          <button type="button" class="dwatch${won?" on":""}" data-dwatch="${p.id}" aria-pressed="${won}">${EYEI}<span>${won?"Wird beobachtet":"Beobachten"}</span></button>
+        </div>
+      </div>
+    </div>
+    ${stats.length?`<div class="ministat dministat">${stats.map(s=>`<div class="ms"><div class="mv tnum">${s[0]}</div><div class="ml">${s[1]}</div></div>`).join("")}</div>`:""}
+    ${scoreSec}${flavSec}${shopSec}
+    <div class="shopnote">Preis oben = kuratierte Standardgröße. Sorten-Preise und Verfügbarkeit kommen live vom MORE-Shop (Stand ${AVAIL_DATE}).</div></div>`;
+  w.hidden=false;
+  w.querySelector(".x").onclick=closeDetail;
+  w.onclick=e=>{if(e.target===w)closeDetail();};
+  w.querySelectorAll(".vadd").forEach(b=>b.onclick=()=>{
+    addToCart(b.dataset.pid,Number(b.dataset.vid));
+    const orig=b.innerHTML;b.classList.add("did");b.innerHTML="✓";
+    setTimeout(()=>{if(b.isConnected){b.innerHTML=orig;b.classList.remove("did");}},1200);
+  });
+  const dw=w.querySelector(".dwatch");
+  dw.onclick=()=>{
+    toggleWatch(p.id);
+    const on=isWatched(p.id);
+    dw.classList.toggle("on",on);dw.setAttribute("aria-pressed",String(on));
+    dw.querySelector("span").textContent=on?"Wird beobachtet":"Beobachten";
+    document.querySelectorAll(`.watchbtn[data-watch="${p.id}"]`).forEach(b=>{b.classList.toggle("on",on);b.setAttribute("aria-pressed",String(on));});
+  };
+  w.querySelector(".x").focus();
+}
+function closeDetail(){document.getElementById("prodov").hidden=true;}
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeCmp();closeShops();closePicker();closeShare();closeSetOv();closeDetail();}});
 
 /* Deep-Links: #tab?q=&f=avs&sort=&view=table — teilbare Zustände, replaceState (kein History-Spam) */
 let hashReady=false;
