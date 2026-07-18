@@ -722,7 +722,6 @@ header.top.scrolled{box-shadow:var(--shadow)}
       <button type="button" class="catchip" id="setAvail" aria-pressed="false">Nur komplett lieferbare Sets</button>
       <button type="button" class="catchip on" id="setSrcMore" aria-pressed="true">Nur MORE-Shop</button>
       <button type="button" class="catchip" id="setSrcAlt" aria-pressed="false">+ andere Anbieter</button>
-      <button type="button" class="catchip" id="setNew">＋ Eigenes Set erstellen &amp; teilen</button>
     </div>
     <!-- Zuklappbar (Biyan: der Generator ist sonst zu dominant, wenn man ihn nicht braucht) —
          natives details/summary, standardmaessig ZU; ein erzeugter Vorschlag bleibt beim
@@ -1263,7 +1262,7 @@ function renderKPIs(){
   const prices=PRODUCTS.map(p=>p.price).filter(x=>x!=null);
   const avail=PRODUCTS.filter(p=>p.avail==="auf Lager").length;
   document.getElementById("kpis").innerHTML=[
-    {v:PRODUCTS.length,l:"Produkte im Vergleich",s:"über 6 Kategorien"},
+    {v:PRODUCTS.length,l:"Produkte im Vergleich",s:`über ${CATORDER.length} Kategorien`},
     {v:"6",l:"Kategorien",s:"eigener Reiter je Kategorie"},
     {v:Math.min(...prices).toLocaleString("de-DE")+"–"+Math.max(...prices).toLocaleString("de-DE")+" €",l:"Preisspanne",s:"Einzelprodukte"},
     {v:"gratis ab 55 €",l:"Versand (DE)",s:"sonst 4,90 €"},
@@ -1485,7 +1484,8 @@ document.getElementById("setAvail").onclick=()=>{
   b.classList.toggle("on",setsOnlyAvail);b.setAttribute("aria-pressed",String(setsOnlyAvail));
   renderSets();
 };
-document.getElementById("setNew").onclick=()=>openSetBuilder();
+/* "Eigenes Set erstellen" lebt nur noch in der Community-Ansicht (Aufraeum-Pass 18.07. —
+   der Doppel-Button in "Unsere Sets" war Redundanz) */
 document.getElementById("comNew").onclick=()=>openSetBuilder();
 function setSetsSrc(alt){
   setsAltSrc=alt;
