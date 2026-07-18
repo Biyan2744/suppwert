@@ -106,6 +106,21 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Community-Ausbau: produktgebundene Wünsche & Kritik (18.07.):** Das Wunsch-Formular
+> bindet Wünsche jetzt an ein KONKRETES Produkt: Auswahl über die (dafür zu `openGallery`
+> generalisierte) Duell-Produkt-Galerie (62 Kacheln, Live-Suche, Gewähltes markiert/gesperrt)
+> statt des Freitext-„Betrifft"-Felds; neue Wunsch-Art **„Produkt-Kritik"**. Produktbezug ist
+> bei „Neue Sorte" + „Produkt-Kritik" Pflicht (Validierung: roter Rahmen + Hinweis), bei
+> „Sonstiges" optional, bei „Neues Produkt"/„Verbesserung der Seite" ausgeblendet — der
+> Wechsel dorthin verwirft die Auswahl, damit nichts unsichtbar mitgespeichert wird. Bei
+> Sorten-Wünschen zeigt ein Hinweis die ECHTEN vorhandenen Sorten aus den Live-Varianten
+> (parseVariants, max. 8 + „und N weitere", „Standard" gefiltert; Fallback: kuratierte
+> flavors-Angabe) — so wünscht sich niemand, was es schon gibt. Wünsche speichern
+> `prodId` + Namens-Snapshot; Liste und Auswahl-Chip zeigen den 28px-Thumb
+> (SHOW_PRODUCT_IMGS-launch-sicher via thumbHTML), der mailto-Betreff nennt das Produkt.
+> Alt-Wünsche mit Freitext-prod bleiben lesbar (ohne Thumb). Intro ehrlich ergänzt:
+> Feedback landet bei Suppwert, nicht direkt bei MORE. Dynamische Textarea-Platzhalter
+> je Wunsch-Art.
 > **Anbieter-Ansicht II (18.07.):** Im „+ andere Anbieter"-Modus zeigen jetzt ALLE Set-Posten
 > (auch lieferbare) ihre Anbieter-Links — man bekommt jedes Produkt theoretisch auch woanders.
 > Recherche-Ergebnis zur Bestands-Frage: KEIN Fremd-Shop ist offen abfragbar (Fitmart live

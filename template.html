@@ -783,12 +783,16 @@ header.top.scrolled{box-shadow:var(--shadow)}
 
   <!-- COMMUNITY: WUENSCHE & VORSCHLAEGE -->
   <section class="panel" id="panel-wuensche" role="tabpanel">
-    <div class="phead"><h2><span class="hbar" style="--acc:var(--brand)"></span>Community – Wünsche &amp; Vorschläge</h2><p>Welche Sorte fehlt dir? Welches Produkt soll MORE bringen? Was können wir an der Seite besser machen?</p></div>
+    <div class="phead"><h2><span class="hbar" style="--acc:var(--brand)"></span>Community – Wünsche &amp; Vorschläge</h2><p>Wähl ein Produkt und wünsch dir neue Sorten oder sag ehrlich, was dich stört – oder schick uns Ideen für neue Produkte und die Seite. Wir sind unabhängig: dein Feedback landet bei Suppwert, nicht direkt bei MORE.</p></div>
     <div class="pnl" style="margin-bottom:14px">
       <h3>Wunsch aufschreiben</h3>
       <div class="setform" style="max-width:520px">
-        <select id="wType" class="sort" aria-label="Art des Wunsches"><option value="Neue Sorte">Neue Sorte</option><option value="Neues Produkt">Neues Produkt</option><option value="Verbesserung der Seite">Verbesserung der Seite</option><option value="Sonstiges">Sonstiges</option></select>
-        <input id="wProd" maxlength="60" placeholder="Betrifft (optional), z. B. Clear Protein" aria-label="Betrifft (optional)">
+        <select id="wType" class="sort" aria-label="Art des Wunsches"><option value="Neue Sorte">Neue Sorte vorschlagen</option><option value="Produkt-Kritik">Kritik an einem Produkt</option><option value="Neues Produkt">Neues Produkt wünschen</option><option value="Verbesserung der Seite">Verbesserung der Seite</option><option value="Sonstiges">Sonstiges</option></select>
+        <div id="wProdRow" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <button type="button" class="goalbtn" id="wPick">Produkt wählen…</button>
+          <span id="wProdChip" style="display:inline-flex;align-items:center"></span>
+        </div>
+        <p class="note" id="wFlavors" style="margin:0;display:none"></p>
         <textarea id="wText" maxlength="500" rows="4" placeholder="Dein Wunsch oder Vorschlag…" aria-label="Wunsch-Text"></textarea>
         <button type="button" class="setadd" id="wSend">Wunsch speichern</button>
       </div>
@@ -1548,28 +1552,66 @@ document.getElementById("ccAdd").onclick=()=>{
   renderCodes();
 };
 
-/* COMMUNITY-WUENSCHE (Biyan: Reiter fuer Sorten-Wuensche + Verbesserungsvorschlaege). EHRLICH
-   ohne Server: Wuensche liegen lokal (mn-wishes); FEEDBACK_MAIL kommt mit dem Launch-Impressum
-   (Launch-Checkliste) — sobald gesetzt, bekommt jeder Wunsch einen mailto-Absende-Knopf. */
+/* COMMUNITY-WUENSCHE (Biyan: Reiter fuer Sorten-Wuensche + Verbesserungsvorschlaege; Ausbau
+   18.07.: Wunsch/Kritik an ein KONKRETES Produkt binden — Auswahl ueber die Produkt-Galerie
+   statt Freitext, bei Sorten-Wuenschen zeigt die Live-Variantenliste, was es schon gibt).
+   EHRLICH ohne Server: Wuensche liegen lokal (mn-wishes); FEEDBACK_MAIL kommt mit dem
+   Launch-Impressum (Launch-Checkliste) — sobald gesetzt, bekommt jeder Wunsch einen
+   mailto-Absende-Knopf. Alt-Wuensche mit Freitext-prod (ohne prodId) bleiben lesbar. */
 const FEEDBACK_MAIL="";
 let wishes=[];try{wishes=JSON.parse(localStorage.getItem("mn-wishes")||"[]")||[];}catch(e){wishes=[];}
 function saveWishes(){try{localStorage.setItem("mn-wishes",JSON.stringify(wishes));}catch(e){}}
-function wishMailto(w2){return `mailto:${FEEDBACK_MAIL}?subject=${encodeURIComponent("Suppwert-Wunsch: "+w2.type)}&body=${encodeURIComponent((w2.prod?"Betrifft: "+w2.prod+"\n\n":"")+w2.text)}`;}
+function wishMailto(w2){return `mailto:${FEEDBACK_MAIL}?subject=${encodeURIComponent("Suppwert-Wunsch: "+w2.type+(w2.prod?" – "+w2.prod:""))}&body=${encodeURIComponent((w2.prod?"Betrifft: "+w2.prod+"\n\n":"")+w2.text)}`;}
+/* Produktbezug je Wunsch-Art: pflicht = ohne Produkt kein Speichern, optional = darf */
+const WISH_PROD={"Neue Sorte":"pflicht","Produkt-Kritik":"pflicht","Sonstiges":"optional"};
+const WISH_PH={"Neue Sorte":"Welche Sorte wünschst du dir – und warum wäre sie gut?","Produkt-Kritik":"Was stört dich? Geschmack, Konsistenz, Preis, Verfügbarkeit …","Neues Produkt":"Welches Produkt soll MORE bringen?","Verbesserung der Seite":"Was können wir an Suppwert besser machen?","Sonstiges":"Dein Wunsch oder Vorschlag…"};
+let wishProd=null; /* Produkt-ID aus der Galerie */
+function renderWishForm(){
+  const type=document.getElementById("wType").value, need=WISH_PROD[type];
+  if(!need)wishProd=null; /* Art ohne Produktbezug -> Auswahl verwerfen, nichts unsichtbar mitspeichern */
+  const p=wishProd?PRODUCTS.find(x=>x.id===wishProd):null;
+  document.getElementById("wProdRow").style.display=need?"flex":"none";
+  const pick=document.getElementById("wPick");
+  pick.textContent=p?"Anderes Produkt wählen":(need==="optional"?"Produkt wählen… (optional)":"Produkt wählen…");
+  if(p)pick.style.borderColor="";
+  document.getElementById("wProdChip").innerHTML=p?`<span class="vchip" style="padding-left:6px">${thumbHTML(p,false)}${escT(p.name)}<button type="button" id="wProdRm" aria-label="Produktauswahl entfernen">✕</button></span>`:"";
+  const rm=document.getElementById("wProdRm"); if(rm)rm.onclick=()=>{wishProd=null;renderWishForm();};
+  document.getElementById("wText").placeholder=WISH_PH[type]||WISH_PH["Sonstiges"];
+  /* Sorten-Hinweis: echte Namen aus den Live-Varianten (Shopify), sonst kuratierte Zahl */
+  const fl=document.getElementById("wFlavors");
+  let hint="";
+  if(type==="Neue Sorte"&&p){
+    const names=(VARIANTS[p.id]||[]).length?parseVariants(p.id).flavors.map(f=>f.flavor).filter(n=>n&&n!=="Standard"):[];
+    if(names.length)hint=`Gibt's schon (laut Shop): ${names.slice(0,8).join(", ")}${names.length>8?` – und ${names.length-8} weitere`:""}.`;
+    else if(p.flavors&&p.flavors!=="k.A.")hint=`Laut unserer Übersicht: ${p.flavors}.`;
+  }
+  fl.textContent=hint;fl.style.display=hint?"":"none";
+}
 function renderWishes(){
   const l=document.getElementById("wishList"); if(!l)return;
   l.innerHTML=wishes.length
-    ?wishes.map((w2,ix)=>`<div class="coderow"><span class="cdesc"><b>${escT(w2.type)}</b>${w2.prod?` · ${escT(w2.prod)}`:""}<br>${escT(w2.text)}</span><small style="color:var(--muted)">${new Date(w2.ts).toLocaleDateString("de-DE")}</small>${FEEDBACK_MAIL?`<a class="goalbtn" style="text-decoration:none" href="${wishMailto(w2)}">Per E-Mail senden</a>`:""}<button type="button" class="goalbtn" data-wrm="${ix}" aria-label="Wunsch entfernen">✕</button></div>`).join("")
+    ?wishes.map((w2,ix)=>{const p=w2.prodId?PRODUCTS.find(x=>x.id===w2.prodId):null;return `<div class="coderow">${p?thumbHTML(p,false):""}<span class="cdesc"><b>${escT(w2.type)}</b>${w2.prod?` · ${escT(w2.prod)}`:""}<br>${escT(w2.text)}</span><small style="color:var(--muted)">${new Date(w2.ts).toLocaleDateString("de-DE")}</small>${FEEDBACK_MAIL?`<a class="goalbtn" style="text-decoration:none" href="${wishMailto(w2)}">Per E-Mail senden</a>`:""}<button type="button" class="goalbtn" data-wrm="${ix}" aria-label="Wunsch entfernen">✕</button></div>`;}).join("")
     :`<p class="note">Noch keine Wünsche notiert.</p>`;
   l.querySelectorAll("[data-wrm]").forEach(b=>b.onclick=()=>{wishes.splice(Number(b.dataset.wrm),1);saveWishes();renderWishes();});
 }
+document.getElementById("wPick").onclick=()=>openGallery({selTxt:"✓ gewählt",isSel:id=>id===wishProd,onPick:id=>{wishProd=id;closePicker();renderWishForm();}});
+document.getElementById("wType").onchange=renderWishForm;
+renderWishForm();
 document.getElementById("wSend").onclick=()=>{
+  const type=document.getElementById("wType").value;
+  const p=wishProd?PRODUCTS.find(x=>x.id===wishProd):null;
+  if(WISH_PROD[type]==="pflicht"&&!p){
+    document.getElementById("wPick").style.borderColor="var(--crit)";
+    document.getElementById("wNote").textContent="Bitte wähl zuerst das Produkt, um das es geht.";
+    return;
+  }
   const tEl=document.getElementById("wText");
   const t=tEl.value.replace(/[<>]/g,"").trim().slice(0,500);
   if(!t){tEl.style.borderColor="var(--crit)";return;}
   tEl.style.borderColor="";
-  wishes.unshift({type:document.getElementById("wType").value,prod:document.getElementById("wProd").value.replace(/[<>]/g,"").trim().slice(0,60),text:t,ts:Date.now()});
+  wishes.unshift({type:type,prodId:p?p.id:"",prod:p?p.name:"",text:t,ts:Date.now()});
   wishes=wishes.slice(0,50);saveWishes();
-  tEl.value="";document.getElementById("wProd").value="";
+  tEl.value="";wishProd=null;renderWishForm();
   document.getElementById("wNote").textContent=FEEDBACK_MAIL
     ?`Gespeichert – über „Per E-Mail senden" in der Liste unten geht er direkt raus.`
     :`Gespeichert (nur in deinem Browser). Zum Launch kommt die Kontakt-E-Mail dazu – dann bekommt jeder Wunsch einen Absende-Knopf.`;
@@ -2427,17 +2469,16 @@ function renderDuel(){
   /* Plus ERSCHAFFT ein weiteres leeres Feld (statt die Galerie fuer Slot 1/2 zu oeffnen) */
   if(add)add.onclick=()=>{duelExtra=Math.min(CMP_MAX,nSlots+1)-cmp.length;renderDuel();};
 }
-/* Produkt-Galerie zum Fuellen eines Duell-Slots: ALLE Produkte mit Bild, nach Kategorien
-   gruppiert, live durchsuchbar. Bereits gewaehlte sind markiert und gesperrt. */
-let pickSlot=0;
-function openPicker(ix){
-  pickSlot=ix;
+/* Produkt-Galerie (generisch): ALLE Produkte mit Bild, nach Kategorien gruppiert, live
+   durchsuchbar. isSel-Produkte sind markiert (selTxt) und gesperrt; onPick bekommt die id.
+   Nutzer: Duell-Slots (openPicker) + Community-Wunsch-Formular. */
+function openGallery(o){
   const w=document.getElementById("pickov");
   const secs=CATORDER.map(cat=>{
     const items=PRODUCTS.filter(p=>p.cat===cat);
     return `<div class="picksec"><h4 class="pch"><span class="hbar" style="--acc:${CATS[cat].color}"></span>${CATS[cat].label}<span class="csn tnum">${items.length}</span></h4><div class="pickgrid">${items.map(p=>{
-      const sel=cmp.includes(p.id);
-      return `<button type="button" class="ptile${sel?" sel":""}" data-pick="${p.id}"${sel?" disabled":""} data-name="${esc(p.name.toLowerCase())}"><span class="ti">${p.img?`<img src="${imgURL(p.img)}" alt="" loading="lazy" onerror="this.remove()">`:`<span class="ph" style="--acc:${CATS[p.cat].color}">${PH_ICONS[p.cat]||""}</span>`}</span><span class="tn">${escT(p.name)}</span><span class="tp tnum">${eur(p.price)}</span>${sel?`<span class="tsel">✓ im Vergleich</span>`:""}</button>`;
+      const sel=o.isSel(p.id);
+      return `<button type="button" class="ptile${sel?" sel":""}" data-pick="${p.id}"${sel?" disabled":""} data-name="${esc(p.name.toLowerCase())}"><span class="ti">${p.img?`<img src="${imgURL(p.img)}" alt="" loading="lazy" onerror="this.remove()">`:`<span class="ph" style="--acc:${CATS[p.cat].color}">${PH_ICONS[p.cat]||""}</span>`}</span><span class="tn">${escT(p.name)}</span><span class="tp tnum">${eur(p.price)}</span>${sel?`<span class="tsel">${o.selTxt}</span>`:""}</button>`;
     }).join("")}</div></div>`;
   }).join("");
   w.innerHTML=`<div class="cmpbox pickbox"><h3>Produkt wählen <button type="button" class="x" aria-label="Schließen">✕</button></h3>
@@ -2448,9 +2489,8 @@ function openPicker(ix){
   w.onclick=e=>{if(e.target===w)closePicker();};
   w.querySelectorAll("[data-pick]").forEach(t=>t.onclick=()=>{
     const id=t.dataset.pick;
-    if(cmp.includes(id))return;
-    if(pickSlot<cmp.length)cmp[pickSlot]=id; else{if(cmp.length>=CMP_MAX)return;cmp.push(id);duelExtra=Math.max(0,duelExtra-1);} /* fuellt ein leeres Feld -> Extra-Slot verbraucht */
-    closePicker();syncCmp();
+    if(o.isSel(id))return;
+    o.onPick(id);
   });
   const ps=w.querySelector("#picksearch");
   ps.oninput=()=>{
@@ -2459,6 +2499,15 @@ function openPicker(ix){
     w.querySelectorAll(".picksec").forEach(s=>{const any=[...s.querySelectorAll(".ptile")].some(t=>t.style.display!=="none");s.style.display=any?"":"none";});
   };
   ps.focus();
+}
+/* Duell-Slot fuellen: bereits Verglichene gesperrt, Extra-Slot-Logik wie gehabt */
+let pickSlot=0;
+function openPicker(ix){
+  pickSlot=ix;
+  openGallery({selTxt:"✓ im Vergleich",isSel:id=>cmp.includes(id),onPick:id=>{
+    if(pickSlot<cmp.length)cmp[pickSlot]=id; else{if(cmp.length>=CMP_MAX)return;cmp.push(id);duelExtra=Math.max(0,duelExtra-1);} /* fuellt ein leeres Feld -> Extra-Slot verbraucht */
+    closePicker();syncCmp();
+  }});
 }
 function closePicker(){document.getElementById("pickov").hidden=true;}
 function renderVchips(){
