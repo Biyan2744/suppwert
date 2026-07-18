@@ -106,6 +106,17 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Samurai-Seitendeko (18.07., Rebranding Stufe 2 — Biyans Skizze):** In den freien
+> Seitenrändern breiter Screens (ab 1500px, wie einst die verworfene Helix — diesmal mit
+> thematischem Anker): LINKS vertikale Kanji-Spalte 正直 („Ehrlichkeit", Beere) + 比較
+> („Vergleich", Gold) über einem vertikalen Line-Art-Katana (Klinge muted, Tsuba gold,
+> Griff mit Beeren-Wicklung); RECHTS ausgerollte Makimono-Schriftrolle (Gold-Roller,
+> Beeren-Papierkanten) mit vier Produkt-Silhouetten aus der PH_VESSELS-Strichsprache
+> (Dose/Riegel/Flasche/Shaker) und Gold-Chevrons dazwischen. Fixe Spalten, opacity .5,
+> aria-hidden + pointer-events:none, z-index 0 unter Header/Overlays; Geometrie geprüft
+> (kein Content-Kontakt: links 90px vs. Content 363px, rechts 1771 vs. 1543; Unterkanten
+> im 900er-Viewport). Breitbild-Muster als Screenshots 13 (dunkel) + 14 (hell) —
+> Biyans Urteil steht aus.
 > **REBRANDING: Suppwert → Protein Samurai (18.07., Stufe 1):** Biyans Entscheidung nach
 > Namens-Brainstorming (DENIC-geprüft; „Vergleichswolf" wegen Christian-Wolf-Anmutung
 > verworfen — steht jetzt als Leitplanke in CLAUDE.md). Umgesetzt: Name in ALLEN Dateien

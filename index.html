@@ -174,6 +174,18 @@ header.top{background:var(--surface-1);border-bottom:1px solid var(--grid);posit
    Rauchglas-Anmutung, Lichtquelle von oben (bewusst nicht an allen 4 Seiten) */
 :root[data-theme="dark"] .hero{box-shadow:var(--shadow),inset 0 1px 0 0 rgba(255,255,255,.05)}
 :root[data-theme="dark"] .radar{box-shadow:var(--shadow),inset 0 1px 0 0 rgba(255,255,255,.05)}
+/* Samurai-Seitendeko (Rebranding Stufe 2): Kanji + Katana links, Makimono-Rolle mit
+   Produkt-Silhouetten rechts. Fixe Spalten in den freien Raendern breiter Screens —
+   ab 1500px sind die Raender >=160px, Deko (<=120px + Offset) beruehrt den 1180px-Content
+   nie. Unter Header (50) und Overlays (79+), nicht klick-/lesbar (aria-hidden). */
+.sidedeco{position:fixed;top:104px;pointer-events:none;z-index:0;display:none;opacity:.5}
+.sidedeco.links{left:30px;display:none}
+.sidedeco.rechts{right:24px}
+.sdkanji{font-size:21px;font-weight:600;line-height:1.5;color:var(--brand);text-align:center;margin:0 0 14px 2px}
+.sdkanji .sdk2{color:var(--gold);opacity:.85}
+.sdkatana{width:60px;height:470px;display:block}
+.sdrolle{width:110px;height:560px;display:block}
+@media(min-width:1500px){.sidedeco{display:block}.sidedeco.links{display:block}}
 :root[data-theme="dark"] .hero{background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='56' height='28' viewBox='0 0 56 28'><g fill='none' stroke='%23d95f8f' stroke-opacity='.2' stroke-width='1.3'><path d='M0 28a28 28 0 0 1 56 0'/><path d='M8 28a20 20 0 0 1 40 0'/><path d='M16 28a12 12 0 0 1 24 0'/></g></svg>") left bottom/56px 28px repeat-x,radial-gradient(560px circle at 88% 18%,rgba(224,182,74,.09),transparent 58%),radial-gradient(620px circle at 8% 0%,rgba(122,33,66,.15),transparent 54%),linear-gradient(135deg,color-mix(in srgb,var(--brand) 7%,var(--card)),var(--card) 60%)}
 :root[data-theme="dark"] .hero::after{display:none} /* Gold-Glow steckt jetzt in der Lichtinsel */
 :root[data-theme="dark"] .kpis{position:relative}
@@ -650,6 +662,48 @@ header.top.scrolled{box-shadow:var(--shadow)}
 </head>
 <body>
 <a class="skip" href="#main">Zum Inhalt springen</a>
+<!-- Samurai-Seitendeko (Biyan 18.07., Rebranding Stufe 2): LINKS Kanji-Spalte (正直 = Ehrlichkeit,
+     比較 = Vergleich — bewusst passende Begriffe) + vertikales Katana, RECHTS ausgerollte
+     Makimono-Schriftrolle mit drei Produkt-Silhouetten aus der PH_VESSELS-Strichsprache.
+     Rein dekorativ (aria-hidden, pointer-events:none), erst ab 1500px — darunter existieren
+     die freien Raender nicht. -->
+<div class="sidedeco links" aria-hidden="true">
+  <div class="sdkanji">正<br>直<br><span class="sdk2">比<br>較</span></div>
+  <svg class="sdkatana" viewBox="0 0 60 470" aria-hidden="true">
+    <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M31 14 C26 110 25 210 28 318 M31 14 C33 110 34 210 34 318" stroke="var(--muted)" stroke-width="2"/>
+      <path d="M31 14 C29 80 28 160 29 250" stroke="var(--muted)" stroke-width="1" opacity=".6"/>
+      <ellipse cx="31" cy="326" rx="15" ry="7" stroke="var(--gold)" stroke-width="2.5"/>
+      <path d="M27 334h8l3 100a7 7 0 0 1-7 7 7 7 0 0 1-7-7Z" stroke="var(--brand)" stroke-width="2"/>
+      <path d="M27 352l10 12M37 352l-10 12M27 382l10 12M37 382l-10 12M27 412l10 12M37 412l-10 12" stroke="var(--brand)" stroke-width="1.6" opacity=".8"/>
+    </g>
+  </svg>
+</div>
+<div class="sidedeco rechts" aria-hidden="true">
+  <svg class="sdrolle" viewBox="0 0 120 560" aria-hidden="true">
+    <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="10" y="8" width="100" height="14" rx="7" stroke="var(--gold)" stroke-width="2.5"/>
+      <circle cx="10" cy="15" r="6" stroke="var(--gold)" stroke-width="2.5"/><circle cx="110" cy="15" r="6" stroke="var(--gold)" stroke-width="2.5"/>
+      <path d="M22 22v516M98 22v516" stroke="var(--brand)" stroke-width="2"/>
+      <rect x="10" y="538" width="100" height="14" rx="7" stroke="var(--gold)" stroke-width="2.5"/>
+      <circle cx="10" cy="545" r="6" stroke="var(--gold)" stroke-width="2.5"/><circle cx="110" cy="545" r="6" stroke="var(--gold)" stroke-width="2.5"/>
+      <g stroke="var(--brand)" stroke-width="2.5" transform="translate(33,52) scale(.45)">
+        <rect x="24" y="40" width="72" height="102" rx="12"/><rect x="32" y="24" width="56" height="16" rx="6"/><path d="M24 56h72"/>
+      </g>
+      <path d="M48 152l6 6 6-6" stroke="var(--gold)" stroke-width="2" transform="translate(6,8)"/>
+      <g stroke="var(--brand)" stroke-width="2.5" transform="translate(33,196) scale(.45)">
+        <g transform="rotate(-7 60 82)"><rect x="16" y="64" width="88" height="34" rx="9"/><path d="M38 64v34M60 64v34M82 64v34"/></g>
+      </g>
+      <path d="M48 278l6 6 6-6" stroke="var(--gold)" stroke-width="2" transform="translate(6,8)"/>
+      <g stroke="var(--brand)" stroke-width="2.5" transform="translate(33,314) scale(.45)">
+        <rect x="34" y="76" width="52" height="66" rx="10"/><path d="M44 76l6-20h20l6 20"/><rect x="46" y="42" width="28" height="14" rx="4"/>
+      </g>
+      <g stroke="var(--brand)" stroke-width="2.5" transform="translate(33,412) scale(.45)">
+        <path d="M34 62h52l-6 70a10 10 0 0 1-10 10H50a10 10 0 0 1-10-10Z"/><path d="M32 62h56l-5-16H37Z"/><path d="M50 34h20v12H50Z"/><path d="M44 98h32M46 116h28"/>
+      </g>
+    </g>
+  </svg>
+</div>
 <header class="top">
   <div class="wrap top-in">
     <a class="brand" href="#uebersicht" aria-label="Zur Übersicht">
