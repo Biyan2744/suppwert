@@ -14,7 +14,9 @@ Priorisierte Ausbaustufen mit Akzeptanzkriterien. Reihenfolge ist ein Vorschlag.
 > impressum.html/datenschutz.html füllen + Entwurfsboxen raus, (b) solange keine
 > Bildfreigabe von MORE vorliegt: `SHOW_PRODUCT_IMGS=false` in template.html + regenerieren
 > (Schalter existiert, beide Modi verifiziert), (c) Settings → Pages → Source
-> „GitHub Actions", (d) `gh workflow enable pages`, (e) 404-Seite live nachtesten.
+> „GitHub Actions", (d) `gh workflow enable pages`, (e) 404-Seite live nachtesten,
+> (f) `FEEDBACK_MAIL` in template.html auf die Impressums-Kontaktadresse setzen — dann
+> bekommen die Community-Wünsche ihren „Per E-Mail senden"-Knopf (bis dahin nur lokal).
 > Impressum: Biyan will die Privatadresse nicht veröffentlichen und kauft **ganz am Ende**
 > einen Impressum-Service (ladungsfähige Anschrift); bis dahin bleibt Pages aus
 > (Impressumspflicht). Offen: 2 (Restock-Alerts, braucht Backend), 3 (Affiliate).
@@ -98,6 +100,22 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Reiter-Umbau IV: Sets vereint + Rabatte + Community-Wünsche + Angebots-Filter (18.07.):**
+> (a) Sets & Community-Sets sind wieder EIN Reiter mit prominentem Umschalter „Unsere Sets /
+> Community & Creator" (Segment-Buttons); Legacy-/Share-Hash `#community` routet auf die
+> Community-Ansicht, der Umschalter schreibt `#sets`/`#community`. (b) Neuer Reiter
+> **„Rabatte"**: kuratierte bekannte Codes (ehrlich datiert, ohne Gewähr, Sonntags-Hinweis)
+> + „Deine Creator-Codes": lokale Liste, Kopieren, und EIN Code als aktiv setzbar → wandert
+> als `?discount=` in den 1-Klick-Warenkorb-Link (bewusste Nutzer-Wahl; unser Partner-Code
+> via AFF bleibt nachrangig und aus, bis die Bewerbung durch ist). (c) Neuer Reiter
+> **„Community"** (Wünsche & Vorschläge): Formular (Neue Sorte/Neues Produkt/Verbesserung/
+> Sonstiges + Text) → lokal gespeicherte Wunschliste; `FEEDBACK_MAIL`-Konstante ist Launch-
+> Platzhalter, danach mailto-Absende-Knopf je Wunsch (Checkliste (f)). (d) Filter
+> **„im Angebot"** im Produkte-Reiter (Hash `f=o`): refresh.py liefert jetzt den Shopify-
+> Streichpreis (compare_at, 5. VARIANTS-Feld) — echte Shop-Daten statt geratener Rabatte;
+> beim Bau live 3 Treffer (Every Workout 3.0, Zerup Zero, Muffinform). Tab-Leiste jetzt 10
+> Reiter: Übersicht · Produkte · Vergleich · Empfehlungen · Sets · Rabatte · Community ·
+> Ratgeber · Wo kaufen · Info.
 > **Zubehör-Kategorie + Set-Reichweite + Galerie-Builder (18.07.):** (a) Neue 7. Kategorie
 > **„Zubehör"** (Teal) mit den 6 echten Einzel-Accessoires aus dem Katalog: Premium Shaker
 > (3 Farben, live 2/3), Aqua Bottle, Breakfast Cup, Backform, Muffinform, Cosmetic Bag —

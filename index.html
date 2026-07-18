@@ -432,6 +432,12 @@ body.has-cart .cmpchip{bottom:74px}
 .goalbtn:hover{border-color:var(--muted);color:var(--text-1)}
 .goalbtn.on{background:var(--text-1);color:var(--surface-1);border-color:var(--text-1)}
 /* Sets: Anklick-Optionen oben, Creator-Zeile + Aktions-Buttons auf Community-Karten, Builder-Formular */
+/* Prominenter Sets/Community-Umschalter */
+.setmode{display:flex;gap:8px;margin-bottom:16px}
+.segbtn{flex:1;padding:12px 10px;border-radius:12px;border:1px solid var(--line);background:var(--card);font-weight:750;font-size:14px;cursor:pointer;color:var(--text-2);transition:background-color .15s ease,color .15s ease,border-color .15s ease,transform .08s ease}
+.segbtn:hover{border-color:var(--muted);color:var(--text-1)}
+.segbtn.on{background:var(--text-1);color:var(--surface-1);border-color:var(--text-1)}
+.segbtn:active{transform:scale(.98)}
 .setctl{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
 .setsearch{flex:1 1 100%;max-width:420px}
 @media(min-width:700px){.setsearch{flex:0 1 300px}}
@@ -440,6 +446,12 @@ body.has-cart .cmpchip{bottom:74px}
 .setform{display:flex;flex-direction:column;gap:8px;margin:12px 0 4px}
 .setform input{border:1px solid var(--line);background:var(--surface-1);color:var(--text-1);border-radius:10px;padding:9px 12px;font-size:13.5px}
 .setform input::placeholder{color:var(--muted)}
+.setform textarea{border:1px solid var(--line);background:var(--surface-1);color:var(--text-1);border-radius:10px;padding:9px 12px;font-size:13.5px;resize:vertical;font-family:inherit}
+.setform textarea::placeholder{color:var(--muted)}
+/* Code-/Wunsch-Zeilen (Rabatte- & Community-Reiter) */
+.coderow{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:9px 0;border-bottom:1px solid var(--grid);font-size:13px}
+.coderow>b{font-size:14px;letter-spacing:.6px}
+.coderow .cdesc{color:var(--text-2);flex:1;min-width:150px;font-size:12.5px;line-height:1.45}
 /* Mini-Produktbilder in Sets (Biyan: sehen, was man bekommt, nicht nur Namen): pthumb =
    runder Thumb (echtes Bild oder Kategorie-Icon-Fallback — respektiert SHOW_PRODUCT_IMGS),
    setthumbs = ueberlappender Bild-Staple am Karten-Kopf, faechert beim Karten-Hover auf */
@@ -663,6 +675,7 @@ header.top.scrolled{box-shadow:var(--shadow)}
         <label class="tg"><input type="checkbox" id="fAvail">nur verfügbar</label>
         <label class="tg"><input type="checkbox" id="fVegan">vegan</label>
         <label class="tg"><input type="checkbox" id="fSugar">zuckerarm</label>
+        <label class="tg" title="Mindestens eine kaufbare Sorte hat gerade einen Streichpreis im MORE-Shop"><input type="checkbox" id="fSale">im Angebot</label>
       </div>
       <div class="viewtog"><button id="vCards" class="on">▦ Karten</button><button id="vTable">≡ Tabelle</button></div>
     </div>
@@ -696,7 +709,14 @@ header.top.scrolled{box-shadow:var(--shadow)}
 
   <!-- SETS -->
   <section class="panel" id="panel-sets" role="tabpanel">
-    <div class="phead"><h2><span class="hbar" style="--acc:var(--acc-supplements)"></span>Fertige Sets</h2><p>Von uns redaktionell zusammengestellte Produkt-Kombis – ein Klick legt alle lieferbaren Artikel in den Merkzettel. Das sind unsere Empfehlungen aus dem Sortiment, keine Kaufdaten.</p></div>
+    <div class="phead"><h2><span class="hbar" style="--acc:var(--acc-supplements)"></span>Sets</h2><p>Fertige Produkt-Kombis mit 1-Klick-Merkzettel: von uns kuratiert und generiert – oder von Creatorn und der Community per Link geteilt.</p></div>
+    <!-- Prominenter Umschalter (Biyan: Sets und Community-Sets nicht getrennt, sondern EIN
+         Reiter mit Umschalter) — Legacy-Hash #community routet auf die Community-Ansicht -->
+    <div class="setmode" role="tablist" aria-label="Set-Bereich wählen">
+      <button type="button" class="segbtn on" id="modeOurs" aria-pressed="true">Unsere Sets</button>
+      <button type="button" class="segbtn" id="modeCom" aria-pressed="false">Community &amp; Creator</button>
+    </div>
+    <div id="setsOurs">
     <div class="setctl">
       <input class="search setsearch" id="setSearch" placeholder="Sets durchsuchen (Name, Produkt)…" aria-label="Sets durchsuchen" autocomplete="off">
       <button type="button" class="catchip" id="setAvail" aria-pressed="false">Nur komplett lieferbare Sets</button>
@@ -724,17 +744,55 @@ header.top.scrolled{box-shadow:var(--shadow)}
       <div id="sgOut"></div>
     </details>
     <div class="setgrid" id="setgrid"></div>
+    </div><!-- /setsOurs -->
+    <div id="setsCom" hidden>
+      <div class="setctl">
+        <div class="goalbtns" id="comCreators" style="margin:0"></div>
+        <button type="button" class="catchip" id="comNew">＋ Eigenes Set erstellen &amp; teilen</button>
+      </div>
+      <p class="note" id="comnote"></p>
+      <div class="setgrid" id="comgrid"></div>
+    </div><!-- /setsCom -->
   </section>
 
-  <!-- COMMUNITY-SETS (eigener Reiter, Biyan) -->
-  <section class="panel" id="panel-community" role="tabpanel">
-    <div class="phead"><h2><span class="hbar" style="--acc:var(--m-value)"></span>Community-Sets</h2><p>Per Link geteilte Sets von Creatorn und aus der Community – gespeichert nur in deinem Browser, Preise und Verfügbarkeit live vom Shop-Abgleich. Erstelle dein eigenes Set aus deinem Merkzettel und teile den Link.</p></div>
-    <div class="setctl">
-      <div class="goalbtns" id="comCreators" style="margin:0"></div>
-      <button type="button" class="catchip" id="comNew">＋ Eigenes Set erstellen &amp; teilen</button>
+  <!-- RABATTE -->
+  <section class="panel" id="panel-rabatte" role="tabpanel">
+    <div class="phead"><h2><span class="hbar" style="--acc:var(--gold)"></span>Rabattcodes &amp; Aktionen</h2><p>Bekannte Codes für den MORE-Shop – ohne Gewähr, Codes wechseln oft; verbindlich ist der Shop. Diese Seite ist unabhängig, die Codes gehören MORE bzw. den Creatorn.</p></div>
+    <div class="pnl" style="margin-bottom:14px">
+      <h3>Aktuelle Codes</h3>
+      <div id="codeList"></div>
+      <p class="note">Die großen Aktionen starten üblicherweise sonntags um 11:00 Uhr (siehe Countdown oben; Community-Beobachtung, ohne Gewähr). Kursierende 50-%-Codes sind meist unbestätigt.</p>
     </div>
-    <p class="note" id="comnote"></p>
-    <div class="setgrid" id="comgrid"></div>
+    <div class="pnl">
+      <h3>Deine Creator-Codes</h3>
+      <p class="note" style="margin-top:4px">Trag die Codes deiner Lieblings-Creator ein (gespeichert nur in deinem Browser). Einen Code kannst du als aktiv setzen – der 1-Klick-MORE-Warenkorb trägt ihn dann beim Checkout automatisch ein. Gültigkeit prüfen wir nicht.</p>
+      <div class="setform" style="max-width:420px">
+        <input id="ccName" maxlength="30" placeholder="Creator-Name" aria-label="Creator-Name">
+        <input id="ccCode" maxlength="30" placeholder="Code, z. B. NAME10" aria-label="Rabattcode">
+        <button type="button" class="setadd" id="ccAdd">Code speichern</button>
+      </div>
+      <div id="ccList"></div>
+    </div>
+  </section>
+
+  <!-- COMMUNITY: WUENSCHE & VORSCHLAEGE -->
+  <section class="panel" id="panel-wuensche" role="tabpanel">
+    <div class="phead"><h2><span class="hbar" style="--acc:var(--brand)"></span>Community – Wünsche &amp; Vorschläge</h2><p>Welche Sorte fehlt dir? Welches Produkt soll MORE bringen? Was können wir an der Seite besser machen?</p></div>
+    <div class="pnl" style="margin-bottom:14px">
+      <h3>Wunsch aufschreiben</h3>
+      <div class="setform" style="max-width:520px">
+        <select id="wType" class="sort" aria-label="Art des Wunsches"><option value="Neue Sorte">Neue Sorte</option><option value="Neues Produkt">Neues Produkt</option><option value="Verbesserung der Seite">Verbesserung der Seite</option><option value="Sonstiges">Sonstiges</option></select>
+        <input id="wProd" maxlength="60" placeholder="Betrifft (optional), z. B. Clear Protein" aria-label="Betrifft (optional)">
+        <textarea id="wText" maxlength="500" rows="4" placeholder="Dein Wunsch oder Vorschlag…" aria-label="Wunsch-Text"></textarea>
+        <button type="button" class="setadd" id="wSend">Wunsch speichern</button>
+      </div>
+      <p class="note" id="wNote"></p>
+    </div>
+    <div class="pnl">
+      <h3>Deine Wünsche</h3>
+      <p class="note" style="margin-top:4px">Ohne Server liegen Wünsche zunächst nur in deinem Browser. Zum Launch kommt eine Kontakt-E-Mail ins Impressum – dann bekommt jeder Wunsch einen direkten Absende-Knopf.</p>
+      <div id="wishList"></div>
+    </div>
   </section>
 
   <!-- RATGEBER -->
@@ -981,8 +1039,8 @@ const PRODUCTS = [
 const SHOW_PRODUCT_IMGS = true;
 PRODUCTS.forEach(p=>{ p.img = SHOW_PRODUCT_IMGS ? (IMG[p.id]||null) : null; });
 const AVAIL_DATE = "18. Juli 2026";
-const LIVE = {"milkshake": [7, 17], "clear": [18, 21], "icedcoffee": [13, 21], "matcha": [11, 13], "chai": [1, 3], "milkyccino": [2, 6], "vegan": [3, 9], "glow": [4, 4], "satisbites": [6, 10], "proteinbar": [3, 8], "veganbar": [3, 3], "waferbar": [0, 1], "pudding": [1, 2], "porridge": [1, 1], "pancake": [2, 2], "griess": [1, 1], "milchreis": [1, 1], "dessert": [0, 2], "tortilla": [2, 3], "chunky": [15, 31], "stevia": [4, 4], "chunkybundle": [0, 1], "creagum": [1, 1], "bioticgum": [1, 1], "sleepgum": [1, 1], "creastick": [2, 2], "dailybiotic": [1, 1], "ashwa": [1, 1], "enzyme": [0, 1], "melatonin": [1, 1], "mineral": [1, 1], "curcu": [1, 1], "harmony": [1, 1], "cycle": [1, 1], "collagen": [7, 8], "fiber": [2, 2], "everyworkout": [4, 4], "everyworkout3": [1, 1], "fizi": [9, 10], "o3d3k2": [2, 2], "daily100": [1, 1], "skinstructure": [1, 3], "magnesium": [0, 1], "iron": [1, 1], "saucenback": [4, 7], "saucenfix": [3, 3], "oilspray": [3, 3], "gourmet": [4, 9], "nomoresugar": [0, 1], "spices": [1, 2], "zerupbarista": [11, 11], "zerupzero": [49, 49], "wrap": [1, 1], "salsa": [0, 1], "moremelade": [2, 3], "nutbutter": [0, 3], "shaker": [2, 3], "aquabottle": [1, 1], "breakfastcup": [1, 1], "backform": [1, 1], "muffinform": [1, 1], "cosmeticbag": [1, 1]};
-const VARIANTS = {"milkshake": [[51094762029220, "Milkshake Style Neutral / 600g", 0, 35.99], [51105811202212, "Milkshake Style Neutral / 25g Probe", 1, 2.99], [51094744170660, "Milkshake Style Chocolate Drink / 600g", 0, 35.99], [51094754787492, "Milkshake Style Chocolate Drink / 25g Probe", 1, 2.99], [51094765011108, "Milkshake Style Vanilla Chocolate Chip Cookie / 600g", 1, 35.99], [51137528135952, "Milkshake Style Vanilla Chocolate Chip Cookie / 25g Probe", 0, 2.99], [51094761046180, "Milkshake Style Cinnalicious V1 / 25g Probe", 1, 2.99], [51094755573924, "Milkshake Style Vanilla Ice Cream / 600g", 1, 35.99], [51094763962532, "Milkshake Style Vanilla Ice Cream / 25g Probe", 1, 2.99], [51094755999908, "Milkshake Style Iced Coffee / 600g", 0, 35.99], [51094747742372, "Milkshake Style Iced Coffee / 25g Probe", 0, 2.99], [51137617592592, "Milkshake Style Cinnalicious / 600g", 0, 35.99], [51094755279012, "Milkshake Style Hazelnut Nougat Praline / 600g", 0, 35.99], [51094758949028, "Milkshake Style Strawberry / 600g", 1, 35.99], [51094754427044, "Milkshake Style Strawberry / 25g Probe", 0, 2.99], [51094757900452, "Milkshake Style Chocolate Brownie / 600g", 0, 35.99], [51094746824868, "Milkshake Style Chocolate Brownie / 25g Probe", 0, 2.99]], "clear": [[51137621426448, "Lemonade Style Bloody Orange / 600g", 1, 39.99], [51137535213840, "Juice Style Orange / 600g", 1, 39.99], [51137616019728, "Lemonade Style Mango Mojito / 600g", 1, 39.99], [51137615954192, "Lemonade Style Raspberry Mojito / 600g", 1, 39.99], [51137616281872, "Lemonade Style Pink Peach Rings / 600g", 0, 39.99], [51098520682660, "Juice Style Pear / 600g", 1, 39.99], [51094758523044, "Juice Style Multifruit / 600g", 1, 39.99], [51094749020324, "Lemonade Style Strawberry Lime / 30g Probe", 1, 3.99], [51094754558116, "Juice Style Pure Apple / 600g", 0, 39.99], [51094760652964, "Lemonade Style Virgin Mojito / 600g", 1, 39.99], [51137528103184, "Lemonade Style Virgin Mojito / 30g Probe", 1, 3.99], [51094750691492, "Iced Tea Style Lemon / 600g", 0, 39.99], [51094765830308, "Iced Tea Style Lemon / 30g Probe", 1, 3.99], [51094746923172, "Iced Tea Style Peach / 600g", 1, 39.99], [51094755508388, "Iced Tea Style Peach / 30g Probe", 1, 3.99], [51094762487972, "Lemonade Style Green Apple / 600g", 1, 39.99], [51094752100516, "Lemonade Style Green Apple / 30g Probe", 1, 3.99], [51094761570468, "Juice Style Mango / 600g", 1, 39.99], [51094754918564, "Juice Style Mango / 30g Probe", 1, 3.99], [51094752657572, "Iced Tea Style Peach Passionfruit / 600g", 1, 39.99], [51094757834916, "Iced Tea Style Peach Passionfruit / 30g Probe", 1, 3.99]], "icedcoffee": [[51135209439396, "Double Chocolate Chip Cookie / 500g", 1, 34.99], [51137621623056, "Coffee Lover / 500g", 1, 34.99], [51137621950736, "Hazelnut Crispy Cream / 500g", 1, 34.99], [51137621033232, "Cafe Frappe Style / 500g", 1, 34.99], [51137621098768, "Dark Chocolate Lover / 500g", 1, 34.99], [51137621066000, "Dark Cookie Crumble / 500g", 1, 34.99], [51135209537700, "Decaff Dark Chocolate Lover / 500g", 1, 34.99], [51135209996452, "Decaff Dark Chocolate Lover / 25g Probe", 0, 2.99], [51094758064292, "Decaff Dark Cookie Crumble / 500g", 1, 34.99], [51094755737764, "Decaff Dark Cookie Crumble / 25g Probe", 1, 2.99], [51094778118308, "Vanilla Chocolate Chip Cookie / 500g", 1, 34.99], [51094764650660, "Vanilla Chocolate Chip Cookie / 25g Probe", 0, 2.99], [51094788178084, "Latte Macchiato / 500g", 1, 34.99], [51094747873444, "Latte Macchiato / 25g Probe", 0, 2.99], [51094775562404, "S'Mores / 500g", 0, 34.99], [51094790668452, "S'Mores / 25g Probe", 0, 2.99], [51094755344548, "Decaff Vanilla Chocolate Chip Cookie / 500g", 0, 34.99], [51094771433636, "Dark Chocolate Cookie Crumble / 500g", 1, 34.99], [51094769074340, "Dark Chocolate Cookie Crumble / 25g Probe", 1, 2.99], [51094774349988, "Decaff Latte Macchiato / 500g", 0, 34.99], [51094754951332, "Decaff Latte Macchiato / 25g Probe", 0, 2.99]], "matcha": [[51137621262608, "Cherry Mochi (Romi x Emma) / 500g", 1, 35.99], [51137621164304, "Strawberry Marshmallow / 500g", 1, 35.99], [51137597767952, "Raspberry Marshmallow (Valentine´s Special) / 500g", 1, 35.99], [51137601831184, "Mango Dream / 500g", 1, 35.99], [51137612841232, "Creamy Banana / 500g", 1, 35.99], [51094744203428, "Strawberry Cheesecake / 500g", 1, 35.99], [51137526890768, "Chai / 500g", 1, 35.99], [51114869227684, "Pistachio White Chocolate / 500g", 1, 35.99], [51137531150608, "Pistachio White Chocolate / 25g Probe", 0, 2.99], [51104394969252, "Vanilla Crumble / 500g", 1, 35.99], [51137528234256, "Vanilla Crumble / 25g Probe", 1, 2.99], [51094742991012, "Original Taste / 500g", 1, 35.99], [51094745809060, "Original Taste / 25g Probe", 0, 2.99]], "chai": [[51137602093328, "Maple Walnut / 500g", 1, 35.99], [51094742401188, "Original Taste / 500g", 0, 35.99], [51094741483684, "Original Taste / 25g Probe", 0, 2.99]], "milkyccino": [[51094741319844, "White Almond Coconut / 500g", 0, 32.99], [51137530822928, "White Almond Coconut / 25g Probe", 1, 2.99], [51104394510500, "Chocolate Crispy Cream / 500g", 1, 32.99], [51137528168720, "Chocolate Crispy Cream / 25g Probe", 0, 2.99], [51114869162148, "Mango Coconut / 500g", 0, 32.99], [51137528070416, "Mango Coconut / 25g Probe", 0, 2.99]], "vegan": [[51137616675088, "Cinnalicious / 600g Dose", 0, 34.99], [51137530560784, "Hazelnut Nougat Praliné / 600g Dose", 0, 34.99], [51137536655632, "Hazelnut Nougat Praliné / 25g Probe", 1, 2.99], [51137531085072, "Cinnalicious V1 / 25g Probe", 0, 2.99], [51094742565028, "Vanilla / 600g Dose", 0, 34.99], [51105811169444, "Vanilla / 25g Probe", 1, 2.99], [51094743875748, "Neutral / 600g Dose", 0, 34.99], [51094743154852, "Neutral / 25g Probe", 1, 2.99], [51094742302884, "Fine Milk Chocolate / 600g Dose", 0, 34.99]], "glow": [[51094752690340, "Green Tea Lime / 600g", 1, 47.99], [51094751314084, "Lemon Iced Tea / 600g", 1, 47.99], [51094746202276, "Cherry White Tea / 600g", 1, 47.99], [51094752297124, "Watermelon / 600g", 1, 47.99]], "satisbites": [[51137616412944, "Pink Raspberry Cheesecake (Pink Design) / 12 x 2x25g", 1, 35.49], [51137598161168, "Milk Chocolate Coconut / 12 x 2x25g", 1, 35.49], [51094629613732, "Milk Chocolate Pistachio / 12 x 2x25g", 0, 35.49], [51137529643280, "Milk Chocolate Pistachio / 2 x 25g", 1, 2.99], [51094629646500, "White Chocolate Strawberry Cream / 12 x 2x25g", 1, 35.49], [51137529676048, "White Chocolate Strawberry Cream / 2 x 25g", 1, 2.99], [51094629679268, "White Hazelnut Nougat / 12 x 2x25g", 0, 35.49], [51137529512208, "White Hazelnut Nougat / 2 x 25g", 0, 2.99], [51094629515428, "Dark Cookie Crumble / 12 x 2x25g", 1, 35.49], [51094629449892, "Dark Cookie Crumble / 2 x 25g", 0, 2.99]], "proteinbar": [[51137527447824, "White Chocolate Caramel Crunch / 10 x 50g", 0, 29.89], [51137530724624, "Caramel Morezipan / 10 x 50g", 0, 29.89], [51094742106276, "Peanut Caramel / 10 x 50g", 1, 29.89], [51104395198628, "Peanut Caramel / 50g", 0, 2.99], [51094754394276, "White Chocolate Peanut Caramel / 10 x 50g", 1, 29.89], [51104394444964, "White Chocolate Peanut Caramel / 50g", 0, 2.99], [51094752592036, "Caramel Crunch / 10 x 50g", 1, 29.89], [51104394739876, "Caramel Crunch / 50g", 0, 2.99]], "veganbar": [[51137531019536, "Hazelnut Nougat / 10 x 55g", 1, 29.89], [51137528299792, "Peanut Butter / 10 x 55g", 1, 29.89], [51137604059408, "Peanut Butter / 55g", 1, 2.99]], "waferbar": [[51137537212688, "Milk Chocolate Hazelnut / 6 x 30g", 0, 17.89]], "pudding": [[51094752329892, "Neutral / 600g", 0, 27.99], [51094749348004, "Neutral / 30g Probe", 1, 2.99]], "porridge": [[51137544356112, "Original Taste / 62g", 1, 2.99]], "pancake": [[51094755147940, "Neutral / 450g", 1, 22.99], [51094746562724, "Neutral / 45g Probe", 1, 2.99]], "griess": [[51137544323344, "Original Taste / 60g", 1, 2.99]], "milchreis": [[51137544388880, "Original Taste / 65g", 1, 2.99]], "dessert": [[51137613168912, "Brownie Style / 600g", 0, 22.99], [51137613201680, "Brownie Style / 75g Probe", 0, 3.49]], "tortilla": [[51094755246244, "Sour Cream & Onion / 300g (6 x 50g)", 1, 17.49], [51137616544016, "Western Style / 300g (6 x 50g)", 1, 17.49], [51094754754724, "Paprika Ungarisch / 300g (6 x 50g)", 0, 17.49]], "chunky": [[51094754459812, "Pistachio White Chocolate / 150g", 1, 13.99], [51094783590564, "Pistachio White Chocolate / 30g Probe", 1, 4.49], [51094787326116, "Strawberry Perfection / 150g", 0, 13.99], [51094769402020, "Strawberry Perfection / 30g Probe", 1, 4.49], [51137614446864, "Pure Honey / 150g", 0, 13.99], [51137604747536, "Pure Honey / 30g Probe", 1, 4.49], [51094774874276, "Neutral / 150g", 1, 13.99], [51105811234980, "Neutral / 30g Probe", 1, 4.49], [51094755803300, "White Almond Coconut / 150g", 0, 13.99], [51094779527332, "White Almond Coconut / 30g Probe", 1, 4.49], [51137528037648, "Dark Cookie Crumble / 30g Probe", 1, 4.49], [51094748070052, "Dark Cookie Crumble / 170g", 0, 13.99], [51137604780304, "Hazelnut & Milky Cream / 30g Probe", 0, 4.49], [51094746005668, "Fudge Brownie / 150g", 1, 13.99], [51094754853028, "Fudge Brownie / 30g Probe", 1, 4.49], [51094761996452, "Vanilla Perfection / 150g", 1, 13.99], [51094748856484, "Vanilla Perfection / 30g Probe", 0, 4.49], [51094755410084, "Lemon Ice Cream Cake / 150g", 0, 13.99], [51137604813072, "Lemon Ice Cream Cake / 30g Probe", 1, 4.49], [51094752854180, "Milchreis-Zimt / 150g", 1, 13.99], [51094771171492, "Milchreis-Zimt / 30g Probe", 0, 4.49], [51094766616740, "Blueberry Cheesecake / 150g", 0, 13.99], [51094756294820, "Blueberry Cheesecake / 30g Probe", 0, 4.49], [51094747578532, "Vanilla Chocolate Chip Cookie / 150g", 0, 13.99], [51094746857636, "Vanilla Chocolate Chip Cookie / 30g Probe", 0, 4.49], [51094765076644, "Salted Caramel / 150g", 0, 13.99], [51094752264356, "Salted Caramel / 30g Probe", 0, 4.49], [51137528201488, "Raspberry Panna Cotta / 30g Probe", 1, 4.49], [51094764060836, "Stracciatella / 150g", 0, 13.99], [51094777757860, "Stracciatella / 30g Probe", 0, 4.49], [51137611727120, "Blueberry Lavender / 150g", 1, 15.99]], "stevia": [[51094762127524, "Strawberry Perfection / 150g", 1, 11.99], [51137535312144, "Strawberry Perfection / 30g Probe", 1, 4.49], [51094762356900, "Pure Vanilla / 150g", 1, 11.99], [51137535148304, "Pure Vanilla / 30g Probe", 1, 4.49]], "chunkybundle": [[51105799471268, "Default Title", 0, 32.99]], "creagum": [[51137612710160, "Green Apple / 60 Gummies", 1, 29.99]], "bioticgum": [[51137612546320, "Peach Strawberry / 40 Gummies", 1, 29.99]], "sleepgum": [[51137612611856, "Forest Berries / 80 Gummies", 1, 29.99]], "creastick": [[51137537409296, "Raspberry / 30 x 5g", 1, 19.99], [51137536721168, "Lemon / 30 x 5g", 1, 19.99]], "dailybiotic": [[51137614971152, "Neutral / 30 x 1,5g", 1, 29.99]], "ashwa": [[51137619460368, "Orange / 30 x 5g", 1, 19.99]], "enzyme": [[51137619296528, "Honey Lemon / 30 x 5g", 0, 24.99]], "melatonin": [[51137619525904, "Mint / 30 x 5g", 1, 19.99]], "mineral": [[51137616314640, "90 Kapseln", 1, 29.99]], "curcu": [[51094759112868, "210 Kapseln", 1, 29.99]], "harmony": [[51094761898148, "90 Kapseln", 1, 29.99]], "cycle": [[51094743384228, "120 Kapseln", 1, 24.99]], "collagen": [[51137537376528, "Neutral / 300g", 1, 29.99], [51137601863952, "Neutral / 15g Probe", 1, 2.99], [51137601929488, "Neutral / 7 x 15g", 1, 15.99], [51137537442064, "Watermelon-Mint / 300g", 1, 29.99], [51137601962256, "Watermelon-Mint / 15g Probe", 1, 2.99], [51137601765648, "Watermelon-Mint / 7 x 15g", 1, 15.99], [51137601896720, "Cherry White Tea / 300g", 0, 29.99], [51137612513552, "Cherry White Tea / 15g Probe", 1, 2.99]], "fiber": [[51137619820816, "Neutral (ohne Flohsamenschalen) / 180g", 1, 19.99], [51137620214032, "Neutral (mit Flohsamenschalen) / 180g", 1, 19.99]], "everyworkout": [[51137612480784, "Sour Pink Grapefruit (without Caffeine) / 270g", 1, 34.99], [51137615233296, "Sour Pink Grapefruit (without Caffeine) / 18g Probe", 1, 2.99], [51137612644624, "Sour Pink Grapefruit (with Caffeine) / 270g", 1, 34.99], [51137615331600, "Sour Pink Grapefruit (with Caffeine) / 18g Probe", 1, 2.99]], "everyworkout3": [[51094754492580, "Neutral / 270g", 1, 24.49]], "fizi": [[51137614283024, "Mango / 12 x 330ml", 1, 22.99], [51137614479632, "Candy Cola / 12 x 330ml", 1, 22.99], [51137614315792, "Mojito / 12 x 330ml", 0, 22.99], [51137616380176, "Apple Cranberry / 12 x 330ml", 1, 22.99], [51137620934928, "Lemon Lime / 12 x 330ml", 1, 22.99], [51137527677200, "Lemon Lime / 330ml", 1, 1.99], [51137616576784, "White Peach / 12 x 330ml", 1, 22.99], [51137527644432, "White Peach / 330ml", 1, 1.99], [51137527709968, "Orange / 330ml", 1, 1.99], [51135284412580, "Orange / 6 x 330ml", 1, 11.49]], "o3d3k2": [[51137537245456, "Standard / 120 Kapseln", 1, 22.99], [51094754984100, "Vegan / 80 Kapseln", 1, 39.99]], "daily100": [[51137527054608, "True Berries / 28 x 40g Starterbox", 1, 109.99]], "skinstructure": [[51094757736612, "Peach Iced Tea / 270g", 0, 64.99], [51094758097060, "Peach Iced Tea / 9g Probe", 1, 2.99], [51094742368420, "Pink Grapefruit / 270g", 0, 64.99]], "magnesium": [[51137606385936, "Lemon Lime / 30 x 3,5g", 0, 19.99]], "iron": [[51137606418704, "Red Berries / 30 x 4g", 1, 19.99]], "saucenback": [[51137611628816, "Schlagcreme / 600g", 1, 35.99], [51137611333904, "Schlagcreme / 50g Probe", 0, 3.99], [51094757802148, "Sahne / 600g", 0, 35.99], [51094758228132, "Sahne / 50g Probe", 1, 3.99], [51094740041892, "Coconut Milk / 600g", 0, 35.99], [51114869194916, "Coconut Milk / 50g Probe", 1, 3.99], [51137534984464, "Sahne (NY Edition) / 2000g", 1, 114.99]], "saucenfix": [[51094755049636, "Tomatencremesauce / 40g", 1, 2.99], [51094744400036, "Helle Sauce / 40g", 1, 2.99], [51094755311780, "Pilzrahm / 40g", 1, 2.99]], "oilspray": [[51094742794404, "Butter / 200ml", 1, 5.99], [51137614905616, "Lemon / 200ml", 1, 5.99], [51094743842980, "Standard / 200ml", 1, 5.99]], "gourmet": [[51094630760612, "Teriyaki / 285ml", 1, 6.99], [51094630564004, "True Curry Ketchup / 285ml", 1, 6.99], [51094751281316, "Burger / 285ml", 1, 6.99], [51094748692644, "Caesar Cheese / 285ml", 1, 6.99], [51094630629540, "Honey Mustard / 285ml", 0, 6.99], [51094630236324, "Balsamico Garlic / 285ml", 0, 6.99], [51094630957220, "BBQ / 285ml", 0, 6.99], [51094762520740, "Creamy Honey Mustard / 285ml", 0, 6.99], [51094750658724, "Creamy Mushroom-Style / 285ml", 0, 6.99]], "nomoresugar": [[51094740598948, "Neutral / 1000g", 0, 14.99]], "spices": [[51094749118628, "Italian Allrounder / 110g", 1, 6.99], [51094751183012, "Knobi-Licious / 130g", 0, 6.99]], "zerupbarista": [[51094756229284, "Hazelnut / 65ml", 1, 6.99], [51137534361872, "Cinnamon / 65ml", 1, 6.99], [51094743056548, "Chocolate / 65ml", 1, 6.99], [51114869293220, "Chai / 65ml", 1, 6.99], [51137533378832, "Amaretto / 65ml", 1, 6.99], [51137603961104, "Sweet Honey / 65ml", 1, 6.99], [51137599635728, "Brown Sugar / 65ml", 1, 6.99], [51094755868836, "Vanilla / 65ml", 1, 5.99], [51094745645220, "Salted Caramel / 65ml", 1, 5.99], [51114869129380, "Maple Walnut / 65ml", 1, 5.99], [51094755639460, "White Sugar / 65ml", 1, 5.99]], "zerupzero": [[51094767042724, "Peach Iced Tea / 65ml", 1, 5.99], [51094762160292, "Lemon Iced Tea / 65ml", 1, 5.99], [51137601995024, "Honey Melon / 65ml", 1, 6.99], [51137529250064, "Blackberry / 65ml", 1, 6.99], [51137603895568, "Birne Melisse / 65ml", 1, 6.99], [51137529348368, "Himbeer Brause / 65ml", 1, 6.99], [51137535082768, "White Boost / 65ml", 1, 6.99], [51094755934372, "Pink Grapefruit / 65ml", 1, 6.99], [51094754689188, "Ginger Lemon / 65ml", 1, 6.99], [51094775398564, "Fruity Sour Mix / 65ml", 1, 6.99], [51137527939344, "Mandarin / 65ml", 1, 6.99], [51094782050468, "Blutorange / 65ml", 1, 6.99], [51137459749028, "Apfel-Birne / 65ml", 1, 6.99], [51137527546128, "Winter Cranberry Moreperello / 65ml", 1, 3.49], [51137527611664, "Weißer Apfelpunsch / 65ml", 1, 3.49], [51094764880036, "Plum Cinnamon / 65ml", 1, 3.49], [51137621754128, "Infused Strawberry Mint / 65ml", 1, 6.99], [51137614217488, "Infused Gurke Zitrone / 65ml", 1, 6.99], [51137621721360, "Peach Apricot / 65ml", 1, 6.99], [51137621688592, "Watermelon Hibiscus / 65ml", 1, 6.99], [51137621655824, "Kiwi Green Apple / 65ml", 1, 6.99], [51137611759888, "Tropical Fruit Mix / 65ml", 1, 6.99], [51137537048848, "Green Apple / 65ml", 1, 6.99], [51137537016080, "Kräuter-Limonade / 65ml", 1, 6.99], [51137529282832, "Pink Peach / 65ml", 1, 6.99], [51094741745828, "Peach Holunder Iced Tea / 65ml", 1, 6.99], [51137606451472, "Mango Lime / 65ml", 1, 6.99], [51137535050000, "Pink Boost / 65ml", 1, 6.99], [51094761767076, "Cola-Lime / 65ml", 1, 6.99], [51094774055076, "Wild Berry / 65ml", 1, 6.99], [51094755377316, "Mojito / 65ml", 1, 6.99], [51094777987236, "Strawberry-Daiquiri / 65ml", 1, 6.99], [51094761373860, "Hugo / 65ml", 1, 6.99], [51094754820260, "Granatapfel Mojito / 65ml", 1, 6.99], [51094752788644, "Pina Colada / 65ml", 1, 6.99], [51137613463824, "Caipirinha / 65ml", 1, 6.99], [51094629744804, "Moreperello / 65ml", 1, 6.99], [51137612775696, "Peach Orange / 65ml", 1, 6.99], [51137533313296, "Fruity Christmas Punch / 65ml", 1, 3.49], [51094779953316, "Multifruit / 65ml", 1, 5.99], [51094764028068, "Holunderblüte / 65ml", 1, 5.99], [51094758326436, "Pear / 65ml", 1, 5.99], [51094759047332, "Blackcurrant / 65ml", 1, 5.99], [51094754263204, "Red Apple / 65ml", 1, 5.99], [51137613037840, "Red Apple / 10 x 65ml", 1, 17.99], [51094766518436, "Capri Orange / 65ml", 1, 5.99], [51094774710436, "Apple Cranberry / 65ml", 1, 5.99], [51094752362660, "Cherry / 65ml", 1, 5.99], [51094777135268, "Lemon Lime Soda / 65ml", 1, 5.99]], "wrap": [[51094764814500, "372g (6 x 62g)", 1, 4.99]], "salsa": [[51094741581988, "Mild / 300g", 0, 6.99]], "moremelade": [[51094741254308, "Raspberry-Blueberry, Squeezie / 250g", 1, 4.99], [51094755213476, "Strawberry, Squeezie / 250g", 1, 4.99], [51094754721956, "Strawberry, Glas / 240g", 0, 4.99]], "nutbutter": [[51094749413540, "White Almond Coconut / 250g", 0, 11.99], [51094751019172, "Hazelnut Vanilla / 250g", 0, 11.99], [51094746595492, "Sweet & Salty Cashew / 250g", 0, 11.99]], "shaker": [[51094743974052, "Red / 700ml", 1, 11.99], [51094744301732, "Purple / 700ml", 0, 11.99], [51094761111716, "Blue / 700ml", 1, 11.99]], "aquabottle": [[51123368558756, "Red", 1, 22.99]], "breakfastcup": [[51137615429904, "Red", 1, 19.99]], "backform": [[51137621197072, "Default Title", 1, 29.99]], "muffinform": [[51103576293540, "Default Title", 1, 6.59]], "cosmeticbag": [[51137620181264, "Default Title", 1, 29.99]]}; /* je Produkt: [[variantId, Sortenname, 1|0 kaufbar, Preis], ...] */
+const LIVE = {"milkshake": [6, 17], "clear": [18, 21], "icedcoffee": [13, 21], "matcha": [11, 13], "chai": [1, 3], "milkyccino": [2, 6], "vegan": [3, 9], "glow": [4, 4], "satisbites": [6, 10], "proteinbar": [3, 8], "veganbar": [3, 3], "waferbar": [0, 1], "pudding": [1, 2], "porridge": [1, 1], "pancake": [2, 2], "griess": [1, 1], "milchreis": [1, 1], "dessert": [0, 2], "tortilla": [2, 3], "chunky": [15, 31], "stevia": [4, 4], "chunkybundle": [0, 1], "creagum": [1, 1], "bioticgum": [1, 1], "sleepgum": [1, 1], "creastick": [2, 2], "dailybiotic": [1, 1], "ashwa": [1, 1], "enzyme": [0, 1], "melatonin": [1, 1], "mineral": [1, 1], "curcu": [1, 1], "harmony": [1, 1], "cycle": [1, 1], "collagen": [7, 8], "fiber": [2, 2], "everyworkout": [4, 4], "everyworkout3": [1, 1], "fizi": [9, 10], "o3d3k2": [2, 2], "daily100": [1, 1], "skinstructure": [1, 3], "magnesium": [0, 1], "iron": [1, 1], "saucenback": [4, 7], "saucenfix": [3, 3], "oilspray": [3, 3], "gourmet": [4, 9], "nomoresugar": [0, 1], "spices": [1, 2], "zerupbarista": [11, 11], "zerupzero": [49, 49], "wrap": [1, 1], "salsa": [0, 1], "moremelade": [2, 3], "nutbutter": [0, 3], "shaker": [2, 3], "aquabottle": [1, 1], "breakfastcup": [1, 1], "backform": [1, 1], "muffinform": [1, 1], "cosmeticbag": [1, 1]};
+const VARIANTS = {"milkshake": [[51094762029220, "Milkshake Style Neutral / 600g", 0, 35.99, 0.0], [51105811202212, "Milkshake Style Neutral / 25g Probe", 1, 2.99, 0.0], [51094744170660, "Milkshake Style Chocolate Drink / 600g", 0, 35.99, 0.0], [51094754787492, "Milkshake Style Chocolate Drink / 25g Probe", 1, 2.99, 0.0], [51094765011108, "Milkshake Style Vanilla Chocolate Chip Cookie / 600g", 0, 35.99, 0.0], [51137528135952, "Milkshake Style Vanilla Chocolate Chip Cookie / 25g Probe", 0, 2.99, 0.0], [51094761046180, "Milkshake Style Cinnalicious V1 / 25g Probe", 1, 2.99, 0.0], [51094755573924, "Milkshake Style Vanilla Ice Cream / 600g", 1, 35.99, 0.0], [51094763962532, "Milkshake Style Vanilla Ice Cream / 25g Probe", 1, 2.99, 0.0], [51094755999908, "Milkshake Style Iced Coffee / 600g", 0, 35.99, 0.0], [51094747742372, "Milkshake Style Iced Coffee / 25g Probe", 0, 2.99, 0.0], [51137617592592, "Milkshake Style Cinnalicious / 600g", 0, 35.99, 0.0], [51094755279012, "Milkshake Style Hazelnut Nougat Praline / 600g", 0, 35.99, 0.0], [51094758949028, "Milkshake Style Strawberry / 600g", 1, 35.99, 0.0], [51094754427044, "Milkshake Style Strawberry / 25g Probe", 0, 2.99, 0.0], [51094757900452, "Milkshake Style Chocolate Brownie / 600g", 0, 35.99, 0.0], [51094746824868, "Milkshake Style Chocolate Brownie / 25g Probe", 0, 2.99, 0.0]], "clear": [[51137621426448, "Lemonade Style Bloody Orange / 600g", 1, 39.99, 0.0], [51137535213840, "Juice Style Orange / 600g", 1, 39.99, 0.0], [51137616019728, "Lemonade Style Mango Mojito / 600g", 1, 39.99, 0.0], [51137615954192, "Lemonade Style Raspberry Mojito / 600g", 1, 39.99, 0.0], [51137616281872, "Lemonade Style Pink Peach Rings / 600g", 0, 39.99, 0.0], [51098520682660, "Juice Style Pear / 600g", 1, 39.99, 0.0], [51094758523044, "Juice Style Multifruit / 600g", 1, 39.99, 0.0], [51094749020324, "Lemonade Style Strawberry Lime / 30g Probe", 1, 3.99, 0.0], [51094754558116, "Juice Style Pure Apple / 600g", 0, 39.99, 0.0], [51094760652964, "Lemonade Style Virgin Mojito / 600g", 1, 39.99, 0.0], [51137528103184, "Lemonade Style Virgin Mojito / 30g Probe", 1, 3.99, 0.0], [51094750691492, "Iced Tea Style Lemon / 600g", 0, 39.99, 0.0], [51094765830308, "Iced Tea Style Lemon / 30g Probe", 1, 3.99, 0.0], [51094746923172, "Iced Tea Style Peach / 600g", 1, 39.99, 0.0], [51094755508388, "Iced Tea Style Peach / 30g Probe", 1, 3.99, 0.0], [51094762487972, "Lemonade Style Green Apple / 600g", 1, 39.99, 0.0], [51094752100516, "Lemonade Style Green Apple / 30g Probe", 1, 3.99, 0.0], [51094761570468, "Juice Style Mango / 600g", 1, 39.99, 0.0], [51094754918564, "Juice Style Mango / 30g Probe", 1, 3.99, 0.0], [51094752657572, "Iced Tea Style Peach Passionfruit / 600g", 1, 39.99, 0.0], [51094757834916, "Iced Tea Style Peach Passionfruit / 30g Probe", 1, 3.99, 0.0]], "icedcoffee": [[51135209439396, "Double Chocolate Chip Cookie / 500g", 1, 34.99, 0.0], [51137621623056, "Coffee Lover / 500g", 1, 34.99, 0.0], [51137621950736, "Hazelnut Crispy Cream / 500g", 1, 34.99, 0.0], [51137621033232, "Cafe Frappe Style / 500g", 1, 34.99, 0.0], [51137621098768, "Dark Chocolate Lover / 500g", 1, 34.99, 0.0], [51137621066000, "Dark Cookie Crumble / 500g", 1, 34.99, 0.0], [51135209537700, "Decaff Dark Chocolate Lover / 500g", 1, 34.99, 0.0], [51135209996452, "Decaff Dark Chocolate Lover / 25g Probe", 0, 2.99, 0.0], [51094758064292, "Decaff Dark Cookie Crumble / 500g", 1, 34.99, 0.0], [51094755737764, "Decaff Dark Cookie Crumble / 25g Probe", 1, 2.99, 0.0], [51094778118308, "Vanilla Chocolate Chip Cookie / 500g", 1, 34.99, 0.0], [51094764650660, "Vanilla Chocolate Chip Cookie / 25g Probe", 0, 2.99, 0.0], [51094788178084, "Latte Macchiato / 500g", 1, 34.99, 0.0], [51094747873444, "Latte Macchiato / 25g Probe", 0, 2.99, 0.0], [51094775562404, "S'Mores / 500g", 0, 34.99, 0.0], [51094790668452, "S'Mores / 25g Probe", 0, 2.99, 0.0], [51094755344548, "Decaff Vanilla Chocolate Chip Cookie / 500g", 0, 34.99, 0.0], [51094771433636, "Dark Chocolate Cookie Crumble / 500g", 1, 34.99, 0.0], [51094769074340, "Dark Chocolate Cookie Crumble / 25g Probe", 1, 2.99, 0.0], [51094774349988, "Decaff Latte Macchiato / 500g", 0, 34.99, 0.0], [51094754951332, "Decaff Latte Macchiato / 25g Probe", 0, 2.99, 0.0]], "matcha": [[51137621262608, "Cherry Mochi (Romi x Emma) / 500g", 1, 35.99, 0.0], [51137621164304, "Strawberry Marshmallow / 500g", 1, 35.99, 0.0], [51137597767952, "Raspberry Marshmallow (Valentine´s Special) / 500g", 1, 35.99, 0.0], [51137601831184, "Mango Dream / 500g", 1, 35.99, 0.0], [51137612841232, "Creamy Banana / 500g", 1, 35.99, 0.0], [51094744203428, "Strawberry Cheesecake / 500g", 1, 35.99, 0.0], [51137526890768, "Chai / 500g", 1, 35.99, 0.0], [51114869227684, "Pistachio White Chocolate / 500g", 1, 35.99, 0.0], [51137531150608, "Pistachio White Chocolate / 25g Probe", 0, 2.99, 0.0], [51104394969252, "Vanilla Crumble / 500g", 1, 35.99, 0.0], [51137528234256, "Vanilla Crumble / 25g Probe", 1, 2.99, 0.0], [51094742991012, "Original Taste / 500g", 1, 35.99, 0.0], [51094745809060, "Original Taste / 25g Probe", 0, 2.99, 0.0]], "chai": [[51137602093328, "Maple Walnut / 500g", 1, 35.99, 0.0], [51094742401188, "Original Taste / 500g", 0, 35.99, 0.0], [51094741483684, "Original Taste / 25g Probe", 0, 2.99, 0.0]], "milkyccino": [[51094741319844, "White Almond Coconut / 500g", 0, 32.99, 0.0], [51137530822928, "White Almond Coconut / 25g Probe", 1, 2.99, 0.0], [51104394510500, "Chocolate Crispy Cream / 500g", 1, 32.99, 0.0], [51137528168720, "Chocolate Crispy Cream / 25g Probe", 0, 2.99, 0.0], [51114869162148, "Mango Coconut / 500g", 0, 32.99, 0.0], [51137528070416, "Mango Coconut / 25g Probe", 0, 2.99, 0.0]], "vegan": [[51137616675088, "Cinnalicious / 600g Dose", 0, 34.99, 0.0], [51137530560784, "Hazelnut Nougat Praliné / 600g Dose", 0, 34.99, 0.0], [51137536655632, "Hazelnut Nougat Praliné / 25g Probe", 1, 2.99, 0.0], [51137531085072, "Cinnalicious V1 / 25g Probe", 0, 2.99, 0.0], [51094742565028, "Vanilla / 600g Dose", 0, 34.99, 0.0], [51105811169444, "Vanilla / 25g Probe", 1, 2.99, 0.0], [51094743875748, "Neutral / 600g Dose", 0, 34.99, 0.0], [51094743154852, "Neutral / 25g Probe", 1, 2.99, 0.0], [51094742302884, "Fine Milk Chocolate / 600g Dose", 0, 34.99, 0.0]], "glow": [[51094752690340, "Green Tea Lime / 600g", 1, 47.99, 0.0], [51094751314084, "Lemon Iced Tea / 600g", 1, 47.99, 0.0], [51094746202276, "Cherry White Tea / 600g", 1, 47.99, 0.0], [51094752297124, "Watermelon / 600g", 1, 47.99, 0.0]], "satisbites": [[51137616412944, "Pink Raspberry Cheesecake (Pink Design) / 12 x 2x25g", 1, 35.49, 0.0], [51137598161168, "Milk Chocolate Coconut / 12 x 2x25g", 1, 35.49, 0.0], [51094629613732, "Milk Chocolate Pistachio / 12 x 2x25g", 0, 35.49, 0.0], [51137529643280, "Milk Chocolate Pistachio / 2 x 25g", 1, 2.99, 0.0], [51094629646500, "White Chocolate Strawberry Cream / 12 x 2x25g", 1, 35.49, 0.0], [51137529676048, "White Chocolate Strawberry Cream / 2 x 25g", 1, 2.99, 0.0], [51094629679268, "White Hazelnut Nougat / 12 x 2x25g", 0, 35.49, 0.0], [51137529512208, "White Hazelnut Nougat / 2 x 25g", 0, 2.99, 0.0], [51094629515428, "Dark Cookie Crumble / 12 x 2x25g", 1, 35.49, 0.0], [51094629449892, "Dark Cookie Crumble / 2 x 25g", 0, 2.99, 0.0]], "proteinbar": [[51137527447824, "White Chocolate Caramel Crunch / 10 x 50g", 0, 29.89, 0.0], [51137530724624, "Caramel Morezipan / 10 x 50g", 0, 29.89, 0.0], [51094742106276, "Peanut Caramel / 10 x 50g", 1, 29.89, 0.0], [51104395198628, "Peanut Caramel / 50g", 0, 2.99, 0.0], [51094754394276, "White Chocolate Peanut Caramel / 10 x 50g", 1, 29.89, 0.0], [51104394444964, "White Chocolate Peanut Caramel / 50g", 0, 2.99, 0.0], [51094752592036, "Caramel Crunch / 10 x 50g", 1, 29.89, 0.0], [51104394739876, "Caramel Crunch / 50g", 0, 2.99, 0.0]], "veganbar": [[51137531019536, "Hazelnut Nougat / 10 x 55g", 1, 29.89, 0.0], [51137528299792, "Peanut Butter / 10 x 55g", 1, 29.89, 0.0], [51137604059408, "Peanut Butter / 55g", 1, 2.99, 0.0]], "waferbar": [[51137537212688, "Milk Chocolate Hazelnut / 6 x 30g", 0, 17.89, 0.0]], "pudding": [[51094752329892, "Neutral / 600g", 0, 27.99, 0.0], [51094749348004, "Neutral / 30g Probe", 1, 2.99, 0.0]], "porridge": [[51137544356112, "Original Taste / 62g", 1, 2.99, 0.0]], "pancake": [[51094755147940, "Neutral / 450g", 1, 22.99, 0.0], [51094746562724, "Neutral / 45g Probe", 1, 2.99, 0.0]], "griess": [[51137544323344, "Original Taste / 60g", 1, 2.99, 0.0]], "milchreis": [[51137544388880, "Original Taste / 65g", 1, 2.99, 0.0]], "dessert": [[51137613168912, "Brownie Style / 600g", 0, 22.99, 0.0], [51137613201680, "Brownie Style / 75g Probe", 0, 3.49, 0.0]], "tortilla": [[51094755246244, "Sour Cream & Onion / 300g (6 x 50g)", 1, 17.49, 0.0], [51137616544016, "Western Style / 300g (6 x 50g)", 1, 17.49, 0.0], [51094754754724, "Paprika Ungarisch / 300g (6 x 50g)", 0, 17.49, 0.0]], "chunky": [[51094754459812, "Pistachio White Chocolate / 150g", 1, 13.99, 0.0], [51094783590564, "Pistachio White Chocolate / 30g Probe", 1, 4.49, 0.0], [51094787326116, "Strawberry Perfection / 150g", 0, 13.99, 0.0], [51094769402020, "Strawberry Perfection / 30g Probe", 1, 4.49, 0.0], [51137614446864, "Pure Honey / 150g", 0, 13.99, 0.0], [51137604747536, "Pure Honey / 30g Probe", 1, 4.49, 0.0], [51094774874276, "Neutral / 150g", 1, 13.99, 0.0], [51105811234980, "Neutral / 30g Probe", 1, 4.49, 0.0], [51094755803300, "White Almond Coconut / 150g", 0, 13.99, 0.0], [51094779527332, "White Almond Coconut / 30g Probe", 1, 4.49, 0.0], [51137528037648, "Dark Cookie Crumble / 30g Probe", 1, 4.49, 0.0], [51094748070052, "Dark Cookie Crumble / 170g", 0, 13.99, 0.0], [51137604780304, "Hazelnut & Milky Cream / 30g Probe", 0, 4.49, 0.0], [51094746005668, "Fudge Brownie / 150g", 1, 13.99, 0.0], [51094754853028, "Fudge Brownie / 30g Probe", 1, 4.49, 0.0], [51094761996452, "Vanilla Perfection / 150g", 1, 13.99, 0.0], [51094748856484, "Vanilla Perfection / 30g Probe", 0, 4.49, 0.0], [51094755410084, "Lemon Ice Cream Cake / 150g", 0, 13.99, 0.0], [51137604813072, "Lemon Ice Cream Cake / 30g Probe", 1, 4.49, 0.0], [51094752854180, "Milchreis-Zimt / 150g", 1, 13.99, 0.0], [51094771171492, "Milchreis-Zimt / 30g Probe", 0, 4.49, 0.0], [51094766616740, "Blueberry Cheesecake / 150g", 0, 13.99, 0.0], [51094756294820, "Blueberry Cheesecake / 30g Probe", 0, 4.49, 0.0], [51094747578532, "Vanilla Chocolate Chip Cookie / 150g", 0, 13.99, 0.0], [51094746857636, "Vanilla Chocolate Chip Cookie / 30g Probe", 0, 4.49, 0.0], [51094765076644, "Salted Caramel / 150g", 0, 13.99, 0.0], [51094752264356, "Salted Caramel / 30g Probe", 0, 4.49, 0.0], [51137528201488, "Raspberry Panna Cotta / 30g Probe", 1, 4.49, 0.0], [51094764060836, "Stracciatella / 150g", 0, 13.99, 0.0], [51094777757860, "Stracciatella / 30g Probe", 0, 4.49, 0.0], [51137611727120, "Blueberry Lavender / 150g", 1, 15.99, 0.0]], "stevia": [[51094762127524, "Strawberry Perfection / 150g", 1, 11.99, 0.0], [51137535312144, "Strawberry Perfection / 30g Probe", 1, 4.49, 0.0], [51094762356900, "Pure Vanilla / 150g", 1, 11.99, 0.0], [51137535148304, "Pure Vanilla / 30g Probe", 1, 4.49, 0.0]], "chunkybundle": [[51105799471268, "Default Title", 0, 32.99, 0.0]], "creagum": [[51137612710160, "Green Apple / 60 Gummies", 1, 29.99, 0.0]], "bioticgum": [[51137612546320, "Peach Strawberry / 40 Gummies", 1, 29.99, 0.0]], "sleepgum": [[51137612611856, "Forest Berries / 80 Gummies", 1, 29.99, 0.0]], "creastick": [[51137537409296, "Raspberry / 30 x 5g", 1, 19.99, 0.0], [51137536721168, "Lemon / 30 x 5g", 1, 19.99, 0.0]], "dailybiotic": [[51137614971152, "Neutral / 30 x 1,5g", 1, 29.99, 0.0]], "ashwa": [[51137619460368, "Orange / 30 x 5g", 1, 19.99, 0.0]], "enzyme": [[51137619296528, "Honey Lemon / 30 x 5g", 0, 24.99, 0.0]], "melatonin": [[51137619525904, "Mint / 30 x 5g", 1, 19.99, 0.0]], "mineral": [[51137616314640, "90 Kapseln", 1, 29.99, 0.0]], "curcu": [[51094759112868, "210 Kapseln", 1, 29.99, 0.0]], "harmony": [[51094761898148, "90 Kapseln", 1, 29.99, 0.0]], "cycle": [[51094743384228, "120 Kapseln", 1, 24.99, 0.0]], "collagen": [[51137537376528, "Neutral / 300g", 1, 29.99, 0.0], [51137601863952, "Neutral / 15g Probe", 1, 2.99, 0.0], [51137601929488, "Neutral / 7 x 15g", 1, 15.99, 0.0], [51137537442064, "Watermelon-Mint / 300g", 1, 29.99, 0.0], [51137601962256, "Watermelon-Mint / 15g Probe", 1, 2.99, 0.0], [51137601765648, "Watermelon-Mint / 7 x 15g", 1, 15.99, 0.0], [51137601896720, "Cherry White Tea / 300g", 0, 29.99, 0.0], [51137612513552, "Cherry White Tea / 15g Probe", 1, 2.99, 0.0]], "fiber": [[51137619820816, "Neutral (ohne Flohsamenschalen) / 180g", 1, 19.99, 0.0], [51137620214032, "Neutral (mit Flohsamenschalen) / 180g", 1, 19.99, 0.0]], "everyworkout": [[51137612480784, "Sour Pink Grapefruit (without Caffeine) / 270g", 1, 34.99, 0.0], [51137615233296, "Sour Pink Grapefruit (without Caffeine) / 18g Probe", 1, 2.99, 0.0], [51137612644624, "Sour Pink Grapefruit (with Caffeine) / 270g", 1, 34.99, 0.0], [51137615331600, "Sour Pink Grapefruit (with Caffeine) / 18g Probe", 1, 2.99, 0.0]], "everyworkout3": [[51094754492580, "Neutral / 270g", 1, 24.49, 34.99]], "fizi": [[51137614283024, "Mango / 12 x 330ml", 1, 22.99, 0.0], [51137614479632, "Candy Cola / 12 x 330ml", 1, 22.99, 0.0], [51137614315792, "Mojito / 12 x 330ml", 0, 22.99, 0.0], [51137616380176, "Apple Cranberry / 12 x 330ml", 1, 22.99, 0.0], [51137620934928, "Lemon Lime / 12 x 330ml", 1, 22.99, 0.0], [51137527677200, "Lemon Lime / 330ml", 1, 1.99, 0.0], [51137616576784, "White Peach / 12 x 330ml", 1, 22.99, 0.0], [51137527644432, "White Peach / 330ml", 1, 1.99, 0.0], [51137527709968, "Orange / 330ml", 1, 1.99, 0.0], [51135284412580, "Orange / 6 x 330ml", 1, 11.49, 0.0]], "o3d3k2": [[51137537245456, "Standard / 120 Kapseln", 1, 22.99, 0.0], [51094754984100, "Vegan / 80 Kapseln", 1, 39.99, 0.0]], "daily100": [[51137527054608, "True Berries / 28 x 40g Starterbox", 1, 109.99, 0.0]], "skinstructure": [[51094757736612, "Peach Iced Tea / 270g", 0, 64.99, 0.0], [51094758097060, "Peach Iced Tea / 9g Probe", 1, 2.99, 0.0], [51094742368420, "Pink Grapefruit / 270g", 0, 64.99, 0.0]], "magnesium": [[51137606385936, "Lemon Lime / 30 x 3,5g", 0, 19.99, 0.0]], "iron": [[51137606418704, "Red Berries / 30 x 4g", 1, 19.99, 0.0]], "saucenback": [[51137611628816, "Schlagcreme / 600g", 1, 35.99, 0.0], [51137611333904, "Schlagcreme / 50g Probe", 0, 3.99, 0.0], [51094757802148, "Sahne / 600g", 0, 35.99, 0.0], [51094758228132, "Sahne / 50g Probe", 1, 3.99, 0.0], [51094740041892, "Coconut Milk / 600g", 0, 35.99, 0.0], [51114869194916, "Coconut Milk / 50g Probe", 1, 3.99, 0.0], [51137534984464, "Sahne (NY Edition) / 2000g", 1, 114.99, 0.0]], "saucenfix": [[51094755049636, "Tomatencremesauce / 40g", 1, 2.99, 0.0], [51094744400036, "Helle Sauce / 40g", 1, 2.99, 0.0], [51094755311780, "Pilzrahm / 40g", 1, 2.99, 0.0]], "oilspray": [[51094742794404, "Butter / 200ml", 1, 5.99, 0.0], [51137614905616, "Lemon / 200ml", 1, 5.99, 0.0], [51094743842980, "Standard / 200ml", 1, 5.99, 0.0]], "gourmet": [[51094630760612, "Teriyaki / 285ml", 1, 6.99, 0.0], [51094630564004, "True Curry Ketchup / 285ml", 1, 6.99, 0.0], [51094751281316, "Burger / 285ml", 1, 6.99, 0.0], [51094748692644, "Caesar Cheese / 285ml", 1, 6.99, 0.0], [51094630629540, "Honey Mustard / 285ml", 0, 6.99, 0.0], [51094630236324, "Balsamico Garlic / 285ml", 0, 6.99, 0.0], [51094630957220, "BBQ / 285ml", 0, 6.99, 0.0], [51094762520740, "Creamy Honey Mustard / 285ml", 0, 6.99, 0.0], [51094750658724, "Creamy Mushroom-Style / 285ml", 0, 6.99, 0.0]], "nomoresugar": [[51094740598948, "Neutral / 1000g", 0, 14.99, 0.0]], "spices": [[51094749118628, "Italian Allrounder / 110g", 1, 6.99, 0.0], [51094751183012, "Knobi-Licious / 130g", 0, 6.99, 0.0]], "zerupbarista": [[51094756229284, "Hazelnut / 65ml", 1, 6.99, 0.0], [51137534361872, "Cinnamon / 65ml", 1, 6.99, 0.0], [51094743056548, "Chocolate / 65ml", 1, 6.99, 0.0], [51114869293220, "Chai / 65ml", 1, 6.99, 0.0], [51137533378832, "Amaretto / 65ml", 1, 6.99, 0.0], [51137603961104, "Sweet Honey / 65ml", 1, 6.99, 0.0], [51137599635728, "Brown Sugar / 65ml", 1, 6.99, 0.0], [51094755868836, "Vanilla / 65ml", 1, 5.99, 0.0], [51094745645220, "Salted Caramel / 65ml", 1, 5.99, 0.0], [51114869129380, "Maple Walnut / 65ml", 1, 5.99, 0.0], [51094755639460, "White Sugar / 65ml", 1, 5.99, 0.0]], "zerupzero": [[51094767042724, "Peach Iced Tea / 65ml", 1, 5.99, 0.0], [51094762160292, "Lemon Iced Tea / 65ml", 1, 5.99, 0.0], [51137601995024, "Honey Melon / 65ml", 1, 6.99, 0.0], [51137529250064, "Blackberry / 65ml", 1, 6.99, 0.0], [51137603895568, "Birne Melisse / 65ml", 1, 6.99, 0.0], [51137529348368, "Himbeer Brause / 65ml", 1, 6.99, 0.0], [51137535082768, "White Boost / 65ml", 1, 6.99, 0.0], [51094755934372, "Pink Grapefruit / 65ml", 1, 6.99, 0.0], [51094754689188, "Ginger Lemon / 65ml", 1, 6.99, 0.0], [51094775398564, "Fruity Sour Mix / 65ml", 1, 6.99, 0.0], [51137527939344, "Mandarin / 65ml", 1, 6.99, 0.0], [51094782050468, "Blutorange / 65ml", 1, 6.99, 0.0], [51137459749028, "Apfel-Birne / 65ml", 1, 6.99, 0.0], [51137527546128, "Winter Cranberry Moreperello / 65ml", 1, 3.49, 6.99], [51137527611664, "Weißer Apfelpunsch / 65ml", 1, 3.49, 6.99], [51094764880036, "Plum Cinnamon / 65ml", 1, 3.49, 6.99], [51137621754128, "Infused Strawberry Mint / 65ml", 1, 6.99, 0.0], [51137614217488, "Infused Gurke Zitrone / 65ml", 1, 6.99, 0.0], [51137621721360, "Peach Apricot / 65ml", 1, 6.99, 0.0], [51137621688592, "Watermelon Hibiscus / 65ml", 1, 6.99, 0.0], [51137621655824, "Kiwi Green Apple / 65ml", 1, 6.99, 0.0], [51137611759888, "Tropical Fruit Mix / 65ml", 1, 6.99, 0.0], [51137537048848, "Green Apple / 65ml", 1, 6.99, 0.0], [51137537016080, "Kräuter-Limonade / 65ml", 1, 6.99, 0.0], [51137529282832, "Pink Peach / 65ml", 1, 6.99, 0.0], [51094741745828, "Peach Holunder Iced Tea / 65ml", 1, 6.99, 0.0], [51137606451472, "Mango Lime / 65ml", 1, 6.99, 0.0], [51137535050000, "Pink Boost / 65ml", 1, 6.99, 0.0], [51094761767076, "Cola-Lime / 65ml", 1, 6.99, 0.0], [51094774055076, "Wild Berry / 65ml", 1, 6.99, 0.0], [51094755377316, "Mojito / 65ml", 1, 6.99, 0.0], [51094777987236, "Strawberry-Daiquiri / 65ml", 1, 6.99, 0.0], [51094761373860, "Hugo / 65ml", 1, 6.99, 0.0], [51094754820260, "Granatapfel Mojito / 65ml", 1, 6.99, 0.0], [51094752788644, "Pina Colada / 65ml", 1, 6.99, 0.0], [51137613463824, "Caipirinha / 65ml", 1, 6.99, 0.0], [51094629744804, "Moreperello / 65ml", 1, 6.99, 0.0], [51137612775696, "Peach Orange / 65ml", 1, 6.99, 0.0], [51137533313296, "Fruity Christmas Punch / 65ml", 1, 3.49, 6.99], [51094779953316, "Multifruit / 65ml", 1, 5.99, 0.0], [51094764028068, "Holunderblüte / 65ml", 1, 5.99, 0.0], [51094758326436, "Pear / 65ml", 1, 5.99, 0.0], [51094759047332, "Blackcurrant / 65ml", 1, 5.99, 0.0], [51094754263204, "Red Apple / 65ml", 1, 5.99, 0.0], [51137613037840, "Red Apple / 10 x 65ml", 1, 17.99, 59.99], [51094766518436, "Capri Orange / 65ml", 1, 5.99, 0.0], [51094774710436, "Apple Cranberry / 65ml", 1, 5.99, 0.0], [51094752362660, "Cherry / 65ml", 1, 5.99, 0.0], [51094777135268, "Lemon Lime Soda / 65ml", 1, 5.99, 0.0]], "wrap": [[51094764814500, "372g (6 x 62g)", 1, 4.99, 0.0]], "salsa": [[51094741581988, "Mild / 300g", 0, 6.99, 0.0]], "moremelade": [[51094741254308, "Raspberry-Blueberry, Squeezie / 250g", 1, 4.99, 0.0], [51094755213476, "Strawberry, Squeezie / 250g", 1, 4.99, 0.0], [51094754721956, "Strawberry, Glas / 240g", 0, 4.99, 0.0]], "nutbutter": [[51094749413540, "White Almond Coconut / 250g", 0, 11.99, 0.0], [51094751019172, "Hazelnut Vanilla / 250g", 0, 11.99, 0.0], [51094746595492, "Sweet & Salty Cashew / 250g", 0, 11.99, 0.0]], "shaker": [[51094743974052, "Red / 700ml", 1, 11.99, 0.0], [51094744301732, "Purple / 700ml", 0, 11.99, 0.0], [51094761111716, "Blue / 700ml", 1, 11.99, 0.0]], "aquabottle": [[51123368558756, "Red", 1, 22.99, 0.0]], "breakfastcup": [[51137615429904, "Red", 1, 19.99, 0.0]], "backform": [[51137621197072, "Default Title", 1, 29.99, 0.0]], "muffinform": [[51103576293540, "Default Title", 1, 6.59, 10.99]], "cosmeticbag": [[51137620181264, "Default Title", 1, 29.99, 0.0]]}; /* je Produkt: [[variantId, Sortenname, 1|0 kaufbar, Preis], ...] */
 const RESTOCKS = {"since": "17. Juli 2026", "back": [], "gone": []}; /* beobachtete Wechsel seit dem letzten Abgleich: {since, back[], gone[]} */
 const NEWPRODUCTS = [];
 PRODUCTS.forEach(p=>{ const l=LIVE[p.id]; if(l){ p.varAvail=l[0]; p.varTotal=l[1]; p.avail = l[0]===0?"ausverkauft":(l[0]>=l[1]?"auf Lager":"limitiert"); } });
@@ -1013,6 +1071,9 @@ const RETAILERS = [["Offizieller Shop","ja","Komplettes Sortiment"],["Amazon.de"
 
 function imgURL(u){ if(!u)return null; if(!/^https?:/.test(u))return u; return u + (u.indexOf("?")>=0?"&":"?") + "width=640"; }
 function perServing(p){ if(p.perServ!=null) return p.perServ; if(p.price!=null&&p.servings) return p.price/p.servings; return null; }
+/* "Im Angebot" = mind. eine KAUFBARE Variante hat einen echten Streichpreis (compare_at aus
+   dem Shopify-Abgleich, 5. Feld in VARIANTS — echte Shop-Daten, kein geratener Rabatt) */
+function prodOnSale(pid){ return (VARIANTS[pid]||[]).some(v=>v[2]&&v[4]&&v[4]>v[3]); }
 /* Grundpreis (PAngV-Logik): €/kg bzw. €/l aus dem kuratierten size-Feld. Stueck-Angaben
    (Sticks/Kapseln/Gummies/Wraps), Spannen ("110–130 g") und leere Groessen bekommen KEINEN
    Grundpreis — lieber keine Zahl als eine geratene. "x g / Portion" wird nur mit bekannter
@@ -1145,7 +1206,7 @@ function parseVariants(pid){
     let size=null,flavor=v[1];
     if(parts.length>1&&/\d/.test(parts[parts.length-1])){size=parts.pop();flavor=parts.join(" / ");}
     if(flavor==="Default Title")flavor="Standard";
-    return {vid:v[0],flavor:flavor,size:size,av:!!v[2],pr:v[3]||0};
+    return {vid:v[0],flavor:flavor,size:size,av:!!v[2],pr:v[3]||0,ca:v[4]||0};
   });
   const names=[...new Set(parsed.map(x=>x.flavor))];
   if(names.length>1){
@@ -1321,6 +1382,17 @@ const SETS=[
 /* Anklick-Option "Nur komplett lieferbare Sets" (Biyan) — filtert Sets, in denen gerade
    mindestens ein Artikel ausverkauft ist; die Zahl der ausgeblendeten wird ehrlich genannt. */
 let setsOnlyAvail=false;
+/* Ansicht im Sets-Reiter: "ours" (kuratiert + Generator) oder "com" (Community & Creator) */
+let setsView="ours";
+function applySetsView(){
+  const ours=setsView==="ours";
+  const a=document.getElementById("setsOurs"),b=document.getElementById("setsCom");
+  if(a)a.hidden=!ours; if(b)b.hidden=ours;
+  const mo=document.getElementById("modeOurs"),mc=document.getElementById("modeCom");
+  if(mo){mo.classList.toggle("on",ours);mo.setAttribute("aria-pressed",String(ours));}
+  if(mc){mc.classList.toggle("on",!ours);mc.setAttribute("aria-pressed",String(!ours));}
+  if(!ours)renderComSets();
+}
 /* Anbieter-Wahl "Nur MORE-Shop / + andere Anbieter" (Biyan: wenn nicht alles bei MORE
    lieferbar ist, muss man auf mehrere Shops verteilen): im Alt-Modus zeigen AUSVERKAUFTE
    Set-Posten die Anbieter-Links aus shopLinks() (Amazon-Direktlink wo kuratiert, sonst
@@ -1424,6 +1496,76 @@ function setSetsSrc(alt){
 }
 document.getElementById("setSrcMore").onclick=()=>setSetsSrc(false);
 document.getElementById("setSrcAlt").onclick=()=>setSetsSrc(true);
+document.getElementById("modeOurs").onclick=()=>{setsView="ours";applySetsView();updateHash();};
+document.getElementById("modeCom").onclick=()=>{setsView="com";applySetsView();updateHash();};
+
+/* RABATTE (Biyan: prominenter Reiter mit allen bekannten Codes + eigener Creator-Code-Liste):
+   KNOWN_CODES ist kuratiert und ehrlich datiert (ohne Gewaehr, Codes wechseln woechentlich);
+   Creator-Codes pflegt der Nutzer selbst lokal (mn-ccodes) und kann EINEN als aktiv setzen —
+   der wandert dann als ?discount= in den 1-Klick-Warenkorb-Link (bewusste NUTZER-Wahl, kein
+   Auto-Eintragen fremder Codes durch uns; eigener Partner-Code via AFF bleibt nachrangig). */
+const KNOWN_CODES=[
+  {code:"AKTION",desc:"Wochen-Aktionscode – zuletzt bis 20 % (10 % auf Proteine)",stand:"Juli 2026"}
+];
+let creatorCodes=[];try{creatorCodes=JSON.parse(localStorage.getItem("mn-ccodes")||"[]")||[];}catch(e){creatorCodes=[];}
+function saveCreatorCodes(){try{localStorage.setItem("mn-ccodes",JSON.stringify(creatorCodes));}catch(e){}}
+function activeUserCode(){try{return localStorage.getItem("mn-usecode")||"";}catch(e){return "";}}
+function setActiveUserCode(c){try{if(c)localStorage.setItem("mn-usecode",c);else localStorage.removeItem("mn-usecode");}catch(e){}}
+async function copyCode(code,btn){
+  try{await navigator.clipboard.writeText(code);btn.textContent="✓ kopiert";}
+  catch(e){window.prompt("Code kopieren:",code);}
+  setTimeout(()=>{if(btn.isConnected)btn.textContent="Kopieren";},1500);
+}
+function renderCodes(){
+  const kl=document.getElementById("codeList"); if(!kl)return;
+  const act=activeUserCode();
+  kl.innerHTML=KNOWN_CODES.map(c=>`<div class="coderow"><b class="tnum">${escT(c.code)}</b><span class="cdesc">${escT(c.desc)} · Stand ${escT(c.stand)}</span><button type="button" class="goalbtn" data-ccopy="${esc(c.code)}">Kopieren</button></div>`).join("");
+  document.getElementById("ccList").innerHTML=creatorCodes.length
+    ?creatorCodes.map((c,ix)=>`<div class="coderow"><b class="tnum">${escT(c.code)}</b><span class="cdesc">von ${escT(c.name)}</span><button type="button" class="goalbtn" data-ccopy="${esc(c.code)}">Kopieren</button><button type="button" class="goalbtn${act===c.code?" on":""}" data-cuse="${ix}" aria-pressed="${act===c.code}">${act===c.code?"✓ aktiv im Warenkorb-Link":"Im Warenkorb-Link nutzen"}</button><button type="button" class="goalbtn" data-crm="${ix}" aria-label="${esc(c.code)} entfernen">✕</button></div>`).join("")
+    :`<p class="note">Noch keine Creator-Codes gespeichert.</p>`;
+  document.querySelectorAll("#panel-rabatte [data-ccopy]").forEach(b=>b.onclick=()=>copyCode(b.dataset.ccopy,b));
+  document.querySelectorAll("#panel-rabatte [data-cuse]").forEach(b=>b.onclick=()=>{const c=creatorCodes[Number(b.dataset.cuse)];setActiveUserCode(activeUserCode()===c.code?"":c.code);renderCodes();renderCart();});
+  document.querySelectorAll("#panel-rabatte [data-crm]").forEach(b=>b.onclick=()=>{const c=creatorCodes[Number(b.dataset.crm)];if(c&&activeUserCode()===c.code)setActiveUserCode("");creatorCodes.splice(Number(b.dataset.crm),1);saveCreatorCodes();renderCodes();renderCart();});
+}
+document.getElementById("ccAdd").onclick=()=>{
+  const nEl=document.getElementById("ccName"),cEl=document.getElementById("ccCode");
+  const n=nEl.value.replace(/[<>]/g,"").trim().slice(0,30);
+  const c=cEl.value.replace(/[^A-Za-z0-9._-]/g,"").trim().slice(0,30);
+  nEl.style.borderColor=n?"":"var(--crit)";cEl.style.borderColor=c?"":"var(--crit)";
+  if(!n||!c)return;
+  if(!creatorCodes.some(x=>x.code.toLowerCase()===c.toLowerCase()))creatorCodes.unshift({name:n,code:c});
+  creatorCodes=creatorCodes.slice(0,30);saveCreatorCodes();
+  nEl.value="";cEl.value="";
+  renderCodes();
+};
+
+/* COMMUNITY-WUENSCHE (Biyan: Reiter fuer Sorten-Wuensche + Verbesserungsvorschlaege). EHRLICH
+   ohne Server: Wuensche liegen lokal (mn-wishes); FEEDBACK_MAIL kommt mit dem Launch-Impressum
+   (Launch-Checkliste) — sobald gesetzt, bekommt jeder Wunsch einen mailto-Absende-Knopf. */
+const FEEDBACK_MAIL="";
+let wishes=[];try{wishes=JSON.parse(localStorage.getItem("mn-wishes")||"[]")||[];}catch(e){wishes=[];}
+function saveWishes(){try{localStorage.setItem("mn-wishes",JSON.stringify(wishes));}catch(e){}}
+function wishMailto(w2){return `mailto:${FEEDBACK_MAIL}?subject=${encodeURIComponent("Suppwert-Wunsch: "+w2.type)}&body=${encodeURIComponent((w2.prod?"Betrifft: "+w2.prod+"\n\n":"")+w2.text)}`;}
+function renderWishes(){
+  const l=document.getElementById("wishList"); if(!l)return;
+  l.innerHTML=wishes.length
+    ?wishes.map((w2,ix)=>`<div class="coderow"><span class="cdesc"><b>${escT(w2.type)}</b>${w2.prod?` · ${escT(w2.prod)}`:""}<br>${escT(w2.text)}</span><small style="color:var(--muted)">${new Date(w2.ts).toLocaleDateString("de-DE")}</small>${FEEDBACK_MAIL?`<a class="goalbtn" style="text-decoration:none" href="${wishMailto(w2)}">Per E-Mail senden</a>`:""}<button type="button" class="goalbtn" data-wrm="${ix}" aria-label="Wunsch entfernen">✕</button></div>`).join("")
+    :`<p class="note">Noch keine Wünsche notiert.</p>`;
+  l.querySelectorAll("[data-wrm]").forEach(b=>b.onclick=()=>{wishes.splice(Number(b.dataset.wrm),1);saveWishes();renderWishes();});
+}
+document.getElementById("wSend").onclick=()=>{
+  const tEl=document.getElementById("wText");
+  const t=tEl.value.replace(/[<>]/g,"").trim().slice(0,500);
+  if(!t){tEl.style.borderColor="var(--crit)";return;}
+  tEl.style.borderColor="";
+  wishes.unshift({type:document.getElementById("wType").value,prod:document.getElementById("wProd").value.replace(/[<>]/g,"").trim().slice(0,60),text:t,ts:Date.now()});
+  wishes=wishes.slice(0,50);saveWishes();
+  tEl.value="";document.getElementById("wProd").value="";
+  document.getElementById("wNote").textContent=FEEDBACK_MAIL
+    ?`Gespeichert – über „Per E-Mail senden" in der Liste unten geht er direkt raus.`
+    :`Gespeichert (nur in deinem Browser). Zum Launch kommt die Kontakt-E-Mail dazu – dann bekommt jeder Wunsch einen Absende-Knopf.`;
+  renderWishes();
+};
 document.getElementById("setSearch").oninput=()=>{
   setsQuery=document.getElementById("setSearch").value.trim().toLowerCase();
   renderSets();
@@ -1904,12 +2046,13 @@ function cardHTML(p){
 let activeCats=[], view="cards", tsort={key:"_total",dir:-1};
 function getFiltered(){
   const q=document.getElementById("search").value.toLowerCase().trim();
-  const fA=document.getElementById("fAvail").checked, fV=document.getElementById("fVegan").checked, fS=document.getElementById("fSugar").checked;
+  const fA=document.getElementById("fAvail").checked, fV=document.getElementById("fVegan").checked, fS=document.getElementById("fSugar").checked, fO=document.getElementById("fSale").checked;
   let list=PRODUCTS.filter(p=>{
     if(activeCats.length&&!activeCats.includes(p.cat))return false;
     if(fA&&p.avail!=="auf Lager")return false;
     if(fV&&!(p.tags||[]).includes("vegan"))return false;
     if(fS&&!((p.sugar!=null&&p.sugar<=2)||(p.tags||[]).some(t=>/zuckerfrei|zuckerarm|Zucker|Stevia/.test(t))))return false;
+    if(fO&&!prodOnSale(p.id))return false;
     if(q){const hay=(p.name+" "+p.note+" "+(p.tags||[]).join(" ")).toLowerCase();if(!hay.includes(q))return false;}
     return true;
   });
@@ -1975,12 +2118,15 @@ function render(){
    Ueberblick, nicht aneinandergereiht): darin Kategorie-Chips als Filter, Standard "Alle"
    zeigt das komplette Sortiment in Kategorie-SEKTIONEN. Alte Deep-Links #proteine etc.
    funktionieren weiter (applyHash/showTab routen sie auf den Produkte-Reiter + Filter). */
-const TABS=[["uebersicht","Übersicht",null],["produkte","Produkte",null],["vergleich","Vergleich",null],["empfehlungen","Empfehlungen",null],["sets","Sets",null],["community","Community-Sets",null],["ratgeber","Ratgeber",null],["buy","Wo kaufen",null],["info","Info",null]];
+const TABS=[["uebersicht","Übersicht",null],["produkte","Produkte",null],["vergleich","Vergleich",null],["empfehlungen","Empfehlungen",null],["sets","Sets",null],["rabatte","Rabatte",null],["wuensche","Community",null],["ratgeber","Ratgeber",null],["buy","Wo kaufen",null],["info","Info",null]];
 function renderTabs(){
   document.getElementById("tabs").innerHTML=TABS.map(t=>`<button class="tab" data-tab="${t[0]}" role="tab" aria-selected="false" aria-controls="${t[0]==="produkte"?"panel-products":"panel-"+t[0]}">${t[1]}${t[0]==="produkte"?`<span class="tcount">${PRODUCTS.length}</span>`:""}</button>`).join("");
   document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 }
 function showTab(tab){
+  /* Legacy-/Share-Hash #community = Community-Ansicht IM Sets-Reiter (Biyan: ein Reiter,
+     prominenter Umschalter) — alte geteilte Links bleiben damit gueltig */
+  if(tab==="community"){tab="sets";setsView="com";}
   const isCat=!!CATS[tab], btnTab=isCat?"produkte":tab;
   document.querySelectorAll(".tab").forEach(b=>{const on=b.dataset.tab===btnTab;b.classList.toggle("on",on);b.setAttribute("aria-selected",on?"true":"false");b.tabIndex=on?0:-1;});
   document.getElementById("panel-uebersicht").classList.toggle("on",tab==="uebersicht");
@@ -1988,8 +2134,11 @@ function showTab(tab){
   document.getElementById("panel-vergleich").classList.toggle("on",tab==="vergleich");
   document.getElementById("panel-empfehlungen").classList.toggle("on",tab==="empfehlungen");
   document.getElementById("panel-sets").classList.toggle("on",tab==="sets");
-  document.getElementById("panel-community").classList.toggle("on",tab==="community");
-  if(tab==="community")renderComSets();
+  document.getElementById("panel-rabatte").classList.toggle("on",tab==="rabatte");
+  document.getElementById("panel-wuensche").classList.toggle("on",tab==="wuensche");
+  if(tab==="rabatte")renderCodes();
+  if(tab==="wuensche")renderWishes();
+  if(tab==="sets")applySetsView();
   if(tab==="vergleich"){renderVchips();renderDuel();renderVtable();}
   document.getElementById("panel-ratgeber").classList.toggle("on",tab==="ratgeber");
   document.getElementById("panel-buy").classList.toggle("on",tab==="buy");
@@ -2019,7 +2168,7 @@ srcAltBtn.addEventListener("click",()=>setAltSrc(true,true));
 // Dropdown-Sortierung auf die Tabellen-Sortierung spiegeln (sonst wirkt das Dropdown in der Tabellen-Ansicht nicht)
 const SORT2TSORT={score:["_total",-1],price:["price",1],perserv:["perserv",1],protein:["protein",-1],sugar:["sugar",1],rating:["rating",-1],reviews:["reviews",-1]};
 document.getElementById("sort").addEventListener("change",()=>{const m=SORT2TSORT[document.getElementById("sort").value];if(m){tsort.key=m[0];tsort.dir=m[1];}});
-["search","sort","fAvail","fVegan","fSugar"].forEach(id=>{const el=document.getElementById(id);el.addEventListener(el.tagName==="INPUT"&&el.type!=="checkbox"?"input":"change",render);});
+["search","sort","fAvail","fVegan","fSugar","fSale"].forEach(id=>{const el=document.getElementById(id);el.addEventListener(el.tagName==="INPUT"&&el.type!=="checkbox"?"input":"change",render);});
 document.getElementById("vsearch").addEventListener("input",vSearch);
 document.getElementById("vCards").onclick=()=>{view="cards";document.getElementById("vCards").classList.add("on");document.getElementById("vTable").classList.remove("on");render();};
 document.getElementById("vTable").onclick=()=>{view="table";document.getElementById("vTable").classList.add("on");document.getElementById("vCards").classList.remove("on");render();};
@@ -2065,7 +2214,10 @@ function addToCart(pid,vid){
    wuerde die Partner-Bewerbung gefaehrden. affLink haengt danach den Tracking-Parameter an. */
 function cartURLFor(items){
   let u="https://morenutrition.de/cart/"+items.map(i=>i.vid+":"+i.q).join(",");
-  if(AFF.enabled&&AFF.moreCode)u+="?discount="+encodeURIComponent(AFF.moreCode);
+  /* Vorrang: vom NUTZER im Rabatte-Reiter aktiv gesetzter Creator-Code (bewusste Wahl),
+     sonst unser Partner-Code (erst mit AFF.enabled) */
+  const code=activeUserCode()||(AFF.enabled&&AFF.moreCode?AFF.moreCode:"");
+  if(code)u+="?discount="+encodeURIComponent(code);
   return affLink(u);
 }
 function cartURL(){return cartURLFor(cart);}
@@ -2334,6 +2486,7 @@ function currentTab(){const b=document.querySelector(".tab.on");return b?b.datas
 function updateHash(){
   if(!hashReady)return;
   let tab=currentTab();
+  if(tab==="sets"&&setsView==="com")tab="community"; /* Community-Ansicht bleibt als #community teilbar */
   if(tab==="produkte"&&activeCats.length===1)tab=activeCats[0]; /* alte #proteine-Links bleiben die Wahrheit */
   let h="#"+tab;
   if(CATS[tab]||tab==="produkte"){
@@ -2341,7 +2494,7 @@ function updateHash(){
     /* Kategorie-KOMBIS (>=2) wandern als cats=a,b in den Hash (Reihenfolge stabil = CATORDER) */
     if(tab==="produkte"&&activeCats.length>1)ps.set("cats",CATORDER.filter(x=>activeCats.includes(x)).join(","));
     const q=document.getElementById("search").value.trim();if(q)ps.set("q",q);
-    const f=[["fAvail","a"],["fVegan","v"],["fSugar","s"]].filter(x=>document.getElementById(x[0]).checked).map(x=>x[1]).join("");if(f)ps.set("f",f);
+    const f=[["fAvail","a"],["fVegan","v"],["fSugar","s"],["fSale","o"]].filter(x=>document.getElementById(x[0]).checked).map(x=>x[1]).join("");if(f)ps.set("f",f);
     const s=document.getElementById("sort").value;if(s!=="score")ps.set("sort",s);
     if(view==="table")ps.set("view","table");
     const str=ps.toString();if(str)h+="?"+str;
@@ -2393,7 +2546,7 @@ function applyHash(){
   if(m.startsWith("warenkorb=")){openCartImport(m.slice(10));return true;}
   if(m.startsWith("set=")){openSetImport(m.slice(4));return true;}
   const qi=m.indexOf("?"),tab=qi<0?m:m.slice(0,qi),qs=qi<0?"":m.slice(qi+1);
-  if(!(CATS[tab]||["uebersicht","produkte","vergleich","empfehlungen","sets","community","ratgeber","buy","info"].includes(tab)))return false;
+  if(!(CATS[tab]||["uebersicht","produkte","vergleich","empfehlungen","sets","community","rabatte","wuensche","ratgeber","buy","info"].includes(tab)))return false;
   showTab(tab);
   if(CATS[tab]||tab==="produkte"){ /* Parameter anwenden — leeres qs setzt bewusst auf Defaults zurück (der Hash ist die Wahrheit) */
     const ps=new URLSearchParams(qs);
@@ -2403,6 +2556,7 @@ function applyHash(){
     document.getElementById("fAvail").checked=f.indexOf("a")>=0;
     document.getElementById("fVegan").checked=f.indexOf("v")>=0;
     document.getElementById("fSugar").checked=f.indexOf("s")>=0;
+    document.getElementById("fSale").checked=f.indexOf("o")>=0;
     const so=ps.get("sort");
     if(so&&SORT2TSORT[so]){document.getElementById("sort").value=so;tsort.key=SORT2TSORT[so][0];tsort.dir=SORT2TSORT[so][1];}
     const tb=ps.get("view")==="table";

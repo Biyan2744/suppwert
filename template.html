@@ -432,6 +432,12 @@ body.has-cart .cmpchip{bottom:74px}
 .goalbtn:hover{border-color:var(--muted);color:var(--text-1)}
 .goalbtn.on{background:var(--text-1);color:var(--surface-1);border-color:var(--text-1)}
 /* Sets: Anklick-Optionen oben, Creator-Zeile + Aktions-Buttons auf Community-Karten, Builder-Formular */
+/* Prominenter Sets/Community-Umschalter */
+.setmode{display:flex;gap:8px;margin-bottom:16px}
+.segbtn{flex:1;padding:12px 10px;border-radius:12px;border:1px solid var(--line);background:var(--card);font-weight:750;font-size:14px;cursor:pointer;color:var(--text-2);transition:background-color .15s ease,color .15s ease,border-color .15s ease,transform .08s ease}
+.segbtn:hover{border-color:var(--muted);color:var(--text-1)}
+.segbtn.on{background:var(--text-1);color:var(--surface-1);border-color:var(--text-1)}
+.segbtn:active{transform:scale(.98)}
 .setctl{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
 .setsearch{flex:1 1 100%;max-width:420px}
 @media(min-width:700px){.setsearch{flex:0 1 300px}}
@@ -440,6 +446,12 @@ body.has-cart .cmpchip{bottom:74px}
 .setform{display:flex;flex-direction:column;gap:8px;margin:12px 0 4px}
 .setform input{border:1px solid var(--line);background:var(--surface-1);color:var(--text-1);border-radius:10px;padding:9px 12px;font-size:13.5px}
 .setform input::placeholder{color:var(--muted)}
+.setform textarea{border:1px solid var(--line);background:var(--surface-1);color:var(--text-1);border-radius:10px;padding:9px 12px;font-size:13.5px;resize:vertical;font-family:inherit}
+.setform textarea::placeholder{color:var(--muted)}
+/* Code-/Wunsch-Zeilen (Rabatte- & Community-Reiter) */
+.coderow{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:9px 0;border-bottom:1px solid var(--grid);font-size:13px}
+.coderow>b{font-size:14px;letter-spacing:.6px}
+.coderow .cdesc{color:var(--text-2);flex:1;min-width:150px;font-size:12.5px;line-height:1.45}
 /* Mini-Produktbilder in Sets (Biyan: sehen, was man bekommt, nicht nur Namen): pthumb =
    runder Thumb (echtes Bild oder Kategorie-Icon-Fallback — respektiert SHOW_PRODUCT_IMGS),
    setthumbs = ueberlappender Bild-Staple am Karten-Kopf, faechert beim Karten-Hover auf */
@@ -663,6 +675,7 @@ header.top.scrolled{box-shadow:var(--shadow)}
         <label class="tg"><input type="checkbox" id="fAvail">nur verfügbar</label>
         <label class="tg"><input type="checkbox" id="fVegan">vegan</label>
         <label class="tg"><input type="checkbox" id="fSugar">zuckerarm</label>
+        <label class="tg" title="Mindestens eine kaufbare Sorte hat gerade einen Streichpreis im MORE-Shop"><input type="checkbox" id="fSale">im Angebot</label>
       </div>
       <div class="viewtog"><button id="vCards" class="on">▦ Karten</button><button id="vTable">≡ Tabelle</button></div>
     </div>
@@ -696,7 +709,14 @@ header.top.scrolled{box-shadow:var(--shadow)}
 
   <!-- SETS -->
   <section class="panel" id="panel-sets" role="tabpanel">
-    <div class="phead"><h2><span class="hbar" style="--acc:var(--acc-supplements)"></span>Fertige Sets</h2><p>Von uns redaktionell zusammengestellte Produkt-Kombis – ein Klick legt alle lieferbaren Artikel in den Merkzettel. Das sind unsere Empfehlungen aus dem Sortiment, keine Kaufdaten.</p></div>
+    <div class="phead"><h2><span class="hbar" style="--acc:var(--acc-supplements)"></span>Sets</h2><p>Fertige Produkt-Kombis mit 1-Klick-Merkzettel: von uns kuratiert und generiert – oder von Creatorn und der Community per Link geteilt.</p></div>
+    <!-- Prominenter Umschalter (Biyan: Sets und Community-Sets nicht getrennt, sondern EIN
+         Reiter mit Umschalter) — Legacy-Hash #community routet auf die Community-Ansicht -->
+    <div class="setmode" role="tablist" aria-label="Set-Bereich wählen">
+      <button type="button" class="segbtn on" id="modeOurs" aria-pressed="true">Unsere Sets</button>
+      <button type="button" class="segbtn" id="modeCom" aria-pressed="false">Community &amp; Creator</button>
+    </div>
+    <div id="setsOurs">
     <div class="setctl">
       <input class="search setsearch" id="setSearch" placeholder="Sets durchsuchen (Name, Produkt)…" aria-label="Sets durchsuchen" autocomplete="off">
       <button type="button" class="catchip" id="setAvail" aria-pressed="false">Nur komplett lieferbare Sets</button>
@@ -724,17 +744,55 @@ header.top.scrolled{box-shadow:var(--shadow)}
       <div id="sgOut"></div>
     </details>
     <div class="setgrid" id="setgrid"></div>
+    </div><!-- /setsOurs -->
+    <div id="setsCom" hidden>
+      <div class="setctl">
+        <div class="goalbtns" id="comCreators" style="margin:0"></div>
+        <button type="button" class="catchip" id="comNew">＋ Eigenes Set erstellen &amp; teilen</button>
+      </div>
+      <p class="note" id="comnote"></p>
+      <div class="setgrid" id="comgrid"></div>
+    </div><!-- /setsCom -->
   </section>
 
-  <!-- COMMUNITY-SETS (eigener Reiter, Biyan) -->
-  <section class="panel" id="panel-community" role="tabpanel">
-    <div class="phead"><h2><span class="hbar" style="--acc:var(--m-value)"></span>Community-Sets</h2><p>Per Link geteilte Sets von Creatorn und aus der Community – gespeichert nur in deinem Browser, Preise und Verfügbarkeit live vom Shop-Abgleich. Erstelle dein eigenes Set aus deinem Merkzettel und teile den Link.</p></div>
-    <div class="setctl">
-      <div class="goalbtns" id="comCreators" style="margin:0"></div>
-      <button type="button" class="catchip" id="comNew">＋ Eigenes Set erstellen &amp; teilen</button>
+  <!-- RABATTE -->
+  <section class="panel" id="panel-rabatte" role="tabpanel">
+    <div class="phead"><h2><span class="hbar" style="--acc:var(--gold)"></span>Rabattcodes &amp; Aktionen</h2><p>Bekannte Codes für den MORE-Shop – ohne Gewähr, Codes wechseln oft; verbindlich ist der Shop. Diese Seite ist unabhängig, die Codes gehören MORE bzw. den Creatorn.</p></div>
+    <div class="pnl" style="margin-bottom:14px">
+      <h3>Aktuelle Codes</h3>
+      <div id="codeList"></div>
+      <p class="note">Die großen Aktionen starten üblicherweise sonntags um 11:00 Uhr (siehe Countdown oben; Community-Beobachtung, ohne Gewähr). Kursierende 50-%-Codes sind meist unbestätigt.</p>
     </div>
-    <p class="note" id="comnote"></p>
-    <div class="setgrid" id="comgrid"></div>
+    <div class="pnl">
+      <h3>Deine Creator-Codes</h3>
+      <p class="note" style="margin-top:4px">Trag die Codes deiner Lieblings-Creator ein (gespeichert nur in deinem Browser). Einen Code kannst du als aktiv setzen – der 1-Klick-MORE-Warenkorb trägt ihn dann beim Checkout automatisch ein. Gültigkeit prüfen wir nicht.</p>
+      <div class="setform" style="max-width:420px">
+        <input id="ccName" maxlength="30" placeholder="Creator-Name" aria-label="Creator-Name">
+        <input id="ccCode" maxlength="30" placeholder="Code, z. B. NAME10" aria-label="Rabattcode">
+        <button type="button" class="setadd" id="ccAdd">Code speichern</button>
+      </div>
+      <div id="ccList"></div>
+    </div>
+  </section>
+
+  <!-- COMMUNITY: WUENSCHE & VORSCHLAEGE -->
+  <section class="panel" id="panel-wuensche" role="tabpanel">
+    <div class="phead"><h2><span class="hbar" style="--acc:var(--brand)"></span>Community – Wünsche &amp; Vorschläge</h2><p>Welche Sorte fehlt dir? Welches Produkt soll MORE bringen? Was können wir an der Seite besser machen?</p></div>
+    <div class="pnl" style="margin-bottom:14px">
+      <h3>Wunsch aufschreiben</h3>
+      <div class="setform" style="max-width:520px">
+        <select id="wType" class="sort" aria-label="Art des Wunsches"><option value="Neue Sorte">Neue Sorte</option><option value="Neues Produkt">Neues Produkt</option><option value="Verbesserung der Seite">Verbesserung der Seite</option><option value="Sonstiges">Sonstiges</option></select>
+        <input id="wProd" maxlength="60" placeholder="Betrifft (optional), z. B. Clear Protein" aria-label="Betrifft (optional)">
+        <textarea id="wText" maxlength="500" rows="4" placeholder="Dein Wunsch oder Vorschlag…" aria-label="Wunsch-Text"></textarea>
+        <button type="button" class="setadd" id="wSend">Wunsch speichern</button>
+      </div>
+      <p class="note" id="wNote"></p>
+    </div>
+    <div class="pnl">
+      <h3>Deine Wünsche</h3>
+      <p class="note" style="margin-top:4px">Ohne Server liegen Wünsche zunächst nur in deinem Browser. Zum Launch kommt eine Kontakt-E-Mail ins Impressum – dann bekommt jeder Wunsch einen direkten Absende-Knopf.</p>
+      <div id="wishList"></div>
+    </div>
   </section>
 
   <!-- RATGEBER -->
@@ -1013,6 +1071,9 @@ const RETAILERS = [["Offizieller Shop","ja","Komplettes Sortiment"],["Amazon.de"
 
 function imgURL(u){ if(!u)return null; if(!/^https?:/.test(u))return u; return u + (u.indexOf("?")>=0?"&":"?") + "width=640"; }
 function perServing(p){ if(p.perServ!=null) return p.perServ; if(p.price!=null&&p.servings) return p.price/p.servings; return null; }
+/* "Im Angebot" = mind. eine KAUFBARE Variante hat einen echten Streichpreis (compare_at aus
+   dem Shopify-Abgleich, 5. Feld in VARIANTS — echte Shop-Daten, kein geratener Rabatt) */
+function prodOnSale(pid){ return (VARIANTS[pid]||[]).some(v=>v[2]&&v[4]&&v[4]>v[3]); }
 /* Grundpreis (PAngV-Logik): €/kg bzw. €/l aus dem kuratierten size-Feld. Stueck-Angaben
    (Sticks/Kapseln/Gummies/Wraps), Spannen ("110–130 g") und leere Groessen bekommen KEINEN
    Grundpreis — lieber keine Zahl als eine geratene. "x g / Portion" wird nur mit bekannter
@@ -1145,7 +1206,7 @@ function parseVariants(pid){
     let size=null,flavor=v[1];
     if(parts.length>1&&/\d/.test(parts[parts.length-1])){size=parts.pop();flavor=parts.join(" / ");}
     if(flavor==="Default Title")flavor="Standard";
-    return {vid:v[0],flavor:flavor,size:size,av:!!v[2],pr:v[3]||0};
+    return {vid:v[0],flavor:flavor,size:size,av:!!v[2],pr:v[3]||0,ca:v[4]||0};
   });
   const names=[...new Set(parsed.map(x=>x.flavor))];
   if(names.length>1){
@@ -1321,6 +1382,17 @@ const SETS=[
 /* Anklick-Option "Nur komplett lieferbare Sets" (Biyan) — filtert Sets, in denen gerade
    mindestens ein Artikel ausverkauft ist; die Zahl der ausgeblendeten wird ehrlich genannt. */
 let setsOnlyAvail=false;
+/* Ansicht im Sets-Reiter: "ours" (kuratiert + Generator) oder "com" (Community & Creator) */
+let setsView="ours";
+function applySetsView(){
+  const ours=setsView==="ours";
+  const a=document.getElementById("setsOurs"),b=document.getElementById("setsCom");
+  if(a)a.hidden=!ours; if(b)b.hidden=ours;
+  const mo=document.getElementById("modeOurs"),mc=document.getElementById("modeCom");
+  if(mo){mo.classList.toggle("on",ours);mo.setAttribute("aria-pressed",String(ours));}
+  if(mc){mc.classList.toggle("on",!ours);mc.setAttribute("aria-pressed",String(!ours));}
+  if(!ours)renderComSets();
+}
 /* Anbieter-Wahl "Nur MORE-Shop / + andere Anbieter" (Biyan: wenn nicht alles bei MORE
    lieferbar ist, muss man auf mehrere Shops verteilen): im Alt-Modus zeigen AUSVERKAUFTE
    Set-Posten die Anbieter-Links aus shopLinks() (Amazon-Direktlink wo kuratiert, sonst
@@ -1424,6 +1496,76 @@ function setSetsSrc(alt){
 }
 document.getElementById("setSrcMore").onclick=()=>setSetsSrc(false);
 document.getElementById("setSrcAlt").onclick=()=>setSetsSrc(true);
+document.getElementById("modeOurs").onclick=()=>{setsView="ours";applySetsView();updateHash();};
+document.getElementById("modeCom").onclick=()=>{setsView="com";applySetsView();updateHash();};
+
+/* RABATTE (Biyan: prominenter Reiter mit allen bekannten Codes + eigener Creator-Code-Liste):
+   KNOWN_CODES ist kuratiert und ehrlich datiert (ohne Gewaehr, Codes wechseln woechentlich);
+   Creator-Codes pflegt der Nutzer selbst lokal (mn-ccodes) und kann EINEN als aktiv setzen —
+   der wandert dann als ?discount= in den 1-Klick-Warenkorb-Link (bewusste NUTZER-Wahl, kein
+   Auto-Eintragen fremder Codes durch uns; eigener Partner-Code via AFF bleibt nachrangig). */
+const KNOWN_CODES=[
+  {code:"AKTION",desc:"Wochen-Aktionscode – zuletzt bis 20 % (10 % auf Proteine)",stand:"Juli 2026"}
+];
+let creatorCodes=[];try{creatorCodes=JSON.parse(localStorage.getItem("mn-ccodes")||"[]")||[];}catch(e){creatorCodes=[];}
+function saveCreatorCodes(){try{localStorage.setItem("mn-ccodes",JSON.stringify(creatorCodes));}catch(e){}}
+function activeUserCode(){try{return localStorage.getItem("mn-usecode")||"";}catch(e){return "";}}
+function setActiveUserCode(c){try{if(c)localStorage.setItem("mn-usecode",c);else localStorage.removeItem("mn-usecode");}catch(e){}}
+async function copyCode(code,btn){
+  try{await navigator.clipboard.writeText(code);btn.textContent="✓ kopiert";}
+  catch(e){window.prompt("Code kopieren:",code);}
+  setTimeout(()=>{if(btn.isConnected)btn.textContent="Kopieren";},1500);
+}
+function renderCodes(){
+  const kl=document.getElementById("codeList"); if(!kl)return;
+  const act=activeUserCode();
+  kl.innerHTML=KNOWN_CODES.map(c=>`<div class="coderow"><b class="tnum">${escT(c.code)}</b><span class="cdesc">${escT(c.desc)} · Stand ${escT(c.stand)}</span><button type="button" class="goalbtn" data-ccopy="${esc(c.code)}">Kopieren</button></div>`).join("");
+  document.getElementById("ccList").innerHTML=creatorCodes.length
+    ?creatorCodes.map((c,ix)=>`<div class="coderow"><b class="tnum">${escT(c.code)}</b><span class="cdesc">von ${escT(c.name)}</span><button type="button" class="goalbtn" data-ccopy="${esc(c.code)}">Kopieren</button><button type="button" class="goalbtn${act===c.code?" on":""}" data-cuse="${ix}" aria-pressed="${act===c.code}">${act===c.code?"✓ aktiv im Warenkorb-Link":"Im Warenkorb-Link nutzen"}</button><button type="button" class="goalbtn" data-crm="${ix}" aria-label="${esc(c.code)} entfernen">✕</button></div>`).join("")
+    :`<p class="note">Noch keine Creator-Codes gespeichert.</p>`;
+  document.querySelectorAll("#panel-rabatte [data-ccopy]").forEach(b=>b.onclick=()=>copyCode(b.dataset.ccopy,b));
+  document.querySelectorAll("#panel-rabatte [data-cuse]").forEach(b=>b.onclick=()=>{const c=creatorCodes[Number(b.dataset.cuse)];setActiveUserCode(activeUserCode()===c.code?"":c.code);renderCodes();renderCart();});
+  document.querySelectorAll("#panel-rabatte [data-crm]").forEach(b=>b.onclick=()=>{const c=creatorCodes[Number(b.dataset.crm)];if(c&&activeUserCode()===c.code)setActiveUserCode("");creatorCodes.splice(Number(b.dataset.crm),1);saveCreatorCodes();renderCodes();renderCart();});
+}
+document.getElementById("ccAdd").onclick=()=>{
+  const nEl=document.getElementById("ccName"),cEl=document.getElementById("ccCode");
+  const n=nEl.value.replace(/[<>]/g,"").trim().slice(0,30);
+  const c=cEl.value.replace(/[^A-Za-z0-9._-]/g,"").trim().slice(0,30);
+  nEl.style.borderColor=n?"":"var(--crit)";cEl.style.borderColor=c?"":"var(--crit)";
+  if(!n||!c)return;
+  if(!creatorCodes.some(x=>x.code.toLowerCase()===c.toLowerCase()))creatorCodes.unshift({name:n,code:c});
+  creatorCodes=creatorCodes.slice(0,30);saveCreatorCodes();
+  nEl.value="";cEl.value="";
+  renderCodes();
+};
+
+/* COMMUNITY-WUENSCHE (Biyan: Reiter fuer Sorten-Wuensche + Verbesserungsvorschlaege). EHRLICH
+   ohne Server: Wuensche liegen lokal (mn-wishes); FEEDBACK_MAIL kommt mit dem Launch-Impressum
+   (Launch-Checkliste) — sobald gesetzt, bekommt jeder Wunsch einen mailto-Absende-Knopf. */
+const FEEDBACK_MAIL="";
+let wishes=[];try{wishes=JSON.parse(localStorage.getItem("mn-wishes")||"[]")||[];}catch(e){wishes=[];}
+function saveWishes(){try{localStorage.setItem("mn-wishes",JSON.stringify(wishes));}catch(e){}}
+function wishMailto(w2){return `mailto:${FEEDBACK_MAIL}?subject=${encodeURIComponent("Suppwert-Wunsch: "+w2.type)}&body=${encodeURIComponent((w2.prod?"Betrifft: "+w2.prod+"\n\n":"")+w2.text)}`;}
+function renderWishes(){
+  const l=document.getElementById("wishList"); if(!l)return;
+  l.innerHTML=wishes.length
+    ?wishes.map((w2,ix)=>`<div class="coderow"><span class="cdesc"><b>${escT(w2.type)}</b>${w2.prod?` · ${escT(w2.prod)}`:""}<br>${escT(w2.text)}</span><small style="color:var(--muted)">${new Date(w2.ts).toLocaleDateString("de-DE")}</small>${FEEDBACK_MAIL?`<a class="goalbtn" style="text-decoration:none" href="${wishMailto(w2)}">Per E-Mail senden</a>`:""}<button type="button" class="goalbtn" data-wrm="${ix}" aria-label="Wunsch entfernen">✕</button></div>`).join("")
+    :`<p class="note">Noch keine Wünsche notiert.</p>`;
+  l.querySelectorAll("[data-wrm]").forEach(b=>b.onclick=()=>{wishes.splice(Number(b.dataset.wrm),1);saveWishes();renderWishes();});
+}
+document.getElementById("wSend").onclick=()=>{
+  const tEl=document.getElementById("wText");
+  const t=tEl.value.replace(/[<>]/g,"").trim().slice(0,500);
+  if(!t){tEl.style.borderColor="var(--crit)";return;}
+  tEl.style.borderColor="";
+  wishes.unshift({type:document.getElementById("wType").value,prod:document.getElementById("wProd").value.replace(/[<>]/g,"").trim().slice(0,60),text:t,ts:Date.now()});
+  wishes=wishes.slice(0,50);saveWishes();
+  tEl.value="";document.getElementById("wProd").value="";
+  document.getElementById("wNote").textContent=FEEDBACK_MAIL
+    ?`Gespeichert – über „Per E-Mail senden" in der Liste unten geht er direkt raus.`
+    :`Gespeichert (nur in deinem Browser). Zum Launch kommt die Kontakt-E-Mail dazu – dann bekommt jeder Wunsch einen Absende-Knopf.`;
+  renderWishes();
+};
 document.getElementById("setSearch").oninput=()=>{
   setsQuery=document.getElementById("setSearch").value.trim().toLowerCase();
   renderSets();
@@ -1904,12 +2046,13 @@ function cardHTML(p){
 let activeCats=[], view="cards", tsort={key:"_total",dir:-1};
 function getFiltered(){
   const q=document.getElementById("search").value.toLowerCase().trim();
-  const fA=document.getElementById("fAvail").checked, fV=document.getElementById("fVegan").checked, fS=document.getElementById("fSugar").checked;
+  const fA=document.getElementById("fAvail").checked, fV=document.getElementById("fVegan").checked, fS=document.getElementById("fSugar").checked, fO=document.getElementById("fSale").checked;
   let list=PRODUCTS.filter(p=>{
     if(activeCats.length&&!activeCats.includes(p.cat))return false;
     if(fA&&p.avail!=="auf Lager")return false;
     if(fV&&!(p.tags||[]).includes("vegan"))return false;
     if(fS&&!((p.sugar!=null&&p.sugar<=2)||(p.tags||[]).some(t=>/zuckerfrei|zuckerarm|Zucker|Stevia/.test(t))))return false;
+    if(fO&&!prodOnSale(p.id))return false;
     if(q){const hay=(p.name+" "+p.note+" "+(p.tags||[]).join(" ")).toLowerCase();if(!hay.includes(q))return false;}
     return true;
   });
@@ -1975,12 +2118,15 @@ function render(){
    Ueberblick, nicht aneinandergereiht): darin Kategorie-Chips als Filter, Standard "Alle"
    zeigt das komplette Sortiment in Kategorie-SEKTIONEN. Alte Deep-Links #proteine etc.
    funktionieren weiter (applyHash/showTab routen sie auf den Produkte-Reiter + Filter). */
-const TABS=[["uebersicht","Übersicht",null],["produkte","Produkte",null],["vergleich","Vergleich",null],["empfehlungen","Empfehlungen",null],["sets","Sets",null],["community","Community-Sets",null],["ratgeber","Ratgeber",null],["buy","Wo kaufen",null],["info","Info",null]];
+const TABS=[["uebersicht","Übersicht",null],["produkte","Produkte",null],["vergleich","Vergleich",null],["empfehlungen","Empfehlungen",null],["sets","Sets",null],["rabatte","Rabatte",null],["wuensche","Community",null],["ratgeber","Ratgeber",null],["buy","Wo kaufen",null],["info","Info",null]];
 function renderTabs(){
   document.getElementById("tabs").innerHTML=TABS.map(t=>`<button class="tab" data-tab="${t[0]}" role="tab" aria-selected="false" aria-controls="${t[0]==="produkte"?"panel-products":"panel-"+t[0]}">${t[1]}${t[0]==="produkte"?`<span class="tcount">${PRODUCTS.length}</span>`:""}</button>`).join("");
   document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 }
 function showTab(tab){
+  /* Legacy-/Share-Hash #community = Community-Ansicht IM Sets-Reiter (Biyan: ein Reiter,
+     prominenter Umschalter) — alte geteilte Links bleiben damit gueltig */
+  if(tab==="community"){tab="sets";setsView="com";}
   const isCat=!!CATS[tab], btnTab=isCat?"produkte":tab;
   document.querySelectorAll(".tab").forEach(b=>{const on=b.dataset.tab===btnTab;b.classList.toggle("on",on);b.setAttribute("aria-selected",on?"true":"false");b.tabIndex=on?0:-1;});
   document.getElementById("panel-uebersicht").classList.toggle("on",tab==="uebersicht");
@@ -1988,8 +2134,11 @@ function showTab(tab){
   document.getElementById("panel-vergleich").classList.toggle("on",tab==="vergleich");
   document.getElementById("panel-empfehlungen").classList.toggle("on",tab==="empfehlungen");
   document.getElementById("panel-sets").classList.toggle("on",tab==="sets");
-  document.getElementById("panel-community").classList.toggle("on",tab==="community");
-  if(tab==="community")renderComSets();
+  document.getElementById("panel-rabatte").classList.toggle("on",tab==="rabatte");
+  document.getElementById("panel-wuensche").classList.toggle("on",tab==="wuensche");
+  if(tab==="rabatte")renderCodes();
+  if(tab==="wuensche")renderWishes();
+  if(tab==="sets")applySetsView();
   if(tab==="vergleich"){renderVchips();renderDuel();renderVtable();}
   document.getElementById("panel-ratgeber").classList.toggle("on",tab==="ratgeber");
   document.getElementById("panel-buy").classList.toggle("on",tab==="buy");
@@ -2019,7 +2168,7 @@ srcAltBtn.addEventListener("click",()=>setAltSrc(true,true));
 // Dropdown-Sortierung auf die Tabellen-Sortierung spiegeln (sonst wirkt das Dropdown in der Tabellen-Ansicht nicht)
 const SORT2TSORT={score:["_total",-1],price:["price",1],perserv:["perserv",1],protein:["protein",-1],sugar:["sugar",1],rating:["rating",-1],reviews:["reviews",-1]};
 document.getElementById("sort").addEventListener("change",()=>{const m=SORT2TSORT[document.getElementById("sort").value];if(m){tsort.key=m[0];tsort.dir=m[1];}});
-["search","sort","fAvail","fVegan","fSugar"].forEach(id=>{const el=document.getElementById(id);el.addEventListener(el.tagName==="INPUT"&&el.type!=="checkbox"?"input":"change",render);});
+["search","sort","fAvail","fVegan","fSugar","fSale"].forEach(id=>{const el=document.getElementById(id);el.addEventListener(el.tagName==="INPUT"&&el.type!=="checkbox"?"input":"change",render);});
 document.getElementById("vsearch").addEventListener("input",vSearch);
 document.getElementById("vCards").onclick=()=>{view="cards";document.getElementById("vCards").classList.add("on");document.getElementById("vTable").classList.remove("on");render();};
 document.getElementById("vTable").onclick=()=>{view="table";document.getElementById("vTable").classList.add("on");document.getElementById("vCards").classList.remove("on");render();};
@@ -2065,7 +2214,10 @@ function addToCart(pid,vid){
    wuerde die Partner-Bewerbung gefaehrden. affLink haengt danach den Tracking-Parameter an. */
 function cartURLFor(items){
   let u="https://morenutrition.de/cart/"+items.map(i=>i.vid+":"+i.q).join(",");
-  if(AFF.enabled&&AFF.moreCode)u+="?discount="+encodeURIComponent(AFF.moreCode);
+  /* Vorrang: vom NUTZER im Rabatte-Reiter aktiv gesetzter Creator-Code (bewusste Wahl),
+     sonst unser Partner-Code (erst mit AFF.enabled) */
+  const code=activeUserCode()||(AFF.enabled&&AFF.moreCode?AFF.moreCode:"");
+  if(code)u+="?discount="+encodeURIComponent(code);
   return affLink(u);
 }
 function cartURL(){return cartURLFor(cart);}
@@ -2334,6 +2486,7 @@ function currentTab(){const b=document.querySelector(".tab.on");return b?b.datas
 function updateHash(){
   if(!hashReady)return;
   let tab=currentTab();
+  if(tab==="sets"&&setsView==="com")tab="community"; /* Community-Ansicht bleibt als #community teilbar */
   if(tab==="produkte"&&activeCats.length===1)tab=activeCats[0]; /* alte #proteine-Links bleiben die Wahrheit */
   let h="#"+tab;
   if(CATS[tab]||tab==="produkte"){
@@ -2341,7 +2494,7 @@ function updateHash(){
     /* Kategorie-KOMBIS (>=2) wandern als cats=a,b in den Hash (Reihenfolge stabil = CATORDER) */
     if(tab==="produkte"&&activeCats.length>1)ps.set("cats",CATORDER.filter(x=>activeCats.includes(x)).join(","));
     const q=document.getElementById("search").value.trim();if(q)ps.set("q",q);
-    const f=[["fAvail","a"],["fVegan","v"],["fSugar","s"]].filter(x=>document.getElementById(x[0]).checked).map(x=>x[1]).join("");if(f)ps.set("f",f);
+    const f=[["fAvail","a"],["fVegan","v"],["fSugar","s"],["fSale","o"]].filter(x=>document.getElementById(x[0]).checked).map(x=>x[1]).join("");if(f)ps.set("f",f);
     const s=document.getElementById("sort").value;if(s!=="score")ps.set("sort",s);
     if(view==="table")ps.set("view","table");
     const str=ps.toString();if(str)h+="?"+str;
@@ -2393,7 +2546,7 @@ function applyHash(){
   if(m.startsWith("warenkorb=")){openCartImport(m.slice(10));return true;}
   if(m.startsWith("set=")){openSetImport(m.slice(4));return true;}
   const qi=m.indexOf("?"),tab=qi<0?m:m.slice(0,qi),qs=qi<0?"":m.slice(qi+1);
-  if(!(CATS[tab]||["uebersicht","produkte","vergleich","empfehlungen","sets","community","ratgeber","buy","info"].includes(tab)))return false;
+  if(!(CATS[tab]||["uebersicht","produkte","vergleich","empfehlungen","sets","community","rabatte","wuensche","ratgeber","buy","info"].includes(tab)))return false;
   showTab(tab);
   if(CATS[tab]||tab==="produkte"){ /* Parameter anwenden — leeres qs setzt bewusst auf Defaults zurück (der Hash ist die Wahrheit) */
     const ps=new URLSearchParams(qs);
@@ -2403,6 +2556,7 @@ function applyHash(){
     document.getElementById("fAvail").checked=f.indexOf("a")>=0;
     document.getElementById("fVegan").checked=f.indexOf("v")>=0;
     document.getElementById("fSugar").checked=f.indexOf("s")>=0;
+    document.getElementById("fSale").checked=f.indexOf("o")>=0;
     const so=ps.get("sort");
     if(so&&SORT2TSORT[so]){document.getElementById("sort").value=so;tsort.key=SORT2TSORT[so][0];tsort.dir=SORT2TSORT[so][1];}
     const tb=ps.get("view")==="table";

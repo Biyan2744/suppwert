@@ -43,7 +43,9 @@ def main():
         try:
             vs = fetch(f"https://morenutrition.de/products/{handle}.js").get("variants", [])
             live[pid] = [sum(1 for v in vs if v.get("available")), len(vs)]
-            variants[pid] = [[v["id"], v.get("title") or "Standard", 1 if v.get("available") else 0, round(v.get("price", 0) / 100, 2)] for v in vs]
+            # 5. Feld: Streichpreis (compare_at_price) fuer die ehrliche "im Angebot"-Erkennung —
+            # 0 wenn keiner gesetzt ist; die UI wertet nur compare_at > Preis als Angebot
+            variants[pid] = [[v["id"], v.get("title") or "Standard", 1 if v.get("available") else 0, round(v.get("price", 0) / 100, 2), round((v.get("compare_at_price") or 0) / 100, 2)] for v in vs]
         except Exception as e:
             fails.append(f"{pid} ({handle}): {e}")
             if pid in data.get("live", {}):
