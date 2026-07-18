@@ -116,7 +116,11 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
 > Browser-Pane rendert so!) feuert IntersectionObserver nie → Reveal initialisiert erst beim
 > Sichtbarwerden + Sicherheitsnetz nach 1,6 s; Content darf NIE davon abhängen, dass ein
 > Observer ihn einblendet.
-> **Sets-Anpassen (18.07.):** „Anpassen – Sorte & Auswahl"-Button unter jeder Set-Karte
+> **Sets-Anpassen (18.07.):** *(Nachtrag: Sorten-Wechsel nur innerhalb derselben GRÖSSE —
+> 600 g bleibt 600 g, keine Probier-/XL-Größen im Select; Referenz ist die Set-Variante
+> (bei Community-Sets fest gepinnt, inkl. ehrlichem „in der Set-Größe zzt. ausverkauft"-
+> Hinweis), bei kuratierten Sets die Standardgröße via bestBuyable.)*
+> „Anpassen – Sorte & Auswahl"-Button unter jeder Set-Karte
 > (kuratiert + Community): Dialog mit Häkchen je Posten (rein/raus) und Sorten-/Größen-Select
 > (nur kaufbare Varianten, Preis je Option), Live-Summe + Zähler, Übernahme in den Merkzettel
 > mit exakt den gewählten Varianten; ausverkaufte Posten erscheinen mit Anbieter-Links.

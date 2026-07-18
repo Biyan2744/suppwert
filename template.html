@@ -1537,16 +1537,21 @@ function renderComSets(){
 function openSetCustomize(title,items){
   const rows=items.map(it=>{
     const p=PRODUCTS.find(x=>x.id===it.pid); if(!p)return null;
-    const opts=parseVariants(it.pid).parsed.filter(x=>x.av&&x.pr);
+    const all=parseVariants(it.pid).parsed, buy=all.filter(x=>x.av&&x.pr);
+    /* Biyan: Sorten-Wechsel NUR innerhalb derselben Groesse (600g bleibt 600g — keine
+       Probiergroessen/XL in der Liste). Referenz = die Set-Variante (auch wenn gerade
+       ausverkauft), sonst die erste kaufbare. */
+    const ref=all.find(o=>o.vid===it.vid)||buy[0]||null;
+    const opts=ref?buy.filter(o=>(o.size||"")===(ref.size||"")):[];
     const sel=opts.find(o=>o.vid===it.vid)||opts[0]||null;
-    return {p:p,opts:opts,sel:sel,q:it.q||1,on:!!sel};
+    return {p:p,opts:opts,sel:sel,q:it.q||1,on:!!sel,refSize:ref&&ref.size?ref.size:"",otherSizes:buy.length>opts.length};
   }).filter(Boolean);
   if(!rows.length)return;
   const w=setOvShow(`<div class="cmpbox shopbox"><h3>${escT(title)} anpassen <button type="button" class="x" aria-label="Schließen">✕</button></h3>
-    <div class="shopnote" style="margin-top:8px">Wähle pro Produkt deine Sorte/Größe oder nimm Posten per Häkchen raus – zur Auswahl stehen nur gerade kaufbare Varianten.</div>
+    <div class="shopnote" style="margin-top:8px">Wähle pro Produkt deine Sorte oder nimm Posten per Häkchen raus – zur Auswahl stehen nur gerade kaufbare Sorten in der Set-Größe (die Größe bleibt fest; andere Größen findest du auf den Produktkarten).</div>
     <div class="setitems">${rows.map((r,ix)=>r.opts.length
       ?`<div class="setit"><span class="sn withimg"><input type="checkbox" data-con="${ix}" checked aria-label="${esc(r.p.name)} im Set behalten">${thumbHTML(r.p,false)}<span class="snt"><b>${r.q>1?`${r.q}× `:""}${escT(r.p.name)}</b><select class="sort" data-cvar="${ix}" aria-label="Sorte für ${esc(r.p.name)} wählen">${r.opts.map(o=>`<option value="${o.vid}"${r.sel&&o.vid===r.sel.vid?" selected":""}>${escT(o.flavor)}${o.size?" · "+escT(o.size):""} – ${eur(o.pr)}</option>`).join("")}</select></span></span><span class="sp tnum" data-cpr="${ix}"></span></div>`
-      :`<div class="setit gone"><span class="sn withimg">${thumbHTML(r.p,true)}<span class="snt"><b>${escT(r.p.name)}</b><small>zzt. ausverkauft${setAltLinksHTML(r.p)}</small></span></span><span class="sp">–</span></div>`
+      :`<div class="setit gone"><span class="sn withimg">${thumbHTML(r.p,true)}<span class="snt"><b>${escT(r.p.name)}</b><small>${r.otherSizes?`in der Set-Größe${r.refSize?` (${escT(r.refSize)})`:""} zzt. ausverkauft – andere Größen auf der Produktkarte`:"zzt. ausverkauft"}${setAltLinksHTML(r.p)}</small></span></span><span class="sp">–</span></div>`
     ).join("")}</div>
     <div class="smarthead" style="margin-top:10px"><b>Deine Auswahl</b><span class="tnum" id="custSum"></span></div>
     <button type="button" class="setadd" id="custAdd"></button>
