@@ -2416,6 +2416,50 @@ function cardHTML(p){
   </div>`;
 }
 
+/* Schlauere Suche (Start- + Produkte-Suche): (1) Umlaut/ss-Normalisierung beidseitig
+   (oelspray findet Ölspray, griess das Grießpudding), (2) kuratierte SYNONYME deutsch ->
+   Katalog-Begriff (Eiweiss->Protein usw. — Keys in NORMALISIERTER Form, also sosse/gewuerz),
+   (3) Tippfehler-Toleranz per OSA-Damerau-Levenshtein (Buchstabendreher wie 'Protien' =
+   Distanz 1): ab 5 Zeichen 1 Fehler, ab 8 Zeichen 2 — kurze Woerter bleiben exakt, sonst
+   traefe 'bar' halb das Sortiment. Kategorie-Label wandert mit in den Suchtext ('Riegel'
+   findet die Riegel). Phrasen-Treffer wie bisher zuerst, sonst UND ueber die Wort-Tokens. */
+function normTxt(s){return s.toLowerCase().replace(/ß/g,"ss").replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue");}
+const SEARCH_SYN={eiweiss:["protein"],kreatin:["creatine"],kaffee:["coffee"],schlaf:["sleep","melatonin"],schlafen:["sleep","melatonin"],einschlafen:["sleep","melatonin"],kollagen:["collagen"],haferbrei:["porridge"],pfannkuchen:["pancake"],sosse:["sauce","saucen"],gewuerz:["spices"],gewuerze:["spices"],marmelade:["moremelade"],ballaststoffe:["fiber"],eisen:["iron"],omega:["o3"],flasche:["bottle"],nussbutter:["butter"]};
+function lev(a,b,max){ /* OSA: Einfuege/Loesch/Ersetz + Nachbar-Dreher, frueher Abbruch > max */
+  if(Math.abs(a.length-b.length)>max)return max+1;
+  let p2=null,p1=[...Array(b.length+1).keys()];
+  for(let i=1;i<=a.length;i++){
+    const cur=[i];let best=i;
+    for(let j=1;j<=b.length;j++){
+      let v=Math.min(p1[j]+1,cur[j-1]+1,p1[j-1]+(a[i-1]===b[j-1]?0:1));
+      if(p2&&i>1&&j>1&&a[i-1]===b[j-2]&&a[i-2]===b[j-1])v=Math.min(v,p2[j-2]+1);
+      cur[j]=v;if(v<best)best=v;
+    }
+    if(best>max)return max+1;
+    p2=p1;p1=cur;
+  }
+  return p1[b.length];
+}
+function productHay(p){
+  if(!p._hay){
+    p._hay=normTxt(p.name+" "+(p.note||"")+" "+(p.tags||[]).join(" ")+" "+CATS[p.cat].label);
+    p._hayW=p._hay.split(/[^a-z0-9+]+/).filter(w=>w.length>2);
+  }
+  return p._hay;
+}
+function tokHit(p,tok){
+  const hay=productHay(p);
+  if(hay.includes(tok))return true;
+  const syn=SEARCH_SYN[tok];
+  if(syn&&syn.some(s=>hay.includes(s)))return true;
+  const max=tok.length>=8?2:tok.length>=5?1:0;
+  return max?p._hayW.some(w=>lev(w,tok,max)<=max):false;
+}
+function matchesQuery(p,q){
+  const nq=normTxt(q);
+  if(productHay(p).includes(nq))return true;
+  return nq.split(/\s+/).filter(Boolean).every(t=>tokHit(p,t));
+}
 /* activeCats: MEHRFACH-Auswahl der Kategorie-Chips (Biyan: Kategorien kombinieren, nochmal
    antippen waehlt ab). Leeres Array = "Alle". Alle 6 gewaehlt wird auf "Alle" normalisiert. */
 let activeCats=[], view="cards", tsort={key:"_total",dir:-1};
@@ -2428,7 +2472,7 @@ function getFiltered(){
     if(fV&&!(p.tags||[]).includes("vegan"))return false;
     if(fS&&!((p.sugar!=null&&p.sugar<=2)||(p.tags||[]).some(t=>/zuckerfrei|zuckerarm|Zucker|Stevia/.test(t))))return false;
     if(fO&&!prodOnSale(p.id))return false;
-    if(q){const hay=(p.name+" "+p.note+" "+(p.tags||[]).join(" ")).toLowerCase();if(!hay.includes(q))return false;}
+    if(q&&!matchesQuery(p,q))return false;
     return true;
   });
   const s=document.getElementById("sort").value, num=x=>x==null?-Infinity:x;
