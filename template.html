@@ -275,6 +275,16 @@ td .cdot{width:8px;height:8px;border-radius:50%}
 
 /* Skip-Link */
 .skip{position:absolute;left:-9999px;top:0;z-index:100;background:var(--text-1);color:var(--surface-1);padding:10px 16px;border-radius:0 0 10px 0;font-size:13px;font-weight:600;text-decoration:none}
+/* Seiten-Helix: eigenes Beeren-Ornament an den freien Raendern breiter Screens (KEIN MORE-M).
+   fixed + pointer-events:none + z-index 0 — liegt unter Header (50)/Overlays (79+); ab 1500px
+   sind die Raender >=160px breit, die 110px-Helix beruehrt den 1180px-Content also nie.
+   Sanfter Ein-/Auslauf oben+unten per mask. */
+.sidehelix{position:fixed;top:0;height:100%;width:110px;pointer-events:none;z-index:0;display:none;opacity:.34;
+  -webkit-mask-image:linear-gradient(to bottom,transparent,#000 14%,#000 86%,transparent);
+  mask-image:linear-gradient(to bottom,transparent,#000 14%,#000 86%,transparent)}
+.sidehelix.left{left:16px}
+.sidehelix.right{right:16px;transform:scaleX(-1)}
+@media(min-width:1500px){.sidehelix{display:block}}
 .skip:focus{left:0}
 
 /* Sorten-Liste in der Karte */
@@ -604,6 +614,24 @@ header.top.scrolled{box-shadow:var(--shadow)}
 </head>
 <body>
 <a class="skip" href="#main">Zum Inhalt springen</a>
+<!-- Seiten-Helix (Deko, Biyan 18.07.): EIGENSTAENDIGES Suppwert-Ornament in Beere/Gold an den
+     leeren Seitenraendern breiter Screens. BEWUSST NICHT das geschwungene MORE-M nachgebaut —
+     Logo-Anmutung waere Herkunftstaeuschung (Rechts-Leitplanke), die Helix ist unsere eigene
+     Formsprache. Rein dekorativ: aria-hidden, pointer-events:none, erst ab 1500px sichtbar. -->
+<svg class="sidehelix left" aria-hidden="true" focusable="false">
+  <defs>
+    <pattern id="helixpat" width="120" height="480" patternUnits="userSpaceOnUse">
+      <path d="M60 0 C 22 62, 22 178, 60 240 C 98 302, 98 418, 60 480" fill="none" stroke="var(--brand)" stroke-width="2" stroke-linecap="round"/>
+      <path d="M60 0 C 98 62, 98 178, 60 240 C 22 302, 22 418, 60 480" fill="none" stroke="var(--brand)" stroke-width="2" stroke-linecap="round" opacity=".45"/>
+      <circle cx="60" cy="0" r="3.5" fill="var(--gold)"/>
+      <circle cx="60" cy="240" r="3.5" fill="var(--gold)"/>
+      <circle cx="31" cy="120" r="2" fill="var(--brand)"/>
+      <circle cx="89" cy="360" r="2" fill="var(--brand)"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#helixpat)"/>
+</svg>
+<svg class="sidehelix right" aria-hidden="true" focusable="false"><rect width="100%" height="100%" fill="url(#helixpat)"/></svg>
 <header class="top">
   <div class="wrap top-in">
     <a class="brand" href="#uebersicht" aria-label="Zur Übersicht">
