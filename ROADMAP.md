@@ -98,6 +98,11 @@ allem schon im Korb (Checkout macht der Kunde selbst — **kein** automatischer 
   Cookie-/Consent-Banner nur falls Tracking/Analytics dazukommt.
 - Kein Checkout-Bot, keine Speicherung fremder Zahlungsdaten (siehe CLAUDE.md → Constraints).
 
+> **Sets-Anpassen (18.07.):** „Anpassen – Sorte & Auswahl"-Button unter jeder Set-Karte
+> (kuratiert + Community): Dialog mit Häkchen je Posten (rein/raus) und Sorten-/Größen-Select
+> (nur kaufbare Varianten, Preis je Option), Live-Summe + Zähler, Übernahme in den Merkzettel
+> mit exakt den gewählten Varianten; ausverkaufte Posten erscheinen mit Anbieter-Links.
+> Tipp-Note verweist auf den Weiterteilen-Weg (Merkzettel → Eigenes Set erstellen).
 > **Sets-Ausbau III: WPF-Name + Warenkorb-Split + Community-Reiter + Code-Plumbing (18.07.):**
 > (a) „Protein-Fasten-Set" heißt jetzt **„WPF-Paket"** (Biyan: darunter kennt es jeder) — mit
 > SICHTBARER Inoffiziell-Zeile unterm Titel („nicht die offizielle MPF-Box"), weil die

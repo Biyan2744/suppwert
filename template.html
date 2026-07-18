@@ -450,6 +450,8 @@ body.has-cart .cmpchip{bottom:74px}
 .setthumbs .pthumb.morecnt{background:var(--plane);color:var(--muted);font-size:12px;font-weight:800}
 @media(prefers-reduced-motion:reduce){.setthumbs .pthumb{transition:none}}
 .sn.withimg{display:flex;align-items:center;gap:9px;min-width:0}
+.sn.withimg input[type=checkbox]{flex-shrink:0;width:15px;height:15px;accent-color:var(--m-nutri);cursor:pointer}
+.setit select.sort{margin-top:4px;max-width:100%;font-size:12px;padding:5px 8px;display:block}
 .sn.withimg .snt{min-width:0}
 .sn.withimg .snt small{display:block}
 .setgen{margin-bottom:16px}
@@ -1335,6 +1337,7 @@ function renderSets(){
       <details class="setwhyd"><summary>Warum dieses Set?</summary><p class="setwhy">${escT(s.why)}</p></details>
       <div class="setfoot">${foot}</div>
       <button type="button" class="setadd" data-set="${s.key}"${buyable.length?"":" disabled"}>${buyable.length?`Lieferbare in den Merkzettel (${buyable.length})`:"Gerade nicht lieferbar"}</button>
+      ${buyable.length?`<div class="setacts"><button type="button" class="goalbtn" data-setcust="${s.key}">Anpassen – Sorte &amp; Auswahl</button></div>`:""}
     </div>`;
   }).join("")
     +(q&&miss===SETS.length?`<div class="note">Kein Set passt zu „${escT(q)}" – die Suche prüft Set-Namen, Beschreibungen und enthaltene Produkte.</div>`:"")
@@ -1343,6 +1346,8 @@ function renderSets(){
   renderComSets();
 }
 document.getElementById("setgrid").addEventListener("click",e=>{
+  const c=e.target.closest("[data-setcust]");
+  if(c){const s=SETS.find(x=>x.key===c.dataset.setcust);if(s)openSetCustomize(s.title,s.ids.map(id=>{const v=bestBuyable(id);return {pid:id,vid:v?v.vid:null,q:1};}));return;}
   const b=e.target.closest(".setadd"); if(!b||b.disabled)return;
   const s=SETS.find(x=>x.key===b.dataset.set); if(!s)return;
   let n=0; s.ids.forEach(id=>{const v=bestBuyable(id);if(v&&v.pr){addToCart(id,v.vid);n++;}});
@@ -1476,7 +1481,7 @@ function renderComSets(){
       <div class="setitems">${items}</div>
       <div class="setfoot">${rows.length?`${buyable.length} von ${rows.length} lieferbar · Sorten wie geteilt.`:"Die Posten dieses Sets sind nicht mehr im Sortiment."}</div>
       <button type="button" class="setadd" data-comadd="${ix}"${buyable.length?"":" disabled"}>${buyable.length?`Lieferbare in den Merkzettel (${buyable.length})`:"Gerade nicht lieferbar"}</button>
-      <div class="setacts"><button type="button" class="goalbtn" data-comshare="${ix}">Link teilen</button><button type="button" class="goalbtn" data-comrm="${ix}">✕ Entfernen</button></div>
+      <div class="setacts">${buyable.length?`<button type="button" class="goalbtn" data-comcust="${ix}">Anpassen</button>`:""}<button type="button" class="goalbtn" data-comshare="${ix}">Link teilen</button><button type="button" class="goalbtn" data-comrm="${ix}">✕ Entfernen</button></div>
     </div>`;
   }).join("");
   grid.querySelectorAll("[data-comadd]").forEach(b=>b.onclick=()=>{
@@ -1485,8 +1490,56 @@ function renderComSets(){
     cs.i.forEach(it=>{const r=comSetRow(it[0],it[1]);if(r&&r.px.av&&r.px.pr){for(let k=0;k<r.q;k++)addToCart(r.p.id,r.vid);n+=r.q;}});
     b.textContent=`✓ ${n} im Merkzettel – unten weiter zum Warenkorb`;b.disabled=true;
   });
+  grid.querySelectorAll("[data-comcust]").forEach(b=>b.onclick=()=>{
+    const cs=comSets[Number(b.dataset.comcust)]; if(!cs)return;
+    const items=cs.i.map(it=>{const r=comSetRow(it[0],it[1]);return r?{pid:r.p.id,vid:it[0],q:it[1]}:null;}).filter(Boolean);
+    openSetCustomize(cs.n,items);
+  });
   grid.querySelectorAll("[data-comshare]").forEach(b=>b.onclick=()=>{const cs=comSets[Number(b.dataset.comshare)];if(cs)shareSetLink(cs,b,"Link teilen");});
   grid.querySelectorAll("[data-comrm]").forEach(b=>b.onclick=()=>{comSets.splice(Number(b.dataset.comrm),1);saveComSets();renderComSets();});
+}
+/* Set-ANPASSEN (Biyan: Kunden sollen Sets anpassen können, z. B. wenn sie die Sorte nicht
+   mögen): Dialog mit Häkchen je Posten + Sorten-/Größen-Auswahl (NUR kaufbare Varianten,
+   Preis je Option sichtbar) + Live-Summe; die Auswahl wandert in den Merkzettel — dort sind
+   Mengen änderbar und über „Eigenes Set erstellen & teilen" wird daraus ein eigenes Set. */
+function openSetCustomize(title,items){
+  const rows=items.map(it=>{
+    const p=PRODUCTS.find(x=>x.id===it.pid); if(!p)return null;
+    const opts=parseVariants(it.pid).parsed.filter(x=>x.av&&x.pr);
+    const sel=opts.find(o=>o.vid===it.vid)||opts[0]||null;
+    return {p:p,opts:opts,sel:sel,q:it.q||1,on:!!sel};
+  }).filter(Boolean);
+  if(!rows.length)return;
+  const w=setOvShow(`<div class="cmpbox shopbox"><h3>${escT(title)} anpassen <button type="button" class="x" aria-label="Schließen">✕</button></h3>
+    <div class="shopnote" style="margin-top:8px">Wähle pro Produkt deine Sorte/Größe oder nimm Posten per Häkchen raus – zur Auswahl stehen nur gerade kaufbare Varianten.</div>
+    <div class="setitems">${rows.map((r,ix)=>r.opts.length
+      ?`<div class="setit"><span class="sn withimg"><input type="checkbox" data-con="${ix}" checked aria-label="${esc(r.p.name)} im Set behalten">${thumbHTML(r.p,false)}<span class="snt"><b>${r.q>1?`${r.q}× `:""}${escT(r.p.name)}</b><select class="sort" data-cvar="${ix}" aria-label="Sorte für ${esc(r.p.name)} wählen">${r.opts.map(o=>`<option value="${o.vid}"${r.sel&&o.vid===r.sel.vid?" selected":""}>${escT(o.flavor)}${o.size?" · "+escT(o.size):""} – ${eur(o.pr)}</option>`).join("")}</select></span></span><span class="sp tnum" data-cpr="${ix}"></span></div>`
+      :`<div class="setit gone"><span class="sn withimg">${thumbHTML(r.p,true)}<span class="snt"><b>${escT(r.p.name)}</b><small>zzt. ausverkauft${setAltLinksHTML(r.p)}</small></span></span><span class="sp">–</span></div>`
+    ).join("")}</div>
+    <div class="smarthead" style="margin-top:10px"><b>Deine Auswahl</b><span class="tnum" id="custSum"></span></div>
+    <button type="button" class="setadd" id="custAdd"></button>
+    <div class="shopnote">Tipp: Im Merkzettel kannst du Mengen ändern und deine Zusammenstellung über „Eigenes Set erstellen &amp; teilen" (Reiter Community-Sets) weitergeben.</div></div>`);
+  const upd=()=>{
+    let sum=0,n=0;
+    rows.forEach((r,ix)=>{
+      if(!r.opts.length)return;
+      r.on=w.querySelector(`[data-con="${ix}"]`).checked;
+      const vid=Number(w.querySelector(`[data-cvar="${ix}"]`).value);
+      r.sel=r.opts.find(o=>o.vid===vid)||r.opts[0];
+      w.querySelector(`[data-cpr="${ix}"]`).textContent=r.on?eur(r.sel.pr*r.q):"–";
+      if(r.on){sum+=r.sel.pr*r.q;n+=r.q;}
+    });
+    document.getElementById("custSum").textContent=n?eur(sum):"–";
+    const b=document.getElementById("custAdd");
+    b.textContent=n?`In den Merkzettel legen (${n})`:"Nichts ausgewählt";
+    b.disabled=!n;
+  };
+  w.querySelectorAll("[data-con],[data-cvar]").forEach(el=>el.onchange=upd);
+  upd();
+  document.getElementById("custAdd").onclick=()=>{
+    rows.forEach(r=>{if(r.on&&r.sel)for(let k=0;k<r.q;k++)addToCart(r.p.id,r.sel.vid);});
+    const b=document.getElementById("custAdd");b.textContent="✓ Im Merkzettel – unten weiter zum Warenkorb";b.disabled=true;
+  };
 }
 function closeSetOv(){const w=document.getElementById("setov");if(w)w.hidden=true;}
 function setOvShow(html){
